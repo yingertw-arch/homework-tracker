@@ -1,0 +1,6 @@
+node_modules/
+dist/
+firebase-token.json
+google-credentials.json
+google-token.json
+.claude/

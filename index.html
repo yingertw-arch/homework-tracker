@@ -41,8 +41,6 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', 'Segoe UI', sans-serif;
       background: #ffffff;
-      background-image: radial-gradient(circle, #d8d8d8 1px, transparent 1px);
-      background-size: 22px 22px;
       color: var(--text);
       min-height: 100vh;
       padding-bottom: 72px;
@@ -69,6 +67,16 @@
       margin-top: 1px;
       font-weight: 400;
     }
+    .header-nav-btn {
+      background: transparent; border: 2px solid #0a0a0a; color: #0a0a0a;
+      padding: 5px 12px; border-radius: 7px; font-size: 12px;
+      cursor: pointer; font-weight: 700; box-shadow: 2px 2px 0 #0a0a0a;
+      letter-spacing: 0.2px; transition: all 0.1s; white-space: nowrap;
+    }
+    .header-nav-btn.active {
+      background: #0a0a0a; color: #fff; box-shadow: none; transform: translate(2px,2px);
+    }
+    .header-nav-btn:hover:not(.active) { background: #f5f5f5; }
 
     /* ── Bottom Tab Bar ── */
     .tab-bar {
@@ -214,14 +222,14 @@
     /* ── Assignment List ── */
     .assignment-item {
       background: var(--surface);
-      border: 2px solid #0a0a0a;
+      border: 2px solid #93c5fd;
       border-radius: var(--radius);
       margin-bottom: 8px;
       overflow: hidden;
-      box-shadow: 3px 3px 0px #0a0a0a;
+      box-shadow: 3px 3px 0px #bfdbfe;
       transition: box-shadow 0.1s, transform 0.1s;
     }
-    .assignment-item:active { box-shadow: 1px 1px 0px #0a0a0a; transform: translate(2px,2px); }
+    .assignment-item:active { box-shadow: 1px 1px 0px #93c5fd; transform: translate(2px,2px); }
     .assignment-item.overdue { border-color: var(--danger); box-shadow: 3px 3px 0px var(--danger); }
     .assignment-item.overdue-warn { border-color: var(--warning); box-shadow: 3px 3px 0px var(--warning); }
 
@@ -446,6 +454,22 @@
     }
     .voice-parsed .seat-tag { background: var(--success-light); color: var(--success); }
 
+    /* ── Quick panel shared styles (used by 訂正確認 tab) ── */
+    .qp-assign-btn {
+      width:100%; text-align:left; padding:8px 10px; border:1.5px solid var(--border);
+      border-radius:8px; background:white; cursor:pointer; font-size:13px;
+      display:flex; justify-content:space-between; align-items:center;
+      transition:border-color 0.1s, background 0.1s;
+    }
+    .qp-assign-btn:hover { border-color:var(--accent); background:var(--accent-light); }
+    .qp-assign-btn.active { border-color:var(--accent); background:var(--accent-light); font-weight:700; }
+    .qp-assign-btn .badge { font-size:11px; background:var(--danger); color:white; padding:1px 6px; border-radius:10px; flex-shrink:0; }
+    .qp-input-row { display:flex; gap:6px; align-items:center; }
+    .qp-input-row input { flex:1; min-width:0; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; }
+    .qp-icon-btn { width:34px; height:34px; border-radius:50%; border:1.5px solid var(--border); background:white; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .qp-icon-btn.active { background:var(--accent); border-color:var(--accent); }
+    .qp-status { font-size:11px; color:var(--text-muted); }
+
     .voice-select-assignment { max-width: 480px; margin: 0 auto 14px; }
     .voice-select-assignment label {
       font-size: 11px; font-weight: 600; text-transform: uppercase;
@@ -542,57 +566,126 @@
     .empty-state .icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
     .empty-state p { font-size: 13px; line-height: 1.6; }
 
-    /* ── Projector Mode ── */
-    #projector-mode {
-      display: none;
-      position: fixed; inset: 0;
-      background: #0d0d0d;
-      color: white;
-      z-index: 1000;
-      overflow-y: auto;
-      padding: 28px;
+    /* ── Daily Items ── */
+    .daily-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 10px; border-radius: 8px; margin-bottom: 6px;
+      border: 1.5px solid var(--border); background: white;
     }
-    #projector-mode.open { display: block; }
+    .daily-item.type-event { border-left: 4px solid #f97316; }
+    .daily-item.type-homework { border-left: 4px solid #22c55e; }
+    .daily-item-badge {
+      font-size: 11px; font-weight: 700; padding: 2px 0; border-radius: 4px;
+      white-space: nowrap; flex-shrink: 0; width: 42px; text-align: center;
+    }
+    .daily-item.type-event .daily-item-badge { background: #fff7ed; color: #c2410c; }
+    .daily-item.type-homework .daily-item-badge { background: #f0fdf4; color: #15803d; }
+    .daily-item-text { flex: 1; font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+    .daily-item-del { color: var(--text-muted); cursor: pointer; font-size: 16px; flex-shrink: 0; padding: 0 2px; }
+    .daily-item-del:hover { color: var(--danger); }
+
+    /* ── Projector Section Titles ── */
+    .proj-section-title {
+      font-size: 12px; font-weight: 800; opacity: 0.45; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-bottom: 8px; flex-shrink: 0;
+    }
+
+    /* ══ Projector Mode ══ */
+    #projector-mode {
+      display: none; flex-direction: column;
+      position: fixed; inset: 0;
+      background: #0d0d0d; color: white;
+      z-index: 1000; padding: 14px 20px 12px; overflow: hidden;
+    }
+    #projector-mode.open { display: flex; }
     .proj-header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 24px;
-      border-bottom: 1px solid #222; padding-bottom: 16px;
+      margin-bottom: 12px; border-bottom: 1px solid #1e1e1e; padding-bottom: 10px; flex-shrink: 0;
     }
-    .proj-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-    .proj-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
-      gap: 8px; margin-bottom: 32px;
+    /* Tab buttons */
+    .proj-tabs { display: flex; gap: 6px; }
+    .proj-tab-btn {
+      padding: 6px 20px; border-radius: 8px; border: 1.5px solid #333;
+      background: transparent; color: #888; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .proj-tab-btn.active { background: #fff; color: #0d0d0d; border-color: #fff; }
+    .proj-tab-btn:not(.active):hover { border-color: #666; color: #ccc; }
+    /* 字體拉桿列 */
+    .proj-slider-row {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.06); border-radius: 8px; padding: 4px 12px;
+    }
+    .proj-slider-label { font-size: 12px; color: #888; white-space: nowrap; }
+
+    /* ── Tab 1：行事曆（上）+ 聯絡簿（下） ── */
+    #proj-tab1 { flex: 1; display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow: hidden; }
+    #proj-events-section {
+      flex-shrink: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 6px 0;
+    }
+    .proj-events-horizontal { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .proj-event-horizontal {
+      padding: 6px 18px; border-radius: 8px;
+      border-left: 5px solid #f97316; background: rgba(251,146,60,0.15);
+      color: #fb923c; font-weight: 700; white-space: nowrap;
+    }
+    #proj-hw-section { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+    .proj-hw-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .proj-hw-card {
+      padding: 8px 16px; border-radius: 10px; border: 2px solid #22c55e;
+      background: rgba(74,222,128,0.10);
+      white-space: pre-wrap; word-break: break-word;
+      line-height: 1.5; color: #fff; font-weight: 600; flex-shrink: 0;
+    }
+
+    /* ── Tab 2：全頁座位圖 ── */
+    #proj-tab2 { flex: 1; display: none; flex-direction: column; min-height: 0; overflow: hidden; }
+    .proj-grid-full {
+      flex: 1; display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px; overflow: hidden; align-content: start;
     }
     .proj-seat {
-      aspect-ratio: 1;
-      border-radius: 10px;
+      aspect-ratio: 1; border-radius: 14px;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.1s;
-      border: 1px solid transparent;
+      font-size: 22px; font-weight: 800;
+      cursor: pointer; transition: transform 0.12s, box-shadow 0.12s;
+      border: 2px solid transparent; user-select: none;
     }
-    .proj-seat:active { transform: scale(0.9); }
-    .proj-seat.proj-ok  { background: #1a1a1a; border-color: #333; color: #666; }
-    .proj-seat.proj-warn { background: #2d1f00; border-color: #5a3e00; color: #fbbf24; }
-    .proj-seat.proj-bad  { background: #2a0a0a; border-color: #5a1a1a; color: var(--danger); }
-    .proj-seat .proj-count { font-size: 10px; font-weight: 600; opacity: 0.7; }
+    .proj-seat:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
+    .proj-seat:active { transform: scale(0.93); }
+    .proj-seat.proj-ok        { background: #141420; border-color: #252538; color: #3a3a5c; }
+    .proj-seat.proj-warn1     { background: #2d2200; border-color: #5a4400; color: #fbbf24; }
+    .proj-seat.proj-warn2     { background: #3d1a00; border-color: #7a3400; color: #fb923c; }
+    .proj-seat.proj-bad       { background: #2a0a0a; border-color: #6a1a1a; color: #f87171; }
+    .proj-seat.proj-submitted { background: #0a2a10; border-color: #1a6a2a; color: #4ade80; }
+    .proj-seat .proj-count { font-size: 11px; font-weight: 600; opacity: 0.9; margin-top: 2px; }
+    .proj-seat .proj-sub-label { font-size: 10px; opacity: 0.7; margin-top: 1px; }
 
-    .proj-assignments { margin-top: 8px; }
-    .proj-assign-card {
-      background: #161616;
-      border: 1px solid #262626;
-      border-radius: 10px; padding: 16px; margin-bottom: 10px;
+    /* ── 座位詳情 Popup ── */
+    .proj-seat-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.88);
+      z-index: 2000; display: flex; align-items: center; justify-content: center;
     }
-    .proj-assign-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: #e5e5e5; }
-    .proj-assign-card .seats { display: flex; flex-wrap: wrap; gap: 5px; }
-    .proj-assign-card .seat-chip {
-      background: var(--danger);
-      color: white; padding: 3px 9px;
-      border-radius: 5px; font-size: 13px; font-weight: 600;
+    .proj-seat-detail {
+      background: #161616; border: 2px solid #2a2a2a;
+      border-radius: 20px; padding: 36px 48px;
+      min-width: 340px; max-width: 600px; text-align: center;
     }
+    .proj-seat-detail h2 { font-size: 52px; font-weight: 800; margin-bottom: 16px; }
+    .proj-seat-detail .miss-item {
+      font-size: 26px; padding: 10px 0; border-bottom: 1px solid #222;
+      color: #f87171; text-align: left;
+    }
+    .proj-seat-detail .ok-msg { font-size: 38px; color: #4ade80; }
+    .proj-popup-btns { display: flex; gap: 10px; justify-content: center; margin-top: 24px; }
+    .proj-popup-btn {
+      padding: 10px 28px; border-radius: 10px; border: none;
+      font-size: 18px; font-weight: 700; cursor: pointer;
+    }
+
     .proj-overdue-badge {
       background: var(--danger); color: white;
       padding: 2px 7px; border-radius: 4px;
@@ -686,12 +779,17 @@
 <body>
 
 <!-- Header -->
-<div class="app-header" style="display:flex;align-items:center;justify-content:space-between;">
+<div class="app-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
   <div>
     <h1>📚 作業缺交追蹤</h1>
     <p id="today-display"></p>
   </div>
-  <button onclick="openSetupModal()" style="background:transparent;border:2px solid #0a0a0a;color:#0a0a0a;padding:5px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-weight:700;box-shadow:2px 2px 0 #0a0a0a;letter-spacing:0.2px;">⚙️ 班級設定</button>
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+    <button class="header-nav-btn active" onclick="switchTab('manage')" data-tab="manage">📋 班級事務管理</button>
+    <button class="header-nav-btn" onclick="switchTab('voice')" data-tab="voice">🎙️ 訂正確認</button>
+    <button class="header-nav-btn" onclick="openProjectorMode()">📺 投影模式</button>
+    <button class="header-nav-btn" onclick="requireAuth(openSetupModal)">⚙️ 班級設定</button>
+  </div>
 </div>
 
 <!-- Toast Container -->
@@ -699,22 +797,6 @@
 
 <!-- Main Layout -->
 <div class="app-content">
-  <!-- Desktop Sidebar -->
-  <div class="desktop-sidebar" id="desktop-sidebar">
-    <button class="nav-item active" onclick="switchTab('manage')" data-tab="manage">
-      <span class="nav-icon">📋</span> 管理作業
-    </button>
-    <button class="nav-item" onclick="switchTab('overview')" data-tab="overview">
-      <span class="nav-icon">👥</span> 班級總覽
-    </button>
-    <button class="nav-item" onclick="switchTab('voice')" data-tab="voice">
-      <span class="nav-icon">🎙️</span> 訂正確認
-    </button>
-    <hr style="border:none;border-top:1px solid var(--border);margin:12px 8px;">
-    <button class="nav-item" onclick="openProjectorMode()">
-      <span class="nav-icon">📺</span> 投影模式
-    </button>
-  </div>
 
   <div class="main-content">
     <!-- ══════════════════ TAB: 管理 ══════════════════ -->
@@ -723,118 +805,52 @@
 
       <div style="padding:12px 16px 0;display:flex;justify-content:space-between;align-items:center;">
         <div class="section-header" style="padding:0;">作業清單</div>
-        <button class="btn btn-primary btn-sm" onclick="openAddModal()">＋ 新增作業</button>
+        <button class="btn btn-primary btn-sm" onclick="requireAuth(openAddModal)">＋ 新增訂正作業</button>
       </div>
 
-      <!-- Quick Voice Correction Card -->
-      <div class="card" style="margin-top:8px;">
-        <div class="card-header" style="cursor:pointer;" onclick="toggleQuickVoice()">
-          <h2>🎙️ 快速訂正確認</h2>
-          <span id="quick-voice-chevron" style="color:var(--text-muted);font-size:18px;transition:transform 0.2s;">⌄</span>
-        </div>
-        <div id="quick-voice-body" style="display:none;padding:16px;">
-          <div class="form-group" style="margin-bottom:10px;">
-            <label>選擇作業</label>
-            <select id="quick-voice-select" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;background:white;">
-              <option value="">-- 請選擇作業 --</option>
-            </select>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-            <button class="mic-btn" id="quick-mic-btn" onclick="toggleQuickVoice_mic()" style="width:60px;height:60px;font-size:26px;flex-shrink:0;">🎙️</button>
-            <div style="flex:1;min-width:160px;">
-              <div id="quick-voice-status" style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">點麥克風開始語音輸入</div>
-              <div id="quick-voice-result" style="background:var(--gray-light);border-radius:8px;padding:8px 10px;font-size:14px;min-height:36px;color:var(--text);">—</div>
-            </div>
-          </div>
-          <div id="quick-voice-parsed" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;"></div>
-          <div id="quick-confirm-area" style="display:none;">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn btn-success btn-sm" onclick="confirmQuickVoice()">✔ 確認完成</button>
-              <button class="btn btn-ghost btn-sm" onclick="clearQuickVoice()">✕ 清除</button>
-            </div>
-          </div>
-          <hr style="border:none;border-top:1px solid var(--border);margin:12px 0 10px;">
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input type="text" id="quick-manual-input" placeholder="手動輸入座號，如：3, 5, 12"
-              style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;"
-              onkeydown="if(event.key==='Enter')quickManualSubmit()">
-            <button class="btn btn-primary btn-sm" onclick="quickManualSubmit()">確認</button>
-          </div>
+      <!-- ══ 今日事項 ══ -->
+      <div style="padding:12px 16px 0;display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+        <div class="section-header" style="padding:0;">今日事項</div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm" style="background:#fff7ed;color:#c2410c;border:1.5px solid #fed7aa;" onclick="requireAuth(()=>openDailyModal('event'))">📅 ＋新增行事曆</button>
+          <button class="btn btn-sm" style="background:#f0fdf4;color:#15803d;border:1.5px solid #bbf7d0;" onclick="requireAuth(()=>openDailyModal('homework'))">📓 ＋新增聯絡簿</button>
         </div>
       </div>
+      <div id="daily-items-list" style="padding:6px 16px 4px;"></div>
 
       <div id="assignment-list" style="padding:8px 16px 16px;"></div>
     </div>
 
-    <!-- ══════════════════ TAB: 班級總覽 ══════════════════ -->
-    <div class="tab-panel" id="tab-overview">
-      <div class="overview-controls">
-        <label>
-          全班人數
-          <input type="number" id="class-size-input" value="35" min="1" max="60" onchange="renderOverview()">
-        </label>
-        <button class="btn btn-ghost btn-sm" onclick="openProjectorMode()">📺 投影模式</button>
-      </div>
-
-      <div class="overview-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--success-light);border:2px solid #86efac"></div>無缺交</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--warning-light);border:2px solid #fcd34d"></div>缺1-2項</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--danger-light);border:2px solid #fca5a5"></div>缺3+項</div>
-      </div>
-
-      <div class="seat-grid" id="seat-grid"></div>
-    </div>
 
     <!-- ══════════════════ TAB: 訂正確認 ══════════════════ -->
     <div class="tab-panel" id="tab-voice">
-      <div class="voice-panel">
-        <div class="voice-select-assignment">
-          <label>選擇要訂正確認的作業項目</label>
-          <select id="voice-assignment-select">
-            <option value="">-- 請選擇作業 --</option>
-          </select>
+      <!-- 作業選擇 -->
+      <div style="padding:14px 16px 8px;">
+        <div class="section-header" style="padding:0 0 8px;">選擇作業</div>
+        <div id="vt-assign-btns" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <!-- 缺交座號（選完作業後顯示） -->
+      <div id="vt-seats-area" style="display:none;padding:0 16px 12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">點座號移除缺交</div>
+        <div id="vt-seat-chips" style="display:flex;flex-wrap:wrap;gap:6px;min-height:32px;"></div>
+      </div>
+
+      <!-- 輸入列 -->
+      <div style="padding:0 16px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="vt-input" placeholder="輸入座號，如：3, 5, 8-12"
+            style="flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;"
+            onkeydown="if(event.key==='Enter')vtManualAdd()">
+          <button class="qp-icon-btn" id="vt-mic-btn" onclick="toggleVtVoice()" title="語音輸入" style="width:42px;height:42px;font-size:20px;">🎤</button>
+          <button class="qp-icon-btn" onclick="vtManualAdd()" title="確認" style="width:42px;height:42px;font-size:18px;background:var(--accent);border-color:var(--accent);color:white;">✓</button>
         </div>
-
-        <button class="mic-btn" id="mic-btn" onclick="toggleVoice()">🎙️</button>
-        <div class="voice-status" id="voice-status">點擊麥克風開始語音輸入</div>
-        <div class="voice-result" id="voice-result">語音識別結果會顯示在這裡...</div>
-
-        <div id="voice-parsed" class="voice-parsed"></div>
-
-        <div id="voice-confirm-area" style="display:none;max-width:480px;margin:0 auto;">
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">以上座號將標記為已訂正完成，確認嗎？</p>
-          <div style="display:flex;gap:10px;justify-content:center;">
-            <button class="btn btn-success" onclick="confirmVoiceSubmission()">✔ 確認完成</button>
-            <button class="btn btn-ghost" onclick="clearVoice()">✕ 清除重來</button>
-          </div>
-        </div>
-
-        <hr style="border:none;border-top:1px solid var(--border);margin:20px 0;">
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">或手動輸入座號（逗號分隔）</p>
-        <div class="manual-input-row">
-          <input type="text" id="manual-seat-input" placeholder="例：3, 5, 12, 20">
-          <button class="btn btn-primary" onclick="manualSubmit()">確認</button>
-        </div>
+        <div id="vt-status" style="font-size:12px;color:var(--text-muted);margin-top:6px;min-height:18px;"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Bottom Tab Bar (Mobile) -->
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('manage')" data-tab="manage">
-    <span class="icon">📋</span>管理
-  </button>
-  <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview">
-    <span class="icon">👥</span>總覽
-  </button>
-  <button class="tab-btn" onclick="switchTab('voice')" data-tab="voice">
-    <span class="icon">🎙️</span>訂正
-  </button>
-  <button class="tab-btn" onclick="openProjectorMode()">
-    <span class="icon">📺</span>投影
-  </button>
-</div>
 
 <!-- ══════════════════ ADD/EDIT MODAL ══════════════════ -->
 <div class="modal-backdrop" id="add-modal">
@@ -866,14 +882,14 @@
           💡 輸入<strong>答對的座號</strong>，系統會自動將其他座號列入待訂正名單（依全班人數 <span id="inverse-size-hint">35</span> 人計算）
         </div>
         <div class="seat-input-wrap">
-          <input type="number" id="seat-single-input" placeholder="輸入座號" min="1" max="60"
-            style="flex:1;min-width:80px"
-            onkeydown="if(event.key==='Enter')addSeatTag()">
+          <input type="text" id="seat-single-input" placeholder="座號，如：3, 5, 8-12"
+            style="flex:1;min-width:100px"
+            onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();addSeatTag()}">
           <button class="btn btn-primary btn-sm" onclick="addSeatTag()">加入</button>
-          <button class="btn btn-ghost btn-sm" onclick="addBatchSeats()">批次</button>
+          <button class="btn btn-ghost btn-sm" id="modal-voice-btn" onclick="toggleModalVoice()">🎤</button>
         </div>
         <div class="seat-tags" id="seat-tags"></div>
-        <p id="seat-hint-text" style="font-size:12px;color:var(--text-muted);margin-top:6px;">點「批次」可一次輸入多個座號，如：1-5, 8, 10-15</p>
+        <p id="seat-hint-text" style="font-size:12px;color:var(--text-muted);margin-top:6px;">可直接輸入多個座號，如：3, 5, 8-12，或按 🎤 語音輸入</p>
       </div>
     </div>
     <div class="modal-footer">
@@ -906,9 +922,102 @@
       <div id="setup-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;"></div>
       <p style="font-size:12px;color:var(--text-muted);margin-top:12px;" id="setup-count-hint"></p>
     </div>
+    <div style="padding:12px 20px 0;border-top:1px solid var(--border);">
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">開機啟動模式</div>
+      <div style="display:flex;gap:8px;">
+        <button id="startup-manage-btn" class="btn btn-sm btn-primary" onclick="setStartupMode('manage')">📋 管理作業</button>
+        <button id="startup-projector-btn" class="btn btn-sm btn-ghost" onclick="setStartupMode('projector')">📺 投影模式</button>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="openChangePwModal()" style="font-size:12px;">🔑 修改密碼</button>
+        <button class="btn btn-ghost btn-sm" onclick="checkForUpdates().then(()=>showToast('已是最新版本 v'+APP_VERSION,'success')).catch(()=>{})" style="font-size:12px;" id="check-update-btn">🔄 檢查更新</button>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" onclick="closeSetupModal()">取消</button>
+        <button class="btn btn-primary" onclick="saveRoster()">儲存設定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ LOGIN MODAL ══════════════════ -->
+<div class="modal-backdrop" id="login-modal">
+  <div class="modal" style="max-width:340px;">
+    <div class="modal-header">
+      <h3>🔐 教師登入</h3>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>管理密碼</label>
+        <input type="password" id="login-password-input" placeholder="輸入密碼"
+          style="letter-spacing:4px;font-size:20px;"
+          onkeydown="if(event.key==='Enter')submitLogin()">
+      </div>
+      <p id="login-error" style="color:var(--danger);font-size:13px;display:none;">密碼錯誤，請重試</p>
+    </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeSetupModal()">取消</button>
-      <button class="btn btn-primary" onclick="saveRoster()">儲存設定</button>
+      <button class="btn btn-ghost" onclick="closeLoginModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitLogin()">登入</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ CHANGE PASSWORD MODAL ══════════════════ -->
+<div class="modal-backdrop" id="change-pw-modal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header">
+      <h3>🔑 修改密碼</h3>
+      <button class="modal-close" onclick="document.getElementById('change-pw-modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>目前密碼</label>
+        <input type="password" id="cpw-current" placeholder="輸入目前密碼">
+      </div>
+      <div class="form-group">
+        <label>新密碼</label>
+        <input type="password" id="cpw-new" placeholder="輸入新密碼">
+      </div>
+      <div class="form-group">
+        <label>確認新密碼</label>
+        <input type="password" id="cpw-confirm" placeholder="再次輸入新密碼">
+      </div>
+      <p id="cpw-error" style="color:var(--danger);font-size:13px;display:none;"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('change-pw-modal').classList.remove('open')">取消</button>
+      <button class="btn btn-primary" onclick="submitChangePassword()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ DAILY ITEM MODAL ══════════════════ -->
+<div class="modal-backdrop" id="daily-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="daily-modal-title">新增行事曆</h3>
+      <button class="modal-close" onclick="closeDailyModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" id="daily-date-group">
+        <label>日期</label>
+        <input type="date" id="daily-item-date" style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-size:15px;">
+      </div>
+      <div class="form-group">
+        <label id="daily-modal-label">內容</label>
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+          <textarea id="daily-item-text" rows="3" placeholder="請輸入內容，或按 🎤 語音輸入"
+            style="flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-size:15px;resize:vertical;font-family:inherit;"></textarea>
+          <button class="btn btn-ghost btn-sm" id="daily-voice-btn" onclick="toggleDailyVoice()" style="height:44px;font-size:18px;flex-shrink:0;">🎤</button>
+        </div>
+        <p id="daily-voice-status" style="font-size:12px;color:var(--text-muted);margin-top:4px;display:none;">語音輸入中...</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDailyModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveDailyItem()">新增</button>
     </div>
   </div>
 </div>
@@ -955,15 +1064,53 @@
 <!-- ══════════════════ PROJECTOR MODE ══════════════════ -->
 <div id="projector-mode">
   <div class="proj-header">
-    <h1>📚 待補作業一覽</h1>
+    <div class="proj-tabs">
+      <button class="proj-tab-btn active" id="proj-tab1-btn" onclick="switchProjTab(1)">📓 聯絡簿 &amp; 行事曆</button>
+      <button class="proj-tab-btn" id="proj-tab2-btn" onclick="switchProjTab(2)">✏️ 待訂正作業</button>
+    </div>
+    <!-- 字體拉桿 -->
+    <div class="proj-slider-row">
+      <span class="proj-slider-label" id="proj-slider-label">字體</span>
+      <input type="range" id="proj-font-slider" min="30" max="220" step="5" value="90"
+        oninput="onProjSlider(this.value)" style="width:140px;accent-color:#4ade80;">
+      <span id="proj-slider-val" style="font-size:12px;color:#aaa;min-width:36px;">90px</span>
+    </div>
     <div style="display:flex;gap:10px;align-items:center;">
-      <span id="proj-date" style="font-size:14px;opacity:0.6;"></span>
-      <button class="btn btn-ghost btn-sm" onclick="closeProjectorMode()" style="color:white;background:rgba(255,255,255,0.15);">✕ 離開</button>
+      <span id="proj-date" style="font-size:13px;opacity:0.5;"></span>
+      <button class="btn btn-ghost btn-sm" onclick="closeProjectorMode()" style="color:white;background:rgba(255,255,255,0.12);">✕ 離開</button>
     </div>
   </div>
-  <div style="margin-bottom:12px;font-size:13px;opacity:0.5;">點擊座號查看該生所有缺交項目</div>
-  <div class="proj-grid" id="proj-grid"></div>
-  <div class="proj-assignments" id="proj-assignments"></div>
+
+  <!-- Tab 1：行事曆（上橫式）+ 聯絡簿（下大字） -->
+  <div id="proj-tab1">
+    <div id="proj-events-section">
+      <div id="proj-events-items" class="proj-events-horizontal"></div>
+    </div>
+    <div id="proj-hw-section">
+      <div style="display:flex;align-items:baseline;gap:14px;flex-shrink:0;margin-bottom:8px;">
+        <div class="proj-section-title" style="margin-bottom:0;">📓 今日聯絡簿</div>
+        <div id="proj-hw-date" style="font-size:15px;font-weight:700;color:#6ee7b7;opacity:0.85;"></div>
+      </div>
+      <div id="proj-hw-items" class="proj-hw-list"></div>
+    </div>
+  </div>
+
+  <!-- Tab 2：全頁座位圖（待訂正） -->
+  <div id="proj-tab2">
+    <div class="proj-section-title">⚠️ 缺交座號 <span style="font-size:11px;opacity:0.4;font-weight:400;letter-spacing:0;margin-left:6px;">點1次看詳情・點2次標綠（已交待查）</span></div>
+    <div class="proj-grid-full" id="proj-grid"></div>
+  </div>
+</div>
+
+<!-- 座位詳情 Popup -->
+<div id="proj-seat-overlay" class="proj-seat-overlay" style="display:none;" onclick="closeProjOverlay()">
+  <div class="proj-seat-detail" onclick="event.stopPropagation()">
+    <div id="proj-seat-detail-content"></div>
+    <div class="proj-popup-btns">
+      <button id="proj-submit-btn" class="proj-popup-btn" onclick="toggleProjSubmit()" style="background:#166534;color:#4ade80;">✅ 標為已交</button>
+      <button class="proj-popup-btn" onclick="closeProjOverlay()" style="background:#2a2a2a;color:#aaa;">關閉</button>
+    </div>
+  </div>
 </div>
 
 <!-- Firebase SDK -->
@@ -986,17 +1133,58 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // ════════════════════════════════════════════
+//  版本
+// ════════════════════════════════════════════
+const APP_VERSION = '1.0.0';
+
+// ════════════════════════════════════════════
 //  資料模型
 // ════════════════════════════════════════════
 let assignments = [];
 let editingId = null;
 let currentSeatTags = [];
-let recognizing = false;
-let recognition = null;
-let parsedSeats = [];
 
 let classRoster = []; // active seat numbers
 let _syncUnsubscribers = []; // Firestore listeners
+let dailyItems = []; // {id, type:'event'|'homework', text, date:'YYYY-MM-DD'}
+
+// ── 投影模式：已交待查座號（localStorage 持久化）──
+let submittedSeats = new Set(JSON.parse(localStorage.getItem('proj_submitted') || '[]'));
+let _projPopupSeat = null;
+let _projLastClickSeat = null;
+let _projLastClickTime = 0;
+let _currentProjTab = 1;
+let _projHwSize  = parseInt(localStorage.getItem('proj_hw_size')   || '90');
+let _projSeatSize = parseInt(localStorage.getItem('proj_seat_size') || '110');
+
+function _saveSubmittedSeats() {
+  localStorage.setItem('proj_submitted', JSON.stringify([...submittedSeats]));
+}
+
+// ── 拉桿變動 ──
+function onProjSlider(val) {
+  val = parseInt(val);
+  document.getElementById('proj-slider-val').textContent = val + 'px';
+  if (_currentProjTab === 1) {
+    _projHwSize = val;
+    localStorage.setItem('proj_hw_size', val);
+    document.querySelectorAll('.proj-hw-card').forEach(el => el.style.fontSize = val + 'px');
+    const evSize = Math.max(16, Math.round(val * 0.45));
+    document.querySelectorAll('.proj-event-horizontal').forEach(el => el.style.fontSize = evSize + 'px');
+  } else {
+    _projSeatSize = val;
+    localStorage.setItem('proj_seat_size', val);
+    _applyProjSeatSize(val);
+  }
+}
+
+function _applyProjSeatSize(val) {
+  const grid = document.getElementById('proj-grid');
+  if (!grid) return;
+  grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${val}px, 1fr))`;
+  const fSize = Math.max(14, Math.round(val * 0.22));
+  grid.querySelectorAll('.proj-seat').forEach(el => el.style.fontSize = fSize + 'px');
+}
 
 // ── 寫入 Firestore ──
 function save() {
@@ -1013,14 +1201,156 @@ function saveRosterToStorage() {
   }).catch(e => showToast('設定儲存失敗：' + e.message, 'error'));
 }
 
+// ════════════════════════════════════════════
+//  教師登入驗證
+// ════════════════════════════════════════════
+let isAuthenticated = false;
+let _authPassword = '1234'; // default, overwritten from Firestore
+let _pendingAuthCallback = null;
+
+// Load password from Firestore on startup
+db.collection('settings').doc('auth').get().then(doc => {
+  if (doc.exists && doc.data().password) _authPassword = doc.data().password;
+});
+
+function requireAuth(callback) {
+  if (isAuthenticated) { callback(); return; }
+  _pendingAuthCallback = callback;
+  document.getElementById('login-password-input').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('login-modal').classList.add('open');
+  setTimeout(() => document.getElementById('login-password-input').focus(), 100);
+}
+
+function submitLogin() {
+  const val = document.getElementById('login-password-input').value;
+  if (val === _authPassword) {
+    isAuthenticated = true;
+    document.getElementById('login-modal').classList.remove('open');
+    showToast('已登入教師模式', 'success');
+    if (_pendingAuthCallback) { _pendingAuthCallback(); _pendingAuthCallback = null; }
+  } else {
+    document.getElementById('login-error').style.display = '';
+    document.getElementById('login-password-input').value = '';
+    document.getElementById('login-password-input').focus();
+  }
+}
+
+function closeLoginModal() {
+  _pendingAuthCallback = null;
+  document.getElementById('login-modal').classList.remove('open');
+}
+
+function openChangePwModal() {
+  document.getElementById('cpw-current').value = '';
+  document.getElementById('cpw-new').value = '';
+  document.getElementById('cpw-confirm').value = '';
+  document.getElementById('cpw-error').style.display = 'none';
+  document.getElementById('change-pw-modal').classList.add('open');
+}
+
+function submitChangePassword() {
+  const cur = document.getElementById('cpw-current').value;
+  const nw = document.getElementById('cpw-new').value.trim();
+  const cf = document.getElementById('cpw-confirm').value.trim();
+  const err = document.getElementById('cpw-error');
+  if (cur !== _authPassword) { err.textContent = '目前密碼錯誤'; err.style.display = ''; return; }
+  if (!nw) { err.textContent = '新密碼不能為空'; err.style.display = ''; return; }
+  if (nw !== cf) { err.textContent = '兩次輸入的新密碼不一致'; err.style.display = ''; return; }
+  _authPassword = nw;
+  db.collection('settings').doc('auth').set({ password: nw });
+  document.getElementById('change-pw-modal').classList.remove('open');
+  showToast('密碼已更新', 'success');
+}
+
+// ════════════════════════════════════════════
+//  開機啟動模式
+// ════════════════════════════════════════════
+let _startupMode = 'manage'; // 'manage' | 'projector'
+
+db.collection('settings').doc('startup').get().then(doc => {
+  if (doc.exists && doc.data().mode) {
+    _startupMode = doc.data().mode;
+    _applyStartupMode();
+  }
+  _renderStartupBtns();
+});
+
+function _applyStartupMode() {
+  if (_startupMode === 'projector') {
+    // 延遲到資料載入完成後再開投影模式
+    setTimeout(() => {
+      if (!document.getElementById('projector-mode').classList.contains('open')) {
+        openProjectorMode();
+      }
+    }, 1500);
+  }
+}
+
+function setStartupMode(mode) {
+  _startupMode = mode;
+  db.collection('settings').doc('startup').set({ mode });
+  _renderStartupBtns();
+  showToast(mode === 'projector' ? '下次開機將進入投影模式' : '下次開機將進入管理作業', 'success');
+}
+
+function _renderStartupBtns() {
+  const mb = document.getElementById('startup-manage-btn');
+  const pb = document.getElementById('startup-projector-btn');
+  if (!mb || !pb) return;
+  if (_startupMode === 'projector') {
+    mb.className = 'btn btn-sm btn-ghost';
+    pb.className = 'btn btn-sm btn-primary';
+  } else {
+    mb.className = 'btn btn-sm btn-primary';
+    pb.className = 'btn btn-sm btn-ghost';
+  }
+}
+
+function openSetupModal() {
+  const max = classRoster.length ? Math.max(...classRoster) : getClassSize();
+  document.getElementById('setup-max-seat').value = max;
+  setupToggleSet = new Set();
+  if (classRoster.length) {
+    for (let i = 1; i <= max; i++) {
+      if (!classRoster.includes(i)) setupToggleSet.add(i);
+    }
+  }
+  generateSetupGrid();
+  _renderStartupBtns();
+  document.getElementById('setup-modal').classList.add('open');
+}
+
+function saveDailyItems() {
+  db.collection('data').doc('daily').set({
+    list: dailyItems,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(e => showToast('儲存失敗：' + e.message, 'error'));
+}
+
 // ── 即時同步監聽 ──
 function setupRealtimeSync() {
   showLoadingState(true);
 
   // 監聽作業清單
   const unsubA = db.collection('data').doc('assignments').onSnapshot(doc => {
+    const prevAssignments = assignments;
     assignments = doc.exists ? (doc.data().list || []) : [];
+    // 清除已被老師處理（缺交數變化）的綠色標記
+    if (submittedSeats.size > 0) {
+      const cleared = [];
+      submittedSeats.forEach(seatNum => {
+        const oldCount = prevAssignments.filter(a => a.missingSeatNums && a.missingSeatNums.includes(seatNum)).length;
+        const newCount = assignments.filter(a => a.missingSeatNums && a.missingSeatNums.includes(seatNum)).length;
+        if (newCount !== oldCount) cleared.push(seatNum);
+      });
+      if (cleared.length) {
+        cleared.forEach(s => submittedSeats.delete(s));
+        _saveSubmittedSeats();
+      }
+    }
     renderAssignmentList();
+    refreshProjGrid();
     showLoadingState(false);
 
     // 第一次使用：顯示提示條
@@ -1048,18 +1378,33 @@ function setupRealtimeSync() {
     if (doc.exists) {
       classRoster = doc.data().seats || [];
       if (classRoster.length) {
-        document.getElementById('class-size-input').value = Math.max(...classRoster);
         const b = document.getElementById('first-run-banner');
         if (b) b.remove();
       }
     }
   });
 
-  _syncUnsubscribers = [unsubA, unsubR];
+  // 監聽今日事項（自動清除過期）
+  const unsubD = db.collection('data').doc('daily').onSnapshot(doc => {
+    const raw = doc.exists ? (doc.data().list || []) : [];
+    const todayStr = today();
+    // 自動刪除過期項目
+    const cleaned = raw.filter(i => i.date >= todayStr);
+    if (cleaned.length < raw.length) {
+      db.collection('data').doc('daily').set({ list: cleaned,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+    dailyItems = cleaned;
+    renderDailyItems();
+    renderOverviewEvents();
+  });
+
+  _syncUnsubscribers = [unsubA, unsubR, unsubD];
 }
 
 function getClassSize() {
-  return parseInt(document.getElementById('class-size-input').value) || 35;
+  if (classRoster.length) return Math.max(...classRoster);
+  return 35;
 }
 // 取得有效座號列表（以 classRoster 為主，若未設定則用 1..N）
 function getActiveRoster() {
@@ -1072,7 +1417,11 @@ function getActiveRoster() {
 //  日期工具
 // ════════════════════════════════════════════
 function today() {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 function daysOverdue(dateStr) {
   const due = new Date(dateStr);
@@ -1094,12 +1443,9 @@ function fmtDateFull(dateStr) {
 // ════════════════════════════════════════════
 function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.nav-item[data-tab]').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.header-nav-btn[data-tab]').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  document.querySelectorAll('[data-tab="' + name + '"]').forEach(b => b.classList.add('active'));
-
-  if (name === 'overview') renderOverview();
+  document.querySelectorAll('.header-nav-btn[data-tab="' + name + '"]').forEach(b => b.classList.add('active'));
   if (name === 'voice') renderVoiceAssignmentSelect();
 }
 
@@ -1107,7 +1453,6 @@ function switchTab(name) {
 //  作業管理
 // ════════════════════════════════════════════
 function renderAssignmentList() {
-  renderQuickVoiceSelect();
   renderOverdueAlerts();
   const container = document.getElementById('assignment-list');
   if (!assignments.length) {
@@ -1156,9 +1501,8 @@ function renderAssignmentItem(a) {
     <div class="assignment-detail">
       <div class="missing-seats-display">${seatsHtml}</div>
       <div class="action-row">
-        <button class="btn btn-primary btn-sm" onclick="openEditModal('${a.id}')">✏ 編輯</button>
-        <button class="btn btn-ghost btn-sm" onclick="markAllDone('${a.id}')">✓ 全部完成</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteAssignment('${a.id}')">🗑 刪除</button>
+        <button class="btn btn-primary btn-sm" onclick="requireAuth(()=>openEditModal('${a.id}'))">✏ 編輯</button>
+        <button class="btn btn-danger btn-sm" onclick="requireAuth(()=>deleteAssignment('${a.id}'))">🗑 刪除</button>
       </div>
     </div>
   </div>`;
@@ -1226,7 +1570,7 @@ function setSeatMode(mode) {
     hint.style.color = '#92400e';
   } else {
     label.textContent = '❌ 尚未繳交的座號';
-    hint.textContent = '點「批次」可一次輸入多個座號，如：1-5, 8, 10-15';
+    hint.textContent = '可直接輸入多個座號，如：3, 5, 8-12，或按 🎤 語音輸入';
     hint.style.color = '';
   }
 }
@@ -1259,10 +1603,15 @@ function openEditModal(id) {
 }
 
 function closeAddModal() {
+  if (modalRecognition) { modalRecognition.stop(); modalRecognition = null; }
   document.getElementById('add-modal').classList.remove('open');
 }
 
 function saveAssignment() {
+  // 自動加入尚未按加入的座號
+  const pendingInp = document.getElementById('seat-single-input');
+  if (pendingInp && pendingInp.value.trim()) addSeatTag();
+
   const name = document.getElementById('form-name').value.trim();
   const date = document.getElementById('form-date').value;
   if (!name) { alert('請輸入作業名稱'); return; }
@@ -1300,9 +1649,11 @@ function saveAssignment() {
 // ── Seat Tags ──
 function addSeatTag() {
   const inp = document.getElementById('seat-single-input');
-  const n = parseInt(inp.value);
-  if (!n || n < 1 || n > 60) { inp.focus(); return; }
-  if (!currentSeatTags.includes(n)) currentSeatTags.push(n);
+  const raw = inp.value.trim();
+  if (!raw) { inp.focus(); return; }
+  const nums = parseSeatString(raw);
+  if (!nums.length) { inp.focus(); return; }
+  nums.forEach(n => { if (!currentSeatTags.includes(n)) currentSeatTags.push(n); });
   inp.value = '';
   renderSeatTags();
   inp.focus();
@@ -1319,6 +1670,47 @@ function renderSeatTags() {
   container.innerHTML = currentSeatTags.sort((a,b)=>a-b).map(n =>
     `<span class="seat-tag">${n}號<span class="remove-tag" onclick="removeTag(${n})">✕</span></span>`
   ).join('');
+}
+
+// ── Modal Voice (for seat input in add/edit modal) ──
+let modalRecognition = null;
+function toggleModalVoice() {
+  if (modalRecognition) {
+    modalRecognition.stop();
+    modalRecognition = null;
+    document.getElementById('modal-voice-btn').textContent = '🎤';
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { alert('此瀏覽器不支援語音輸入'); return; }
+  modalRecognition = new SpeechRecognition();
+  modalRecognition.lang = 'zh-TW';
+  modalRecognition.continuous = false;
+  modalRecognition.interimResults = false;
+  document.getElementById('modal-voice-btn').textContent = '⏹';
+  modalRecognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    const formatted = voiceTextToSeatInput(text);
+    const inp = document.getElementById('seat-single-input');
+    if (formatted) {
+      inp.value = formatted;
+      addSeatTag();
+    } else {
+      inp.value = '';
+      showToast('未識別到座號，請重試', 'error');
+    }
+  };
+  modalRecognition.onend = () => {
+    modalRecognition = null;
+    const btn = document.getElementById('modal-voice-btn');
+    if (btn) btn.textContent = '🎤';
+  };
+  modalRecognition.onerror = () => {
+    modalRecognition = null;
+    const btn = document.getElementById('modal-voice-btn');
+    if (btn) btn.textContent = '🎤';
+  };
+  modalRecognition.start();
 }
 
 // ── Batch Modal ──
@@ -1358,6 +1750,179 @@ function parseSeatString(str) {
 }
 
 // ════════════════════════════════════════════
+//  今日事項（行事曆 & 聯絡簿）
+// ════════════════════════════════════════════
+let _dailyModalType = 'event';
+let _dailyVoiceRecog = null;
+
+function openDailyModal(type) {
+  _dailyModalType = type;
+  const isEvent = type === 'event';
+  document.getElementById('daily-modal-title').textContent = isEvent ? '新增行事曆' : '新增聯絡簿';
+  document.getElementById('daily-modal-label').textContent = isEvent ? '事項內容' : '回家功課';
+  document.getElementById('daily-item-text').value = '';
+  document.getElementById('daily-item-text').placeholder = isEvent
+    ? '例：下午數學小考、第3節體育課' : '例：數學P.35-36、預習第四課';
+  const dateInp = document.getElementById('daily-item-date');
+  dateInp.value = today();
+  document.getElementById('daily-date-group').style.display = '';
+  document.getElementById('daily-modal').classList.add('open');
+  setTimeout(() => document.getElementById('daily-item-text').focus(), 100);
+}
+
+function closeDailyModal() {
+  if (_dailyVoiceRecog) { _dailyVoiceRecog.stop(); _dailyVoiceRecog = null; }
+  document.getElementById('daily-modal').classList.remove('open');
+  _editingDailyId = null;
+}
+
+let _editingDailyId = null;
+
+function editDailyItem(id) {
+  const item = dailyItems.find(i => i.id === id);
+  if (!item) return;
+  _editingDailyId = id;
+  _dailyModalType = item.type;
+  const isEvent = item.type === 'event';
+  document.getElementById('daily-modal-title').textContent = isEvent ? '編輯行事曆' : '編輯聯絡簿';
+  document.getElementById('daily-modal-label').textContent = isEvent ? '事項內容' : '回家功課';
+  document.getElementById('daily-item-text').value = item.text;
+  document.getElementById('daily-item-date').value = item.date;
+  document.getElementById('daily-date-group').style.display = '';
+  document.getElementById('daily-modal').classList.add('open');
+  setTimeout(() => document.getElementById('daily-item-text').focus(), 100);
+}
+
+function saveDailyItem() {
+  const text = document.getElementById('daily-item-text').value.trim();
+  if (!text) { showToast('請輸入內容', 'error'); return; }
+  const isEvent = _dailyModalType === 'event';
+  const date = document.getElementById('daily-item-date').value || today();
+  if (_editingDailyId) {
+    const idx = dailyItems.findIndex(i => i.id === _editingDailyId);
+    if (idx !== -1) dailyItems[idx] = { ...dailyItems[idx], text, date };
+    _editingDailyId = null;
+    showToast('已更新', 'success');
+  } else {
+    dailyItems.push({ id: 'd' + Date.now(), type: _dailyModalType, text, date });
+    showToast(isEvent ? '行事曆已新增' : '聯絡簿已新增', 'success');
+  }
+  saveDailyItems();
+  closeDailyModal();
+}
+
+function deleteDailyItem(id) {
+  dailyItems = dailyItems.filter(i => i.id !== id);
+  saveDailyItems();
+}
+
+function renderDailyItems() {
+  const container = document.getElementById('daily-items-list');
+  if (!container) return;
+  const todayStr = today();
+
+  // 行事曆：顯示所有未來（含今日）事項，前面帶日期
+  const upcomingEvents = dailyItems
+    .filter(i => i.type === 'event' && i.date >= todayStr)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  // 聯絡簿：顯示所有未來（含今日）
+  const upcomingHw = dailyItems
+    .filter(i => i.type === 'homework' && i.date >= todayStr)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  let html = '';
+
+  if (upcomingEvents.length) {
+    html += upcomingEvents.map(i => {
+      const d = new Date(i.date + 'T00:00:00');
+      const label = `${d.getMonth()+1}/${d.getDate()}`;
+      return `<div class="daily-item type-event">
+        <span class="daily-item-badge" style="min-width:42px;">${label}</span>
+        <span class="daily-item-text">${escHtml(i.text)}</span>
+        <span class="daily-item-del" onclick="requireAuth(()=>editDailyItem('${i.id}'))" title="編輯" style="font-size:13px;">✏️</span>
+        <span class="daily-item-del" onclick="requireAuth(()=>deleteDailyItem('${i.id}'))" title="刪除">✕</span>
+      </div>`;
+    }).join('');
+  } else {
+    html += '<p style="font-size:13px;color:var(--text-muted);padding:2px 0 4px;">目前無行事曆事項</p>';
+  }
+
+  if (upcomingHw.length) {
+    html += upcomingHw.map(i => {
+      const d = new Date(i.date + 'T00:00:00');
+      const label = i.date === todayStr ? '今日' : `${d.getMonth()+1}/${d.getDate()}`;
+      return `<div class="daily-item type-homework">
+        <span class="daily-item-badge" style="min-width:42px;">${label}</span>
+        <span class="daily-item-text">${escHtml(i.text)}</span>
+        <span class="daily-item-del" onclick="requireAuth(()=>editDailyItem('${i.id}'))" title="編輯" style="font-size:13px;">✏️</span>
+        <span class="daily-item-del" onclick="requireAuth(()=>deleteDailyItem('${i.id}'))" title="刪除">✕</span>
+      </div>`;
+    }).join('');
+  }
+
+  container.innerHTML = html || '<p style="font-size:13px;color:var(--text-muted);padding:4px 0 8px;">今日尚無事項</p>';
+}
+
+function renderOverviewEvents() {
+  const container = document.getElementById('overview-events-list');
+  if (!container) return;
+  const todayStr = today();
+  const upcoming = dailyItems
+    .filter(i => i.type === 'event' && i.date >= todayStr)
+    .sort((a,b) => a.date.localeCompare(b.date));
+  if (!upcoming.length) {
+    container.innerHTML = '<p style="font-size:13px;color:var(--text-muted);padding:4px 0 12px;">目前沒有行事曆事項</p>';
+    return;
+  }
+  // Group by date
+  const byDate = {};
+  upcoming.forEach(i => { (byDate[i.date] = byDate[i.date] || []).push(i); });
+  container.innerHTML = Object.entries(byDate).map(([date, items]) => `
+    <div style="margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:4px;">${fmtDateFull(date)}${date===todayStr?' (今天)':''}</div>
+      ${items.map(i => `
+        <div class="daily-item type-event" style="margin-bottom:4px;">
+          <span class="daily-item-text">${escHtml(i.text)}</span>
+          <span class="daily-item-del" onclick="requireAuth(()=>deleteDailyItem('${i.id}'))" title="刪除">✕</span>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function toggleDailyVoice() {
+  if (_dailyVoiceRecog) {
+    _dailyVoiceRecog.stop(); _dailyVoiceRecog = null;
+    document.getElementById('daily-voice-btn').textContent = '🎤';
+    document.getElementById('daily-voice-status').style.display = 'none';
+    return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert('此瀏覽器不支援語音輸入'); return; }
+  _dailyVoiceRecog = new SR();
+  _dailyVoiceRecog.lang = 'zh-TW';
+  _dailyVoiceRecog.continuous = false;
+  _dailyVoiceRecog.interimResults = false;
+  document.getElementById('daily-voice-btn').textContent = '⏹';
+  document.getElementById('daily-voice-status').style.display = '';
+  _dailyVoiceRecog.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    const ta = document.getElementById('daily-item-text');
+    ta.value = (ta.value ? ta.value + '\n' : '') + text;
+  };
+  _dailyVoiceRecog.onend = () => {
+    _dailyVoiceRecog = null;
+    document.getElementById('daily-voice-btn').textContent = '🎤';
+    document.getElementById('daily-voice-status').style.display = 'none';
+  };
+  _dailyVoiceRecog.onerror = () => {
+    _dailyVoiceRecog = null;
+    document.getElementById('daily-voice-btn').textContent = '🎤';
+    document.getElementById('daily-voice-status').style.display = 'none';
+  };
+  _dailyVoiceRecog.start();
+}
+
+// ════════════════════════════════════════════
 //  班級總覽
 // ════════════════════════════════════════════
 function renderOverview() {
@@ -1371,6 +1936,7 @@ function renderOverview() {
     const dot = count > 0 ? `<div class="count-dot">${count}</div>` : '';
     return `<div class="seat-cell ${cls}" onclick="openStudentModal(${i})">${dot}${i}</div>`;
   }).join('');
+  renderOverviewEvents();
 }
 
 function openStudentModal(seatNum) {
@@ -1401,64 +1967,133 @@ function closeStudentModal() {
 // ════════════════════════════════════════════
 //  語音輸入
 // ════════════════════════════════════════════
+// ════════════════════════════════════════════
+//  訂正確認分頁
+// ════════════════════════════════════════════
+let _vtSelectedId = null;
+let _vtRecog = null;
+let _vtRecognizing = false;
+
 function renderVoiceAssignmentSelect() {
-  const sel = document.getElementById('voice-assignment-select');
-  const hasMissing = assignments.filter(a => a.missingSeatNums.length > 0);
-  sel.innerHTML = '<option value="">-- 請選擇作業 --</option>' +
-    hasMissing.map(a => `<option value="${a.id}">${escHtml(a.name)} (${a.missingSeatNums.length}人待補)</option>`).join('');
+  renderVtAssignments();
 }
 
-function toggleVoice() {
+function renderVtAssignments() {
+  const container = document.getElementById('vt-assign-btns');
+  if (!container) return;
+  const hasMissing = assignments.filter(a => a.missingSeatNums.length > 0)
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  if (!hasMissing.length) {
+    container.innerHTML = '<span style="font-size:13px;color:var(--text-muted);">目前無待訂正作業 🎉</span>';
+    document.getElementById('vt-seats-area').style.display = 'none';
+    _vtSelectedId = null;
+    return;
+  }
+  container.innerHTML = hasMissing.map(a =>
+    `<button class="qp-assign-btn${_vtSelectedId === a.id ? ' active' : ''}" onclick="vtSelectAssignment('${a.id}')">
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(a.name)}</span>
+      <span class="badge">${a.missingSeatNums.length}</span>
+    </button>`
+  ).join('');
+  if (_vtSelectedId) {
+    const still = hasMissing.find(a => a.id === _vtSelectedId);
+    if (still) renderVtSeats();
+    else { _vtSelectedId = null; document.getElementById('vt-seats-area').style.display = 'none'; }
+  }
+}
+
+function vtSelectAssignment(id) {
+  _vtSelectedId = id;
+  renderVtAssignments();
+  renderVtSeats();
+  document.getElementById('vt-status').textContent = '';
+  document.getElementById('vt-input').focus();
+}
+
+function renderVtSeats() {
+  const a = assignments.find(x => x.id === _vtSelectedId);
+  const area = document.getElementById('vt-seats-area');
+  const chips = document.getElementById('vt-seat-chips');
+  if (!a) { area.style.display = 'none'; return; }
+  area.style.display = '';
+  if (!a.missingSeatNums.length) {
+    chips.innerHTML = '<span style="font-size:13px;color:var(--success);">🎉 全部完成！</span>';
+  } else {
+    chips.innerHTML = a.missingSeatNums.sort((x,y)=>x-y).map(n =>
+      `<span class="missing-seat-chip" style="cursor:pointer;" onclick="vtRemoveSeat(${n})" title="點擊移除">${n}號</span>`
+    ).join('');
+  }
+}
+
+function vtRemoveSeat(num) {
+  if (!_vtSelectedId) return;
+  const a = assignments.find(x => x.id === _vtSelectedId);
+  if (!a) return;
+  a.missingSeatNums = a.missingSeatNums.filter(n => n !== num);
+  save();
+  renderAssignmentList();
+  renderVtSeats();
+  showToast(`已移除 ${num} 號`, 'success');
+}
+
+function vtManualAdd() {
+  if (!_vtSelectedId) { showToast('請先選擇作業', 'error'); return; }
+  const inp = document.getElementById('vt-input');
+  const raw = inp.value.trim();
+  if (!raw) return;
+  const nums = parseSeatString(raw);
+  if (!nums.length) { showToast('請輸入有效座號', 'error'); return; }
+  applyVoiceCorrection(_vtSelectedId, nums);
+  renderVtSeats();
+  inp.value = '';
+  document.getElementById('vt-status').textContent = `✓ 已移除 ${nums.length} 位`;
+  setTimeout(() => { const s = document.getElementById('vt-status'); if(s) s.textContent=''; }, 2000);
+}
+
+function toggleVtVoice() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    showToast('此裝置不支援語音識別，請使用手動輸入', 'error');
-    return;
+    showToast('此裝置不支援語音識別', 'error'); return;
   }
-  if (recognizing) {
-    recognition && recognition.stop();
-    return;
-  }
-  startVoice();
-}
-
-function startVoice() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = 'zh-TW';
-  recognition.continuous = false;
-  recognition.interimResults = true;
-
-  recognition.onstart = () => {
-    recognizing = true;
-    document.getElementById('mic-btn').classList.add('listening');
-    document.getElementById('mic-btn').textContent = '⏹';
-    document.getElementById('voice-status').textContent = '聆聽中...請說出已訂正的座號';
-    document.getElementById('voice-result').textContent = '';
+  if (_vtRecognizing) { _vtRecog && _vtRecog.stop(); return; }
+  if (!_vtSelectedId) { showToast('請先選擇作業', 'error'); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  _vtRecog = new SR();
+  _vtRecog.lang = 'zh-TW';
+  _vtRecog.continuous = false;
+  _vtRecog.interimResults = false;
+  _vtRecog.onstart = () => {
+    _vtRecognizing = true;
+    const btn = document.getElementById('vt-mic-btn');
+    if (btn) { btn.textContent = '⏹'; btn.classList.add('active'); }
+    document.getElementById('vt-status').textContent = '聆聽中...';
   };
-
-  recognition.onresult = (e) => {
-    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
-    document.getElementById('voice-result').textContent = transcript;
-    if (e.results[e.results.length - 1].isFinal) {
-      processVoiceResult(transcript);
+  _vtRecog.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    const formatted = voiceTextToSeatInput(text);
+    const nums = formatted ? parseSeatString(formatted) : extractSeatsFromText(text);
+    if (nums.length) {
+      applyVoiceCorrection(_vtSelectedId, nums);
+      renderVtSeats();
+      document.getElementById('vt-status').textContent = `✓ 已移除 ${nums.length} 位`;
+      setTimeout(() => { const s = document.getElementById('vt-status'); if(s) s.textContent=''; }, 2000);
+    } else {
+      showToast('未識別到座號，請重試', 'error');
     }
   };
-
-  recognition.onend = () => {
-    recognizing = false;
-    document.getElementById('mic-btn').classList.remove('listening');
-    document.getElementById('mic-btn').textContent = '🎙️';
-    document.getElementById('voice-status').textContent = '點擊麥克風再次輸入';
+  _vtRecog.onend = () => {
+    _vtRecognizing = false;
+    _vtRecog = null;
+    const btn = document.getElementById('vt-mic-btn');
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('active'); }
   };
-
-  recognition.onerror = (e) => {
-    recognizing = false;
-    document.getElementById('mic-btn').classList.remove('listening');
-    document.getElementById('mic-btn').textContent = '🎙️';
-    document.getElementById('voice-status').textContent = '語音識別失敗，請重試';
+  _vtRecog.onerror = (e) => {
+    _vtRecognizing = false; _vtRecog = null;
+    const btn = document.getElementById('vt-mic-btn');
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('active'); }
+    document.getElementById('vt-status').textContent = '';
     showToast('語音識別錯誤：' + e.error, 'error');
   };
-
-  recognition.start();
+  _vtRecog.start();
 }
 
 // ── 共用座號解析工具 ──
@@ -1466,6 +2101,41 @@ const ZH_NUM = {'零':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,
   '十一':11,'十二':12,'十三':13,'十四':14,'十五':15,'十六':16,'十七':17,'十八':18,'十九':19,'二十':20,
   '二十一':21,'二十二':22,'二十三':23,'二十四':24,'二十五':25,'二十六':26,'二十七':27,'二十八':28,'二十九':29,'三十':30,
   '三十一':31,'三十二':32,'三十三':33,'三十四':34,'三十五':35,'三十六':36,'三十七':37,'三十八':38,'三十九':39,'四十':40};
+
+// ── 語音轉座號輸入格式（"5號6號" → "5, 6"；"1到15號" → "1-15"）──
+function voiceTextToSeatInput(text) {
+  function zhToNum(s) {
+    if (/^\d+$/.test(s)) return parseInt(s);
+    return ZH_NUM[s] ?? null;
+  }
+  const numPat = '(?:\\d{1,2}|' + Object.keys(ZH_NUM).sort((a,b)=>b.length-a.length).join('|') + ')';
+  const rangePat = new RegExp(`(${numPat})\\s*(?:到|至|~|-)\\s*(${numPat})\\s*號?`, 'g');
+  const singlePat = new RegExp(`(${numPat})\\s*號`, 'g');
+
+  const parts = [];
+  const covered = new Set();
+
+  for (const m of text.matchAll(rangePat)) {
+    const from = zhToNum(m[1]), to = zhToNum(m[2]);
+    if (from !== null && to !== null && from >= 1 && to <= 60) {
+      const lo = Math.min(from, to), hi = Math.max(from, to);
+      parts.push({ lo, hi });
+      for (let i = lo; i <= hi; i++) covered.add(i);
+    }
+  }
+
+  const singles = [];
+  for (const m of text.matchAll(singlePat)) {
+    const n = zhToNum(m[1]);
+    if (n !== null && n >= 1 && n <= 60 && !covered.has(n)) singles.push(n);
+  }
+
+  if (parts.length === 0 && singles.length === 0) return null;
+  const output = [];
+  parts.sort((a,b)=>a.lo-b.lo).forEach(p => output.push(`${p.lo}-${p.hi}`));
+  singles.sort((a,b)=>a-b).forEach(n => output.push(String(n)));
+  return output.join(', ');
+}
 
 function extractSeatsFromText(text) {
   const nums = new Set();
@@ -1479,68 +2149,7 @@ function extractSeatsFromText(text) {
   return [...nums].sort((a,b)=>a-b);
 }
 
-// 判斷是否為反向模式（只有這些人對）
-function isInverseVoiceText(text) {
-  return /只有|只剩|除了|僅有/.test(text) && /對|正確|完成|好了|做對|交了/.test(text);
-}
-
-let voiceIsInverse = false;
-
-function processVoiceResult(text) {
-  voiceIsInverse = isInverseVoiceText(text);
-  const seats = extractSeatsFromText(text);
-
-  if (voiceIsInverse) {
-    // 反向：seats = 答對的人，missing = 全班 - seats
-    const selId = document.getElementById('voice-assignment-select').value;
-    const a = selId ? assignments.find(x => x.id === selId) : null;
-    const maxSeat = a ? Math.max(...a.missingSeatNums, getClassSize()) : getClassSize();
-    const correctSet = new Set(seats);
-    parsedSeats = [];
-    for (let i = 1; i <= maxSeat; i++) {
-      if (!correctSet.has(i) && (!a || a.missingSeatNums.includes(i))) parsedSeats.push(i);
-    }
-    // parsedSeats = 待移除（即剩餘缺交的不在正確裡）
-    // 實際上反向意思：只有這些對 → 其他都要補 → 這裡邏輯是「只有這些完成了」
-    // 所以 parsedSeats = seats (答對的人，要從待訂正移除)
-    parsedSeats = seats;
-  } else {
-    parsedSeats = seats;
-  }
-
-  renderParsedSeats();
-}
-
-function renderParsedSeats() {
-  const container = document.getElementById('voice-parsed');
-  const confirmArea = document.getElementById('voice-confirm-area');
-  if (!parsedSeats.length) {
-    container.innerHTML = '<span style="color:var(--text-muted);font-size:13px;">未識別到座號，請重試或手動輸入</span>';
-    confirmArea.style.display = 'none';
-    return;
-  }
-  const inverseNote = voiceIsInverse
-    ? `<p style="width:100%;font-size:12px;color:#92400e;background:#fef3c7;padding:6px 8px;border-radius:6px;margin-bottom:6px;">⚡ 反向模式：以下座號「已完成」，將從待訂正名單移除</p>`
-    : '';
-  container.innerHTML = inverseNote +
-    `<p style="width:100%;font-size:13px;color:var(--text-muted);margin-bottom:4px;">識別到 ${parsedSeats.length} 位同學：</p>` +
-    parsedSeats.map(n => `<span class="seat-tag" style="background:var(--success-light);color:var(--success)">${n}號</span>`).join('');
-  confirmArea.style.display = 'block';
-}
-
-function confirmVoiceSubmission() {
-  const selId = document.getElementById('voice-assignment-select').value;
-  if (!selId) { showToast('請先選擇作業項目', 'error'); return; }
-  applyVoiceCorrection(selId, parsedSeats, 'voice-assignment-select');
-  clearVoice();
-  renderVoiceAssignmentSelect();
-  const sel = document.getElementById('voice-assignment-select');
-  for (let i = 0; i < sel.options.length; i++) {
-    if (sel.options[i].value === selId) { sel.selectedIndex = i; break; }
-  }
-}
-
-function applyVoiceCorrection(assignmentId, seats, selectElId) {
+function applyVoiceCorrection(assignmentId, seats) {
   const a = assignments.find(x => x.id === assignmentId);
   if (!a) return;
   const removed = seats.filter(n => a.missingSeatNums.includes(n));
@@ -1550,42 +2159,10 @@ function applyVoiceCorrection(assignmentId, seats, selectElId) {
   showToast(`✓ ${removed.length} 位同學已完成訂正`, 'success');
 }
 
-function clearVoice() {
-  parsedSeats = [];
-  document.getElementById('voice-result').textContent = '語音識別結果會顯示在這裡...';
-  document.getElementById('voice-parsed').innerHTML = '';
-  document.getElementById('voice-confirm-area').style.display = 'none';
-}
-
-function manualSubmit() {
-  const raw = document.getElementById('manual-seat-input').value;
-  const nums = parseSeatString(raw);
-  if (!nums.length) { showToast('請輸入有效座號', 'error'); return; }
-  parsedSeats = nums;
-  voiceIsInverse = false;
-  document.getElementById('voice-result').textContent = `手動輸入：${raw}`;
-  renderParsedSeats();
-  document.getElementById('manual-seat-input').value = '';
-}
-
 // ════════════════════════════════════════════
 //  班級座號設定（Roster）
 // ════════════════════════════════════════════
 let setupToggleSet = new Set(); // 被標記為移除的座號
-
-function openSetupModal() {
-  const max = classRoster.length ? Math.max(...classRoster) : getClassSize();
-  document.getElementById('setup-max-seat').value = max;
-  // 計算目前被排除的座號
-  setupToggleSet = new Set();
-  if (classRoster.length) {
-    for (let i = 1; i <= max; i++) {
-      if (!classRoster.includes(i)) setupToggleSet.add(i);
-    }
-  }
-  generateSetupGrid();
-  document.getElementById('setup-modal').classList.add('open');
-}
 
 function closeSetupModal() {
   document.getElementById('setup-modal').classList.remove('open');
@@ -1637,7 +2214,6 @@ function saveRoster() {
     if (!setupToggleSet.has(i)) classRoster.push(i);
   }
   saveRosterToStorage();
-  document.getElementById('class-size-input').value = max;
   closeSetupModal();
   showToast(`班級設定已儲存，共 ${classRoster.length} 位有效座號`, 'success');
   renderAssignmentList();
@@ -1645,169 +2221,274 @@ function saveRoster() {
 }
 
 // ════════════════════════════════════════════
-//  管理頁快速語音訂正
+//  右側快速訂正面板
 // ════════════════════════════════════════════
-let quickRecognition = null;
-let quickRecognizing = false;
-let quickParsedSeats = [];
-let quickVoiceOpen = false;
+let _qpSelectedId = null;
+let _qpRecog = null;
+let _qpRecognizing = false;
 
-function renderQuickVoiceSelect() {
-  const sel = document.getElementById('quick-voice-select');
-  if (!sel) return;
-  const prev = sel.value;
-  const hasMissing = assignments.filter(a => a.missingSeatNums.length > 0);
-  sel.innerHTML = '<option value="">-- 請選擇作業 --</option>' +
-    hasMissing.map(a => `<option value="${a.id}">${escHtml(a.name)} (${a.missingSeatNums.length}人待補)</option>`).join('');
-  if (prev) {
-    for (let i = 0; i < sel.options.length; i++) {
-      if (sel.options[i].value === prev) { sel.selectedIndex = i; break; }
-    }
+function renderQpAssignments() {
+  const container = document.getElementById('qp-assign-list');
+  if (!container) return;
+  const hasMissing = assignments.filter(a => a.missingSeatNums.length > 0)
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  if (!hasMissing.length) {
+    container.innerHTML = '<span style="font-size:12px;color:var(--text-muted);">目前無待訂正作業 🎉</span>';
+    document.getElementById('qp-seats-area').style.display = 'none';
+    _qpSelectedId = null;
+    return;
+  }
+  container.innerHTML = hasMissing.map(a =>
+    `<button class="qp-assign-btn${_qpSelectedId === a.id ? ' active' : ''}" onclick="qpSelectAssignment('${a.id}')">
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(a.name)}</span>
+      <span class="badge">${a.missingSeatNums.length}</span>
+    </button>`
+  ).join('');
+  // If selected assignment still exists, refresh its seat chips
+  if (_qpSelectedId) {
+    const still = hasMissing.find(a => a.id === _qpSelectedId);
+    if (still) renderQpSeats();
+    else { _qpSelectedId = null; document.getElementById('qp-seats-area').style.display = 'none'; }
   }
 }
 
-function toggleQuickVoice() {
-  quickVoiceOpen = !quickVoiceOpen;
-  document.getElementById('quick-voice-body').style.display = quickVoiceOpen ? 'block' : 'none';
-  document.getElementById('quick-voice-chevron').style.transform = quickVoiceOpen ? 'rotate(180deg)' : '';
-  if (quickVoiceOpen) renderQuickVoiceSelect();
+function qpSelectAssignment(id) {
+  _qpSelectedId = id;
+  renderQpAssignments(); // re-render buttons to show active state
+  renderQpSeats();
+  document.getElementById('qp-status').textContent = '';
 }
 
-function toggleQuickVoice_mic() {
+function renderQpSeats() {
+  const a = assignments.find(x => x.id === _qpSelectedId);
+  const area = document.getElementById('qp-seats-area');
+  const chips = document.getElementById('qp-seat-chips');
+  if (!a) { area.style.display = 'none'; return; }
+  area.style.display = '';
+  if (!a.missingSeatNums.length) {
+    chips.innerHTML = '<span style="font-size:12px;color:var(--success);">🎉 全部完成！</span>';
+  } else {
+    chips.innerHTML = a.missingSeatNums.sort((x,y)=>x-y).map(n =>
+      `<span class="missing-seat-chip" style="cursor:pointer;" onclick="qpRemoveSeat(${n})" title="點擊移除">${n}號</span>`
+    ).join('');
+  }
+}
+
+function qpRemoveSeat(num) {
+  if (!_qpSelectedId) return;
+  removeSeat(_qpSelectedId, num); // reuses existing removeSeat which calls save + renderAssignmentList
+  // renderQpSeats will be called via renderAssignmentList → renderQpAssignments
+}
+
+function qpManualAdd() {
+  if (!_qpSelectedId) { showToast('請先選擇作業', 'error'); return; }
+  const inp = document.getElementById('qp-input');
+  const raw = inp.value.trim();
+  if (!raw) return;
+  const nums = parseSeatString(raw);
+  if (!nums.length) { showToast('請輸入有效座號', 'error'); return; }
+  applyVoiceCorrection(_qpSelectedId, nums);
+  inp.value = '';
+  document.getElementById('qp-status').textContent = `已移除 ${nums.length} 位`;
+  setTimeout(() => { const s = document.getElementById('qp-status'); if (s) s.textContent = ''; }, 2000);
+}
+
+function toggleQpVoice() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
     showToast('此裝置不支援語音識別', 'error'); return;
   }
-  if (quickRecognizing) { quickRecognition && quickRecognition.stop(); return; }
-  startQuickVoice();
-}
+  if (_qpRecognizing) { _qpRecog && _qpRecog.stop(); return; }
+  if (!_qpSelectedId) { showToast('請先選擇作業', 'error'); return; }
 
-function startQuickVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  quickRecognition = new SR();
-  quickRecognition.lang = 'zh-TW';
-  quickRecognition.continuous = false;
-  quickRecognition.interimResults = true;
-
-  quickRecognition.onstart = () => {
-    quickRecognizing = true;
-    document.getElementById('quick-mic-btn').classList.add('listening');
-    document.getElementById('quick-mic-btn').textContent = '⏹';
-    document.getElementById('quick-voice-status').textContent = '聆聽中...';
-    document.getElementById('quick-voice-result').textContent = '';
+  _qpRecog = new SR();
+  _qpRecog.lang = 'zh-TW';
+  _qpRecog.continuous = false;
+  _qpRecog.interimResults = false;
+  _qpRecog.onstart = () => {
+    _qpRecognizing = true;
+    const btn = document.getElementById('qp-voice-btn');
+    if (btn) { btn.textContent = '⏹'; btn.classList.add('active'); }
+    document.getElementById('qp-status').textContent = '聆聽中...';
   };
-  quickRecognition.onresult = (e) => {
-    const t = Array.from(e.results).map(r => r[0].transcript).join('');
-    document.getElementById('quick-voice-result').textContent = t;
-    if (e.results[e.results.length-1].isFinal) processQuickVoiceResult(t);
+  _qpRecog.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    const formatted = voiceTextToSeatInput(text);
+    const nums = formatted ? parseSeatString(formatted) : extractSeatsFromText(text);
+    if (nums.length) {
+      applyVoiceCorrection(_qpSelectedId, nums);
+      document.getElementById('qp-status').textContent = `✓ 已移除 ${nums.length} 位`;
+      setTimeout(() => { const s = document.getElementById('qp-status'); if (s) s.textContent = ''; }, 2000);
+    } else {
+      showToast('未識別到座號，請重試', 'error');
+    }
   };
-  quickRecognition.onend = () => {
-    quickRecognizing = false;
-    document.getElementById('quick-mic-btn').classList.remove('listening');
-    document.getElementById('quick-mic-btn').textContent = '🎙️';
-    document.getElementById('quick-voice-status').textContent = '點麥克風再次輸入';
+  _qpRecog.onend = () => {
+    _qpRecognizing = false;
+    _qpRecog = null;
+    const btn = document.getElementById('qp-voice-btn');
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('active'); }
   };
-  quickRecognition.onerror = (e) => {
-    quickRecognizing = false;
-    document.getElementById('quick-mic-btn').classList.remove('listening');
-    document.getElementById('quick-mic-btn').textContent = '🎙️';
+  _qpRecog.onerror = (e) => {
+    _qpRecognizing = false;
+    _qpRecog = null;
+    const btn = document.getElementById('qp-voice-btn');
+    if (btn) { btn.textContent = '🎤'; btn.classList.remove('active'); }
+    document.getElementById('qp-status').textContent = '';
     showToast('語音識別錯誤：' + e.error, 'error');
   };
-  quickRecognition.start();
-}
-
-function processQuickVoiceResult(text) {
-  quickParsedSeats = extractSeatsFromText(text);
-  renderQuickParsed();
-}
-
-function renderQuickParsed() {
-  const container = document.getElementById('quick-voice-parsed');
-  const confirmArea = document.getElementById('quick-confirm-area');
-  if (!quickParsedSeats.length) {
-    container.innerHTML = '<span style="font-size:12px;color:var(--text-muted);">未識別到座號</span>';
-    confirmArea.style.display = 'none';
-    return;
-  }
-  container.innerHTML =
-    `<span style="font-size:12px;color:var(--text-muted);width:100%;display:block;margin-bottom:4px;">識別到 ${quickParsedSeats.length} 位：</span>` +
-    quickParsedSeats.map(n => `<span class="seat-tag" style="background:var(--success-light);color:var(--success)">${n}號</span>`).join('');
-  confirmArea.style.display = 'block';
-}
-
-function confirmQuickVoice() {
-  const selId = document.getElementById('quick-voice-select').value;
-  if (!selId) { showToast('請先選擇作業項目', 'error'); return; }
-  applyVoiceCorrection(selId, quickParsedSeats, 'quick-voice-select');
-  clearQuickVoice();
-  renderQuickVoiceSelect();
-}
-
-function clearQuickVoice() {
-  quickParsedSeats = [];
-  document.getElementById('quick-voice-result').textContent = '—';
-  document.getElementById('quick-voice-parsed').innerHTML = '';
-  document.getElementById('quick-confirm-area').style.display = 'none';
-  document.getElementById('quick-voice-status').textContent = '點麥克風開始語音輸入';
-}
-
-function quickManualSubmit() {
-  const raw = document.getElementById('quick-manual-input').value;
-  const nums = parseSeatString(raw);
-  if (!nums.length) { showToast('請輸入有效座號', 'error'); return; }
-  quickParsedSeats = nums;
-  document.getElementById('quick-voice-result').textContent = `手動輸入：${raw}`;
-  renderQuickParsed();
-  document.getElementById('quick-manual-input').value = '';
+  _qpRecog.start();
 }
 
 // ════════════════════════════════════════════
 //  投影模式
 // ════════════════════════════════════════════
 function openProjectorMode() {
-  const size = getClassSize();
   document.getElementById('proj-date').textContent = new Date().toLocaleDateString('zh-TW');
 
-  // Grid
-  const roster = getActiveRoster();
-  const grid = document.getElementById('proj-grid');
-  grid.innerHTML = roster.map(i => {
-    const count = assignments.filter(a => a.missingSeatNums.includes(i)).length;
-    let cls = 'proj-ok';
-    if (count >= 3) cls = 'proj-bad';
-    else if (count >= 1) cls = 'proj-warn';
-    const countLabel = count > 0 ? `<div class="proj-count">${count}項</div>` : '';
-    return `<div class="proj-seat ${cls}" onclick="projSeatClick(${i})">${i}${countLabel}</div>`;
-  }).join('');
+  // ── Tab 1：聯絡簿 + 行事曆 ──
+  const todayStr = today();
 
-  // Assignment List
-  const aList = document.getElementById('proj-assignments');
-  const pending = assignments.filter(a => a.missingSeatNums.length > 0)
-    .sort((a,b) => a.dueDate.localeCompare(b.dueDate));
-  if (!pending.length) {
-    aList.innerHTML = '<div style="text-align:center;padding:30px;opacity:0.4;font-size:18px;">🎉 全班作業皆已完成！</div>';
-  } else {
-    aList.innerHTML = pending.map(a => {
-      const days = daysOverdue(a.dueDate);
-      const ob = days > 3 ? `<span class="proj-overdue-badge">逾期${days}天</span>` : days > 0 ? `<span class="proj-overdue-badge" style="background:var(--warning)">逾期${days}天</span>` : '';
-      return `<div class="proj-assign-card">
-        <h3>${escHtml(a.name)} <span style="font-size:13px;opacity:0.6;font-weight:400">截止 ${fmtDate(a.dueDate)}</span>${ob}</h3>
-        <div class="seats">${a.missingSeatNums.sort((a,b)=>a-b).map(n=>`<span class="seat-chip">${n}號</span>`).join('')}</div>
-      </div>`;
-    }).join('');
+  // 優先顯示今日，若無則顯示最近一筆未來聯絡簿
+  const upcomingHw = dailyItems
+    .filter(i => i.type === 'homework' && i.date >= todayStr)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const hwDate = upcomingHw.length ? upcomingHw[0].date : todayStr;
+  const showHw = upcomingHw.filter(i => i.date === hwDate);
+
+  // 更新日期標籤
+  const hwDateEl = document.getElementById('proj-hw-date');
+  if (hwDateEl) {
+    const d = new Date(hwDate + 'T00:00:00');
+    const weekDays = ['日','一','二','三','四','五','六'];
+    hwDateEl.textContent = `${d.getMonth()+1}月${d.getDate()}日（${weekDays[d.getDay()]}）`;
   }
 
+  const todayEvents = dailyItems.filter(i => i.type === 'event' && i.date === todayStr);
+
+  document.getElementById('proj-hw-items').innerHTML = showHw.length
+    ? showHw.map(i => `<div class="proj-hw-card" style="font-size:${_projHwSize}px">${escHtml(i.text.trim())}</div>`).join('')
+    : `<div class="proj-hw-card" style="font-size:${_projHwSize}px;opacity:0.25;">（今日無聯絡簿）</div>`;
+
+  const evSection = document.getElementById('proj-events-section');
+  if (todayEvents.length) {
+    const evSize = Math.max(16, Math.round(_projHwSize * 0.45));
+    document.getElementById('proj-events-items').innerHTML =
+      todayEvents.map(i => `<div class="proj-event-horizontal" style="font-size:${evSize}px">${escHtml(i.text.trim())}</div>`).join('');
+    evSection.style.display = 'flex';
+  } else {
+    evSection.style.display = 'none';
+  }
+
+  // ── Tab 2：座位圖 ──
+  refreshProjGrid();
+
+  // 初始化拉桿
+  switchProjTab(1);
   document.getElementById('projector-mode').classList.add('open');
 }
 
+function switchProjTab(n) {
+  _currentProjTab = n;
+  document.getElementById('proj-tab1').style.display = n === 1 ? 'flex' : 'none';
+  document.getElementById('proj-tab2').style.display = n === 2 ? 'flex' : 'none';
+  document.getElementById('proj-tab1-btn').classList.toggle('active', n === 1);
+  document.getElementById('proj-tab2-btn').classList.toggle('active', n === 2);
+  // 更新拉桿
+  const val = n === 1 ? _projHwSize : _projSeatSize;
+  const slider = document.getElementById('proj-font-slider');
+  slider.value = val;
+  slider.min = n === 1 ? 30 : 60;
+  slider.max = n === 1 ? 220 : 240;
+  document.getElementById('proj-slider-val').textContent = val + 'px';
+  document.getElementById('proj-slider-label').textContent = n === 1 ? '聯絡簿字體' : '座位大小';
+  if (n === 2) _applyProjSeatSize(_projSeatSize);
+}
+
+// ── 重新渲染座位圖（資料更新時自動呼叫）──
+function refreshProjGrid() {
+  const grid = document.getElementById('proj-grid');
+  if (!grid) return;
+  const roster = getActiveRoster();
+  const fSize = Math.max(14, Math.round(_projSeatSize * 0.22));
+  grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${_projSeatSize}px, 1fr))`;
+  grid.innerHTML = roster.map(i => {
+    const count = assignments.filter(a => a.missingSeatNums && a.missingSeatNums.includes(i)).length;
+    const submitted = submittedSeats.has(i);
+    let cls = submitted ? 'proj-submitted' : 'proj-ok';
+    if (!submitted) {
+      if (count >= 4)      cls = 'proj-bad';
+      else if (count >= 2) cls = 'proj-warn2';
+      else if (count >= 1) cls = 'proj-warn1';
+    }
+    const sub = submitted ? `<div class="proj-sub-label">已交</div>` : '';
+    const cnt = !submitted && count > 0 ? `<div class="proj-count">${count}項</div>` : '';
+    return `<div class="proj-seat ${cls}" style="font-size:${fSize}px" onclick="projSeatClick(${i})">${i}${cnt}${sub}</div>`;
+  }).join('');
+}
+
+// ── 座位點擊（單擊＝詳情，雙擊＝切換綠色）──
 function projSeatClick(seatNum) {
-  const missing = assignments.filter(a => a.missingSeatNums.includes(seatNum));
-  let msg = `${seatNum} 號`;
-  if (!missing.length) {
-    msg += '\n\n✅ 沒有缺交作業！';
-  } else {
-    msg += `\n\n缺交 ${missing.length} 項：\n` + missing.map(a => `• ${a.name}`).join('\n');
+  const now = Date.now();
+  const isDouble = (_projLastClickSeat === seatNum && now - _projLastClickTime < 500);
+  _projLastClickSeat = seatNum;
+  _projLastClickTime = now;
+
+  if (isDouble) {
+    // 雙擊：只有有缺交作業的座號才切換已交狀態
+    closeProjOverlay();
+    const hasMissing = assignments.some(a => a.missingSeatNums && a.missingSeatNums.includes(seatNum));
+    if (!hasMissing) return; // 沒有作業要訂正，不做任何事
+    if (submittedSeats.has(seatNum)) submittedSeats.delete(seatNum);
+    else submittedSeats.add(seatNum);
+    _saveSubmittedSeats();
+    refreshProjGrid();
+    return;
   }
-  alert(msg);
+
+  // 單擊：顯示詳情 popup
+  _projPopupSeat = seatNum;
+  const missing = assignments.filter(a => a.missingSeatNums && a.missingSeatNums.includes(seatNum));
+  const content = document.getElementById('proj-seat-detail-content');
+  const isSubmitted = submittedSeats.has(seatNum);
+
+  if (!missing.length) {
+    content.innerHTML = `<div class="ok-msg">✅ ${seatNum} 號</div>
+      <div style="font-size:24px;margin-top:12px;color:#aaa;">沒有作業要訂正</div>`;
+  } else {
+    content.innerHTML = `<h2>${seatNum} 號 <span style="font-size:24px;color:#f87171;font-weight:600;">缺交 ${missing.length} 項</span></h2>
+      <div>${missing.map(a => `<div class="miss-item">• ${escHtml(a.name)}</div>`).join('')}</div>`;
+  }
+
+  const btn = document.getElementById('proj-submit-btn');
+  if (!missing.length) {
+    btn.style.display = 'none'; // 沒有作業，不顯示標為已交按鈕
+  } else {
+    btn.style.display = '';
+    if (isSubmitted) {
+      btn.textContent = '🔄 取消已交標記';
+      btn.style.background = '#3a1a1a'; btn.style.color = '#f87171';
+    } else {
+      btn.textContent = '✅ 標為已交（待查）';
+      btn.style.background = '#166534'; btn.style.color = '#4ade80';
+    }
+  }
+
+  document.getElementById('proj-seat-overlay').style.display = 'flex';
+}
+
+function toggleProjSubmit() {
+  if (_projPopupSeat === null) return;
+  if (submittedSeats.has(_projPopupSeat)) submittedSeats.delete(_projPopupSeat);
+  else submittedSeats.add(_projPopupSeat);
+  _saveSubmittedSeats();
+  refreshProjGrid();
+  closeProjOverlay();
+}
+
+function closeProjOverlay() {
+  document.getElementById('proj-seat-overlay').style.display = 'none';
+  _projPopupSeat = null;
 }
 
 function closeProjectorMode() {
@@ -1867,6 +2548,87 @@ document.getElementById('today-display').textContent =
   new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'long', day:'numeric', weekday:'short'});
 
 setupRealtimeSync();
+checkForUpdates();
+
+// ── Electron：URL 參數 ?projector=1 自動開啟投影模式 ──
+if (new URLSearchParams(window.location.search).get('projector') === '1') {
+  window.addEventListener('load', () => setTimeout(openProjectorMode, 800));
+}
+
+// ════════════════════════════════════════════
+//  自動更新
+// ════════════════════════════════════════════
+function compareVersions(a, b) {
+  const pa = a.split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if ((pa[i]||0) > (pb[i]||0)) return 1;
+    if ((pa[i]||0) < (pb[i]||0)) return -1;
+  }
+  return 0;
+}
+
+async function checkForUpdates() {
+  // 只在 Electron 環境執行
+  if (!window.electronAPI) return;
+  try {
+    const doc = await db.collection('settings').doc('appVersion').get();
+    if (!doc.exists) return;
+    const { version, downloadUrl, notes, fileName } = doc.data();
+    if (!version || !downloadUrl) return;
+    if (compareVersions(version, APP_VERSION) <= 0) return; // 沒有新版
+
+    showUpdateBanner(version, downloadUrl, notes || '', fileName || '作業缺交追蹤-安裝檔.exe');
+  } catch (e) {
+    // 無法連線時靜默忽略
+  }
+}
+
+function showUpdateBanner(newVer, url, notes, fileName) {
+  const existing = document.getElementById('update-banner');
+  if (existing) existing.remove();
+
+  const banner = document.createElement('div');
+  banner.id = 'update-banner';
+  banner.style.cssText = `
+    background:#0055ff; color:white; padding:10px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; flex-wrap:wrap; font-size:13px; position:sticky; top:0; z-index:999;
+  `;
+  banner.innerHTML = `
+    <span>🎉 有新版本 <strong>v${newVer}</strong> 可更新！${notes ? `<span style="opacity:0.85;margin-left:6px;">${escHtml(notes)}</span>` : ''}</span>
+    <div style="display:flex;gap:8px;flex-shrink:0;">
+      <button id="update-download-btn" style="background:white;color:#0055ff;border:none;padding:5px 14px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;">
+        ⬇ 下載並安裝
+      </button>
+      <button onclick="document.getElementById('update-banner').remove()" style="background:rgba(255,255,255,0.2);color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;">
+        稍後
+      </button>
+    </div>
+  `;
+  document.querySelector('.app-header').before(banner);
+
+  document.getElementById('update-download-btn').addEventListener('click', () => startUpdate(url, fileName));
+}
+
+async function startUpdate(url, fileName) {
+  const btn = document.getElementById('update-download-btn');
+  if (!btn) return;
+  btn.textContent = '下載中 0%';
+  btn.disabled = true;
+
+  window.electronAPI.onUpdateProgress(({ percent }) => {
+    if (btn) btn.textContent = `下載中 ${percent}%`;
+  });
+
+  try {
+    await window.electronAPI.downloadAndInstall(url, fileName);
+    showToast('下載完成，安裝程式已啟動！', 'success');
+  } catch (e) {
+    showToast('下載失敗：' + e.message, 'error');
+    if (btn) { btn.textContent = '⬇ 下載並安裝'; btn.disabled = false; }
+  }
+}
 </script>
 </body>
 </html>

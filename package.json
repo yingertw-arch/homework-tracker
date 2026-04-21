@@ -1,0 +1,43 @@
+{
+  "name": "homework-tracker",
+  "version": "1.7.2",
+  "description": "作業缺交追蹤系統",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --publish never",
+    "release": "npm run build && node release.js"
+  },
+  "build": {
+    "appId": "com.teacher.homework-tracker",
+    "productName": "作業缺交追蹤",
+    "directories": {
+      "output": "C:/Users/HSPS/Desktop/homework-installer"
+    },
+    "win": {
+      "target": "nsis",
+      "requestedExecutionLevel": "asInvoker",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "作業缺交追蹤"
+    },
+    "files": [
+      "index.html",
+      "main.js",
+      "preload.js",
+      "assets/**"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0",
+    "googleapis": "^171.4.0"
+  },
+  "dependencies": {
+    "node-schedule": "^2.1.1"
+  }
+}

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1a2e">
+<title>作業缺交追蹤</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --primary: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --text: #111827;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --radius: 12px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* ── Login ── */
+  #login-screen {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    padding: 32px 24px; gap: 32px;
+  }
+  .login-logo { font-size: 56px; }
+  .login-title { color: #fff; font-size: 24px; font-weight: 800; text-align: center; }
+  .login-subtitle { color: #94a3b8; font-size: 14px; text-align: center; }
+  .btn-google {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff; color: #374151;
+    border: none; border-radius: 12px;
+    padding: 14px 28px; font-size: 16px; font-weight: 600;
+    cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-google:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .btn-google img { width: 22px; height: 22px; }
+  #login-error { color: #fca5a5; font-size: 13px; text-align: center; }
+
+  /* ── App Shell ── */
+  #app { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
+  #app.visible { display: flex; }
+
+  /* Header */
+  .app-header {
+    background: #fff; border-bottom: 1.5px solid var(--border);
+    padding: 12px 16px; display: flex; align-items: center;
+    justify-content: space-between; gap: 8px; flex-shrink: 0;
+  }
+  .header-title { font-size: 16px; font-weight: 800; }
+  .header-user { display: flex; align-items: center; gap: 8px; }
+  .user-avatar { width: 30px; height: 30px; border-radius: 50%; }
+  .btn-logout {
+    background: none; border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 4px 10px;
+    font-size: 12px; color: var(--text-muted); cursor: pointer;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex; background: #fff;
+    border-bottom: 1.5px solid var(--border); flex-shrink: 0;
+  }
+  .tab-btn {
+    flex: 1; padding: 12px 8px; border: none; background: none;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    cursor: pointer; border-bottom: 2.5px solid transparent;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+  /* Content */
+  .tab-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .tab-panel { display: none; padding: 16px; }
+  .tab-panel.active { display: block; }
+
+  /* Section */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .section-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Buttons */
+  .btn {
+    border: none; border-radius: 10px; padding: 10px 16px;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.1s;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:active { background: var(--primary-dark); transform: scale(0.97); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:active { transform: scale(0.97); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-ghost { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-add {
+    background: var(--primary); color: #fff; border: none;
+    border-radius: 8px; padding: 6px 14px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden; margin-bottom: 10px;
+  }
+
+  /* Daily items */
+  .daily-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .daily-item:last-child { border-bottom: none; }
+  .daily-badge {
+    flex-shrink: 0; font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px; min-width: 40px; text-align: center;
+  }
+  .badge-event { background: #fff7ed; color: #c2410c; }
+  .badge-hw { background: #eff6ff; color: #1d4ed8; }
+  .daily-text { flex: 1; }
+  .daily-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .icon-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 4px; font-size: 15px; opacity: 0.5; line-height: 1;
+  }
+  .icon-btn:active { opacity: 1; }
+
+  /* Assignment card */
+  .asgn-card {
+    background: var(--surface); border-radius: var(--radius);
+    border: 2px solid #93c5fd; box-shadow: 3px 3px 0 #bfdbfe;
+    margin-bottom: 12px; overflow: hidden;
+  }
+  .asgn-header {
+    padding: 12px 14px; display: flex; align-items: center;
+    justify-content: space-between; gap: 8px; cursor: pointer;
+  }
+  .asgn-name { font-size: 15px; font-weight: 700; flex: 1; }
+  .asgn-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .asgn-badge {
+    background: #fee2e2; color: #dc2626;
+    font-size: 12px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+  }
+  .asgn-badge.done { background: #dcfce7; color: #15803d; }
+  .asgn-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); }
+  .asgn-body.open { display: block; }
+  .seat-grid {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding-top: 12px;
+  }
+  .seat-chip {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    border: 2px solid #fca5a5; background: #fee2e2; color: #dc2626;
+    transition: all 0.1s; user-select: none;
+  }
+  .seat-chip.submitted { background: #dcfce7; border-color: #86efac; color: #15803d; }
+  .seat-chip:active { transform: scale(0.9); }
+  .asgn-footer { display: flex; gap: 8px; margin-top: 12px; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 14px; }
+  .empty-icon { font-size: 36px; margin-bottom: 8px; }
+
+  /* Overdue badge */
+  .overdue-chip { background: #fee2e2; color: #dc2626; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 100;
+    align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: 20px 20px 0 0;
+    padding: 24px 20px 32px; width: 100%; max-width: 520px;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 15px; color: var(--text);
+    background: var(--bg); outline: none; -webkit-appearance: none;
+  }
+  .form-input:focus { border-color: var(--primary); background: #fff; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 8px; }
+  .modal-btns .btn { flex: 1; padding: 14px; font-size: 15px; }
+
+  /* Seat picker */
+  .seat-picker { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 8px; }
+  .sp-chip {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    border: 2px solid var(--border); background: var(--bg); color: var(--text-muted);
+    transition: all 0.1s; user-select: none;
+  }
+  .sp-chip.sel { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+  .sp-chip:active { transform: scale(0.9); }
+  .sp-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+  .sp-toolbar button {
+    background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 6px 12px;
+    font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-muted);
+  }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #1f2937; color: #fff; padding: 10px 20px;
+    border-radius: 20px; font-size: 14px; font-weight: 600;
+    transition: transform 0.25s ease; z-index: 200; white-space: nowrap;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success { background: #15803d; }
+  #toast.error { background: #dc2626; }
+
+  /* Loading */
+  #loading-overlay {
+    position: fixed; inset: 0; background: rgba(255,255,255,0.8);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; font-size: 15px; color: var(--text-muted);
+  }
+  .spinner {
+    width: 28px; height: 28px; border: 3px solid var(--border);
+    border-top-color: var(--primary); border-radius: 50%;
+    animation: spin 0.7s linear infinite; margin-right: 10px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-logo">📚</div>
+  <div>
+    <div class="login-title">作業缺交追蹤</div>
+    <div class="login-subtitle" style="margin-top:6px;">教師管理後台</div>
+  </div>
+  <button class="btn-google" onclick="signIn()">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+    使用 Google 帳號登入
+  </button>
+  <div id="login-error"></div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <div class="app-header">
+    <div class="header-title">📚 作業缺交追蹤</div>
+    <div class="header-user">
+      <img id="user-avatar" class="user-avatar" src="" alt="" style="display:none">
+      <button class="btn-logout" onclick="signOut()">登出</button>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('daily')" data-tab="daily">📓 班級事務</button>
+    <button class="tab-btn" onclick="switchTab('assignments')" data-tab="assignments">📋 作業管理</button>
+  </div>
+  <div class="tab-content">
+
+    <!-- Daily Items Tab -->
+    <div id="tab-daily" class="tab-panel active">
+      <!-- Events -->
+      <div class="section-header" style="margin-bottom:8px;">
+        <span class="section-title">🗓 行事曆</span>
+        <button class="btn-add" onclick="openDailyModal('event')">+ 新增</button>
+      </div>
+      <div class="card" id="events-list"><div class="empty">載入中…</div></div>
+
+      <!-- Homework -->
+      <div class="section-header" style="margin-top:16px; margin-bottom:8px;">
+        <span class="section-title">📓 聯絡簿</span>
+        <button class="btn-add" onclick="openDailyModal('homework')">+ 新增</button>
+      </div>
+      <div class="card" id="homework-list"><div class="empty">載入中…</div></div>
+    </div>
+
+    <!-- Assignments Tab -->
+    <div id="tab-assignments" class="tab-panel">
+      <div class="section-header" style="margin-bottom:12px;">
+        <span class="section-title">📋 缺交作業</span>
+        <button class="btn-add" onclick="openAsgnModal()">+ 新增作業</button>
+      </div>
+      <div id="asgn-list"><div class="empty"><div class="empty-icon">📭</div>載入中…</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Daily Item Modal -->
+<div class="modal-overlay" id="daily-modal">
+  <div class="modal">
+    <div class="modal-title" id="daily-modal-title">新增行事曆</div>
+    <div class="form-group">
+      <label class="form-label" id="daily-modal-label">事項內容</label>
+      <input class="form-input" id="daily-text" type="text" placeholder="請輸入內容…">
+    </div>
+    <div class="form-group">
+      <label class="form-label">日期</label>
+      <input class="form-input" id="daily-date" type="date">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeDailyModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveDailyItem()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assignment Modal -->
+<div class="modal-overlay" id="asgn-modal">
+  <div class="modal">
+    <div class="modal-title" id="asgn-modal-title">新增作業</div>
+    <div class="form-group">
+      <label class="form-label">作業名稱</label>
+      <input class="form-input" id="asgn-name" type="text" placeholder="例：數學第3課">
+    </div>
+    <div class="form-group">
+      <label class="form-label">截止日期</label>
+      <input class="form-input" id="asgn-date" type="date">
+    </div>
+    <div class="form-group">
+      <label class="form-label">未繳座號（點選切換）</label>
+      <div class="sp-toolbar">
+        <button onclick="spSelectAll()">全選</button>
+        <button onclick="spClearAll()">全清</button>
+      </div>
+      <div class="seat-picker" id="seat-picker"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeAsgnModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveAsgn()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="loading-overlay" style="display:none">
+  <div class="spinner"></div>載入中…
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Config ──
+const firebaseConfig = {
+  apiKey: "AIzaSyDTT6UzOWRk_oqa8TXm3N1DK-1HiouKjxg",
+  authDomain: "homework-tracker-5c6d3.firebaseapp.com",
+  projectId: "homework-tracker-5c6d3",
+  storageBucket: "homework-tracker-5c6d3.firebasestorage.app",
+  messagingSenderId: "133239689183",
+  appId: "1:133239689183:web:196488edd609c4fa663e6a"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ── State ──
+let dailyItems = [];
+let assignments = [];
+let classRoster = [];
+let _editingDailyId = null;
+let _dailyType = 'event';
+let _editingAsgnId = null;
+let _selectedSeats = new Set();
+let _unsubA = null, _unsubD = null, _unsubR = null;
+
+// ── Helpers ──
+function today() { return new Date().toISOString().slice(0, 10); }
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function fmtDate(s) {
+  if (!s) return '';
+  const d = new Date(s + 'T00:00:00');
+  const days = ['日','一','二','三','四','五','六'];
+  return `${d.getMonth()+1}/${d.getDate()} (${days[d.getDay()]})`;
+}
+function daysOverdue(d) {
+  const diff = Math.floor((new Date(today()) - new Date(d + 'T00:00:00')) / 86400000);
+  return diff;
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = '', 2200);
+}
+
+function showLoading(v) {
+  document.getElementById('loading-overlay').style.display = v ? 'flex' : 'none';
+}
+
+// ── Auth ──
+function signIn() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  // 使用 redirect 方式（取代 popup），手機瀏覽器相容性最佳
+  auth.signInWithRedirect(provider).catch(err => {
+    document.getElementById('login-error').textContent = '登入失敗：' + err.message;
+  });
+}
+function signOut() {
+  if (!confirm('確定要登出？')) return;
+  auth.signOut();
+}
+
+// 處理 redirect 登入後的回傳結果
+auth.getRedirectResult().catch(err => {
+  if (err && err.code !== 'auth/no-current-user') {
+    document.getElementById('login-error').textContent = '登入失敗：' + err.message;
+  }
+});
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    const avatar = document.getElementById('user-avatar');
+    if (user.photoURL) { avatar.src = user.photoURL; avatar.style.display = ''; }
+    startListeners();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').classList.remove('visible');
+    stopListeners();
+  }
+});
+
+function startListeners() {
+  showLoading(true);
+  _unsubR = db.collection('settings').doc('roster').onSnapshot(doc => {
+    classRoster = doc.exists ? (doc.data().seats || []) : [];
+  });
+  _unsubD = db.collection('data').doc('daily').onSnapshot(doc => {
+    const raw = doc.exists ? (doc.data().list || []) : [];
+    const t = today();
+    const cleaned = raw.filter(i => i.date >= t);
+    if (cleaned.length < raw.length) {
+      db.collection('data').doc('daily').set({ list: cleaned, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+    dailyItems = cleaned;
+    renderDailyItems();
+    showLoading(false);
+  });
+  _unsubA = db.collection('data').doc('assignments').onSnapshot(doc => {
+    assignments = doc.exists ? (doc.data().list || []) : [];
+    renderAssignments();
+  });
+}
+function stopListeners() {
+  if (_unsubR) { _unsubR(); _unsubR = null; }
+  if (_unsubD) { _unsubD(); _unsubD = null; }
+  if (_unsubA) { _unsubA(); _unsubA = null; }
+}
+
+// ── Tabs ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${name}"]`).classList.add('active');
+}
+
+// ── Daily Items ──
+function saveDailyItems() {
+  db.collection('data').doc('daily').set({
+    list: dailyItems,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function renderDailyItems() {
+  const t = today();
+  const events = dailyItems.filter(i => i.type === 'event').sort((a,b) => a.date.localeCompare(b.date));
+  const hws = dailyItems.filter(i => i.type === 'homework').sort((a,b) => a.date.localeCompare(b.date));
+
+  const renderList = (list, containerId, emptyMsg) => {
+    const el = document.getElementById(containerId);
+    if (!list.length) { el.innerHTML = `<div class="empty">${emptyMsg}</div>`; return; }
+    el.innerHTML = list.map(i => {
+      const label = i.date === t ? '今日' : fmtDate(i.date).split(' ')[0];
+      const badgeClass = i.type === 'event' ? 'badge-event' : 'badge-hw';
+      return `<div class="daily-item">
+        <span class="daily-badge ${badgeClass}">${escHtml(label)}</span>
+        <span class="daily-text">${escHtml(i.text)}</span>
+        <div class="daily-actions">
+          <button class="icon-btn" onclick="openEditDaily('${i.id}')" title="編輯">✏️</button>
+          <button class="icon-btn" onclick="deleteDailyItem('${i.id}')" title="刪除" style="color:#ef4444">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  renderList(events, 'events-list', '目前無行事曆事項');
+  renderList(hws, 'homework-list', '目前無聯絡簿');
+}
+
+function openDailyModal(type) {
+  _dailyType = type;
+  _editingDailyId = null;
+  const isEvent = type === 'event';
+  document.getElementById('daily-modal-title').textContent = isEvent ? '新增行事曆' : '新增聯絡簿';
+  document.getElementById('daily-modal-label').textContent = isEvent ? '事項內容' : '回家功課';
+  document.getElementById('daily-text').value = '';
+  document.getElementById('daily-date').value = today();
+  document.getElementById('daily-modal').classList.add('open');
+  setTimeout(() => document.getElementById('daily-text').focus(), 100);
+}
+
+function openEditDaily(id) {
+  const item = dailyItems.find(i => i.id === id);
+  if (!item) return;
+  _editingDailyId = id;
+  _dailyType = item.type;
+  const isEvent = item.type === 'event';
+  document.getElementById('daily-modal-title').textContent = isEvent ? '編輯行事曆' : '編輯聯絡簿';
+  document.getElementById('daily-modal-label').textContent = isEvent ? '事項內容' : '回家功課';
+  document.getElementById('daily-text').value = item.text;
+  document.getElementById('daily-date').value = item.date;
+  document.getElementById('daily-modal').classList.add('open');
+  setTimeout(() => document.getElementById('daily-text').focus(), 100);
+}
+
+function closeDailyModal() {
+  document.getElementById('daily-modal').classList.remove('open');
+  _editingDailyId = null;
+}
+
+function saveDailyItem() {
+  const text = document.getElementById('daily-text').value.trim();
+  if (!text) { showToast('請輸入內容', 'error'); return; }
+  const date = document.getElementById('daily-date').value || today();
+  if (_editingDailyId) {
+    const idx = dailyItems.findIndex(i => i.id === _editingDailyId);
+    if (idx !== -1) dailyItems[idx] = { ...dailyItems[idx], text, date };
+    showToast('已更新', 'success');
+  } else {
+    dailyItems.push({ id: 'd' + Date.now(), type: _dailyType, text, date });
+    showToast(_dailyType === 'event' ? '行事曆已新增' : '聯絡簿已新增', 'success');
+  }
+  saveDailyItems();
+  closeDailyModal();
+}
+
+function deleteDailyItem(id) {
+  if (!confirm('確定要刪除這筆資料？')) return;
+  dailyItems = dailyItems.filter(i => i.id !== id);
+  saveDailyItems();
+  showToast('已刪除', 'success');
+}
+
+// ── Assignments ──
+function saveAssignments() {
+  db.collection('data').doc('assignments').set({
+    list: assignments,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function renderAssignments() {
+  const el = document.getElementById('asgn-list');
+  const active = assignments.filter(a => a.missingSeatNums && a.missingSeatNums.length > 0)
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  const done = assignments.filter(a => !a.missingSeatNums || a.missingSeatNums.length === 0)
+    .sort((a, b) => b.dueDate.localeCompare(a.dueDate));
+  const all = [...active, ...done];
+  if (!all.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📭</div>目前沒有作業記錄</div>';
+    return;
+  }
+  el.innerHTML = all.map(a => {
+    const missing = a.missingSeatNums || [];
+    const overdue = daysOverdue(a.dueDate);
+    const badgeClass = missing.length === 0 ? 'done' : '';
+    const badgeText = missing.length === 0 ? '全部繳交 ✓' : `${missing.length} 人未繳`;
+    const overdueHtml = overdue > 0 && missing.length > 0
+      ? `<span class="overdue-chip">逾期 ${overdue} 天</span> ` : '';
+    return `<div class="asgn-card" id="asgn-${a.id}">
+      <div class="asgn-header" onclick="toggleAsgn('${a.id}')">
+        <div>
+          <div class="asgn-name">${escHtml(a.name)}</div>
+          <div class="asgn-meta">${overdueHtml}📅 ${fmtDate(a.dueDate)}</div>
+        </div>
+        <span class="asgn-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="asgn-body" id="body-${a.id}">
+        <div class="seat-grid">
+          ${missing.sort((x,y)=>x-y).map(n =>
+            `<div class="seat-chip" onclick="toggleSeatSubmit('${a.id}',${n})" data-seat="${n}">${n}</div>`
+          ).join('')}
+          ${missing.length === 0 ? '<span style="color:var(--text-muted);font-size:13px;padding:8px 0;">全部已繳！</span>' : ''}
+        </div>
+        <div class="asgn-footer">
+          <button class="btn btn-ghost btn-sm" onclick="openEditAsgn('${a.id}')">✏️ 編輯</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAsgn('${a.id}')">刪除</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleAsgn(id) {
+  const body = document.getElementById('body-' + id);
+  if (body) body.classList.toggle('open');
+}
+
+function toggleSeatSubmit(asgnId, seatNum) {
+  const a = assignments.find(x => x.id === asgnId);
+  if (!a) return;
+  a.missingSeatNums = a.missingSeatNums.filter(n => n !== seatNum);
+  saveAssignments();
+  showToast(`座號 ${seatNum} 已標記繳交`, 'success');
+}
+
+function deleteAsgn(id) {
+  if (!confirm('確定要刪除這筆作業記錄？')) return;
+  assignments = assignments.filter(a => a.id !== id);
+  saveAssignments();
+  showToast('已刪除', 'success');
+}
+
+// ── Assignment Modal ──
+function renderSeatPicker() {
+  const el = document.getElementById('seat-picker');
+  const roster = classRoster.length ? classRoster : Array.from({length: 35}, (_,i) => i+1);
+  el.innerHTML = roster.map(n =>
+    `<div class="sp-chip${_selectedSeats.has(n) ? ' sel' : ''}" onclick="toggleSp(${n})">${n}</div>`
+  ).join('');
+}
+
+function toggleSp(n) {
+  if (_selectedSeats.has(n)) _selectedSeats.delete(n);
+  else _selectedSeats.add(n);
+  renderSeatPicker();
+}
+
+function spSelectAll() {
+  const roster = classRoster.length ? classRoster : Array.from({length: 35}, (_,i) => i+1);
+  roster.forEach(n => _selectedSeats.add(n));
+  renderSeatPicker();
+}
+
+function spClearAll() { _selectedSeats.clear(); renderSeatPicker(); }
+
+function openAsgnModal() {
+  _editingAsgnId = null;
+  _selectedSeats = new Set();
+  document.getElementById('asgn-modal-title').textContent = '新增作業';
+  document.getElementById('asgn-name').value = '';
+  document.getElementById('asgn-date').value = today();
+  renderSeatPicker();
+  document.getElementById('asgn-modal').classList.add('open');
+  setTimeout(() => document.getElementById('asgn-name').focus(), 100);
+}
+
+function openEditAsgn(id) {
+  const a = assignments.find(x => x.id === id);
+  if (!a) return;
+  _editingAsgnId = id;
+  _selectedSeats = new Set(a.missingSeatNums || []);
+  document.getElementById('asgn-modal-title').textContent = '編輯作業';
+  document.getElementById('asgn-name').value = a.name;
+  document.getElementById('asgn-date').value = a.dueDate;
+  renderSeatPicker();
+  document.getElementById('asgn-modal').classList.add('open');
+  setTimeout(() => document.getElementById('asgn-name').focus(), 100);
+}
+
+function closeAsgnModal() {
+  document.getElementById('asgn-modal').classList.remove('open');
+  _editingAsgnId = null;
+}
+
+function saveAsgn() {
+  const name = document.getElementById('asgn-name').value.trim();
+  const date = document.getElementById('asgn-date').value;
+  if (!name) { showToast('請輸入作業名稱', 'error'); return; }
+  if (!date) { showToast('請選擇日期', 'error'); return; }
+  const missingSeatNums = [..._selectedSeats].sort((a,b)=>a-b);
+  if (_editingAsgnId) {
+    const idx = assignments.findIndex(a => a.id === _editingAsgnId);
+    if (idx !== -1) { assignments[idx].name = name; assignments[idx].dueDate = date; assignments[idx].missingSeatNums = missingSeatNums; }
+    showToast('作業已更新', 'success');
+  } else {
+    assignments.push({ id: 'a' + Date.now(), name, dueDate: date, missingSeatNums });
+    showToast(`作業已新增，${missingSeatNums.length} 人未繳`, 'success');
+  }
+  saveAssignments();
+  closeAsgnModal();
+}
+
+// ── Init ──
+document.getElementById('daily-date').value = today();
+document.getElementById('asgn-date').value = today();
+</script>
+</body>
+</html>
