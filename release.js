@@ -20,12 +20,17 @@ const CREDENTIALS_FILE = path.join(__dirname, 'google-credentials.json'); // OAu
 const TOKEN_FILE       = path.join(__dirname, 'google-token.json');        // 儲存授權 token
 
 // Firebase 設定（更新版本資訊用）
+// 注意：不再硬編碼任何金鑰／token。
+//  ① Firestore 寫入改用 OAuth 身分（Bearer token），避開「需登入」的新規則。
+//  ② Hosting 部署改用 `firebase login` 既有登入工作階段（不再傳 --token）。
 const FIREBASE_PROJECT_ID = 'homework-tracker-5c6d3';
-const FIREBASE_API_KEY    = 'AIzaSyBhLCqXSgF7pXAcSXkE3cIvLFn9x8nHJRs'; // 你的 Firebase API key
 
 // ══════════════════════════════════════════
 
-const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
+const SCOPES = [
+  'https://www.googleapis.com/auth/drive.file',
+  'https://www.googleapis.com/auth/datastore', // 以 OAuth 身分寫入 Firestore（繞過安全規則）
+];
 
 async function authorize() {
   if (!fs.existsSync(CREDENTIALS_FILE)) {
@@ -132,7 +137,11 @@ async function uploadToDrive(auth, filePath) {
   return { fileId: res.data.id, downloadUrl, fileName };
 }
 
-async function updateFirebaseVersion(version, downloadUrl, fileName) {
+async function updateFirebaseVersion(auth, version, downloadUrl, fileName) {
+  // 以 OAuth 身分取得 access token（具 datastore 權限，繞過 Firestore 安全規則）
+  const { token: accessToken } = await auth.getAccessToken();
+  if (!accessToken) throw new Error('無法取得 OAuth access token');
+
   const body = JSON.stringify({
     fields: {
       version:     { stringValue: version },
@@ -143,14 +152,21 @@ async function updateFirebaseVersion(version, downloadUrl, fileName) {
   });
 
   return new Promise((resolve, reject) => {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/settings/appVersion?key=${FIREBASE_API_KEY}`;
+    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/settings/appVersion`;
     const req = https.request(url, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body)
+      }
     }, res => {
       let data = '';
       res.on('data', c => data += c);
-      res.on('end', () => resolve(JSON.parse(data)));
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) resolve(JSON.parse(data));
+        else reject(new Error(`Firestore 回傳 ${res.statusCode}：${data}`));
+      });
     });
     req.on('error', reject);
     req.write(body);
@@ -177,8 +193,18 @@ async function main() {
 
   // 4. 更新 Firebase
   console.log('\n🔥 更新 Firebase 版本資訊...');
-  await updateFirebaseVersion(version, downloadUrl, fileName);
+  await updateFirebaseVersion(auth, version, downloadUrl, fileName);
   console.log(`✅ Firebase 已更新：v${version}`);
+
+  // 5. 部署 web/ 到 Firebase Hosting
+  console.log('\n🌐 部署 web/ 到 Firebase Hosting...');
+  const { execSync } = require('child_process');
+  try {
+    execSync(`npx firebase-tools deploy --only hosting --project ${FIREBASE_PROJECT_ID}`, { stdio: 'inherit', cwd: __dirname });
+    console.log('✅ Firebase Hosting 部署完成');
+  } catch(e) {
+    console.warn('⚠️  Hosting 部署失敗（不影響 App 更新）：', e.message);
+  }
 
   console.log('\n🎉 發布完成！App 下次啟動時會自動提示更新。\n');
 }
