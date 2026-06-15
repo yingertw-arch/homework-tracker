@@ -1,6 +1,16 @@
 node_modules/
 dist/
+
+# Firebase / Google 密鑰（切勿提交）
 firebase-token.json
 google-credentials.json
 google-token.json
+google-token-hosting.json
+*-token.json
+*-credentials.json
+.firebase/
+.env
+.env.*
+*.local
+
 .claude/

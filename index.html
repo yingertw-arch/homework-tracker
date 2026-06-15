@@ -494,7 +494,7 @@
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.4);
       backdrop-filter: blur(2px);
-      z-index: 500;
+      z-index: 1100;
       align-items: flex-end;
       justify-content: center;
     }
@@ -590,6 +590,36 @@
       text-transform: uppercase; margin-bottom: 8px; flex-shrink: 0;
     }
 
+    /* ══ 會議提醒 ══ */
+    .rm-rec-btn, .rm-wd-btn {
+      padding: 6px 14px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: #fff; color: var(--text-muted); font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.12s;
+    }
+    .rm-rec-btn.active, .rm-wd-btn.active {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    .rm-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px;
+      background: #fff; margin-bottom: 8px; box-shadow: var(--shadow-sm);
+    }
+    .rm-card.off { opacity: 0.5; }
+    .rm-toggle { font-size: 22px; cursor: pointer; flex-shrink: 0; line-height: 1; }
+    .rm-info { flex: 1; min-width: 0; }
+    .rm-info .rm-title { font-size: 15px; font-weight: 800; color: var(--text); }
+    .rm-info .rm-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .rm-countdown {
+      font-size: 13px; font-weight: 800; color: var(--success);
+      font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;
+    }
+    .rm-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .rm-actions button {
+      border: 1.5px solid var(--border); background: #fff; border-radius: 8px;
+      padding: 5px 9px; font-size: 13px; cursor: pointer;
+    }
+    .rm-actions button:hover { border-color: var(--border-strong); }
+
     /* ══ Projector Mode ══ */
     #projector-mode {
       display: none; flex-direction: column;
@@ -598,6 +628,53 @@
       z-index: 1000; padding: 14px 20px 12px; overflow: hidden;
     }
     #projector-mode.open { display: flex; }
+
+    /* ── Tab 7：大考 ── */
+    #proj-tab7 { flex: 1; display: none; flex-direction: column; min-height: 0; overflow: hidden; gap: 12px; }
+    .exam-clock-area {
+      flex: 2; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px; min-height: 0;
+    }
+    .exam-subject { font-size: 4.5vw; font-weight: 900; color: #4ade80; line-height: 1; min-height: 1.1em; }
+    .exam-clock {
+      font-weight: 900; line-height: 0.95; letter-spacing: 3px; color: #fff;
+      font-variant-numeric: tabular-nums; font-size: 16vw;
+    }
+    .exam-date { font-size: 2.2vw; color: #888; }
+    .exam-countdown { font-size: 2.8vw; font-weight: 800; color: #fbbf24; min-height: 1.1em; }
+    .exam-countdown.urgent { color: #ff4d4d; animation: examBlink 1s steps(2,start) infinite; }
+    @keyframes examBlink { 50% { opacity: 0.25; } }
+    .exam-settings { flex: 1; display: flex; gap: 14px; min-height: 0; }
+    .exam-panel {
+      flex: 1; background: rgba(255,255,255,0.05); border: 1px solid #2a2a2a;
+      border-radius: 14px; padding: 12px 18px; overflow-y: auto;
+    }
+    .exam-panel-title { font-size: 16px; font-weight: 800; color: #ddd; margin-bottom: 8px; }
+    .exam-panel label { display: block; font-size: 12px; color: #888; margin: 8px 0 3px; }
+    .exam-panel input {
+      width: 100%; background: #1a1a1a; border: 1.5px solid #333; color: #fff;
+      border-radius: 8px; padding: 8px 10px; font-size: 15px;
+    }
+    .exam-panel input:focus { outline: none; border-color: #4ade80; }
+    .exam-srow { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .exam-srow .exam-sname { flex: 1.3; }
+    .exam-srow input[type=time] { flex: 1; }
+    .exam-stilde { color: #666; flex: 0 0 auto; }
+    .exam-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .exam-panel-head .exam-panel-title { margin-bottom: 0; }
+    .exam-day-tabs { display: flex; gap: 6px; }
+    .exam-day-tab {
+      background: #1a1a1a; border: 1.5px solid #333; color: #aaa;
+      border-radius: 8px; padding: 5px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .exam-day-tab.active { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+    /* 右側人數：數字／輸入框與標題同列 */
+    .exam-nrow { display: flex; gap: 14px; margin-bottom: 14px; }
+    .exam-ncell { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .exam-nlabel { flex: 0 0 auto; font-size: 18px; font-weight: 800; color: #ccc; }
+    .exam-nval { font-size: 38px; font-weight: 900; line-height: 1; }
+    .exam-ncell input { margin: 0; font-size: 32px; font-weight: 900; padding: 4px 10px; height: auto; }
+
     .proj-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 12px; border-bottom: 1px solid #1e1e1e; padding-bottom: 10px; flex-shrink: 0;
@@ -626,9 +703,14 @@
     }
     .proj-events-horizontal { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .proj-event-horizontal {
-      padding: 6px 18px; border-radius: 8px;
+      padding: 10px 20px; border-radius: 8px;
       border-left: 5px solid #f97316; background: rgba(251,146,60,0.15);
-      color: #fb923c; font-weight: 700; white-space: nowrap;
+      color: #fb923c; font-weight: 800; white-space: nowrap;
+      display: flex; align-items: baseline; gap: 10px;
+    }
+    .proj-event-date-label {
+      font-size: 0.7em; font-weight: 900; color: #ffd7aa; padding: 2px 8px;
+      background: rgba(255,255,255,0.06); border-radius: 5px; white-space: nowrap;
     }
     #proj-hw-section { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
     .proj-hw-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
@@ -691,6 +773,177 @@
       padding: 2px 7px; border-radius: 4px;
       font-size: 10px; font-weight: 700; margin-left: 8px;
     }
+
+    /* ══ Tab 3-6 共用控制列 ══ */
+    #proj-tab3, #proj-tab4, #proj-tab5, #proj-tab6 {
+      flex: 1; display: none; flex-direction: column; min-height: 0; overflow: hidden; position: relative;
+    }
+    .ptab-controls {
+      flex-shrink: 0; padding-bottom: 10px; margin-bottom: 8px;
+      border-bottom: 1px solid #1e1e1e;
+    }
+    .ptab-btn {
+      padding: 5px 14px; border-radius: 8px; border: 1.5px solid #444;
+      background: #222; color: #ccc; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .ptab-btn:hover { border-color: #888; color: #fff; }
+    .ptab-lock  { border-color: #166534 !important; background: #052e16 !important; color: #4ade80 !important; }
+    .ptab-unlock{ border-color: #92400e !important; background: #1c0a00 !important; color: #fb923c !important; }
+    .ptab-clear { border-color: #6b1a1a !important; background: #1a0505 !important; color: #f87171 !important; }
+    .ptab-blue  { border-color: #1d4ed8 !important; background: #0c1e4a !important; color: #93c5fd !important; }
+    .ptab-purple{ border-color: #7c3aed !important; background: #2e1065 !important; color: #c4b5fd !important; }
+    .ptab-hint  { font-size: 11px; color: #555; margin-top: 4px; }
+
+    /* ── Tab 3: 座位表 ── */
+    .seat-pool {
+      display: flex; flex-wrap: wrap; gap: 6px; padding: 8px;
+      background: rgba(255,255,255,0.04); border-radius: 10px; min-height: 42px;
+    }
+    .draggable-seat {
+      padding: 5px 11px; border-radius: 8px; font-size: 14px; font-weight: 700;
+      cursor: grab; user-select: none; border: 1.5px solid transparent;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .draggable-seat:active { cursor: grabbing; }
+    .draggable-seat.dragging { opacity: 0.25; }
+    .draggable-seat.gender-m { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+    .draggable-seat.gender-f { background: #4a1a2e; border-color: #f43f5e; color: #fda4af; }
+    .draggable-seat.gender-n { background: #222; border-color: #444; color: #aaa; }
+    .seat-chart-grid { display: grid; gap: 6px; width: fit-content; }
+    .seat-cell {
+      border-radius: 10px; border: 2px dashed #333;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; position: relative;
+      transition: background 0.15s; cursor: default;
+    }
+    .seat-cell.has-seat { border-style: solid; }
+    .seat-cell.gender-m.has-seat { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+    .seat-cell.gender-f.has-seat { background: #4a1a2e; border-color: #f43f5e; color: #fda4af; }
+    .seat-cell.gender-n.has-seat { background: #2a2a2a; border-color: #555; color: #ccc; }
+    .seat-cell.drag-over { background: rgba(255,255,255,0.12) !important; border-color: #aaa !important; border-style: dashed !important; }
+    .seat-remove-x {
+      position: absolute; top: 2px; right: 4px; font-size: 10px;
+      color: #555; cursor: pointer; display: none; line-height: 1;
+    }
+    .seat-cell:hover .seat-remove-x { display: block; }
+
+    /* ── Tab 4: 打掃工作 ── */
+    .clean-tasks-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; align-content: flex-start; }
+    .clean-task-card {
+      background: rgba(255,255,255,0.05); border: 1.5px solid #2a2a2a;
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .clean-task-title {
+      font-size: 16px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    }
+    .clean-dropzone {
+      display: flex; flex-wrap: wrap; gap: 6px; min-height: 42px;
+      padding: 6px; border-radius: 8px; border: 1.5px dashed #333; transition: background 0.15s;
+    }
+    .clean-dropzone.drag-over { background: rgba(255,255,255,0.1) !important; border-color: #aaa !important; }
+    .clean-chip {
+      padding: 5px 12px; border-radius: 8px; font-size: 15px; font-weight: 700;
+      cursor: pointer; border: 1.5px solid transparent;
+    }
+    .clean-chip.duty1 { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+    .clean-chip.duty2 { background: #3d1f00; border-color: #f97316; color: #fb923c; }
+
+    /* ── Tab 5: 班級幹部（新版欄位式） ── */
+    .officer-table { display:flex; gap:8px; overflow-x:auto; overflow-y:auto; flex:1; padding-bottom:4px; align-items:flex-start; }
+    .officer-col {
+      flex: 0 0 auto; min-width:10em; max-width:13em;
+      border-radius: 10px; overflow:hidden;
+      border: 1.5px solid rgba(255,255,255,0.08);
+      display: flex; flex-direction: column;
+    }
+    .officer-col-header {
+      padding: 0.6em 0.8em; font-size: 1em; font-weight: 800; color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      display: flex; align-items: center; justify-content: space-between; gap:4px;
+    }
+    .officer-col-header .grp-add-btn {
+      background: rgba(255,255,255,0.2); border: none; color: #fff;
+      border-radius: 5px; padding: 2px 7px; font-size: 1em; cursor:pointer;
+      line-height:1; font-weight:700;
+    }
+    .officer-col-header .grp-del-btn {
+      background: rgba(0,0,0,0.25); border: none; color: rgba(255,255,255,0.6);
+      border-radius: 5px; padding: 2px 6px; font-size: 0.85em; cursor:pointer; line-height:1;
+    }
+    .officer-pos-row {
+      padding: 0.6em 0.8em; border-top: 1px solid rgba(255,255,255,0.07);
+      background: rgba(0,0,0,0.35); position:relative;
+    }
+    .officer-pos-title { font-size: 0.92em; font-weight: 700; color: #f1f5f9; margin-bottom: 2px; }
+    .officer-pos-desc { font-size: 0.77em; color: #64748b; margin-bottom: 5px; line-height:1.3; }
+    .officer-pos-dropzone {
+      min-height: 2.2em; border-radius: 7px; border: 1.5px dashed #2e3a4a;
+      padding: 0.3em 0.4em; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+      transition: background 0.15s;
+    }
+    .officer-pos-dropzone.drag-over { background: rgba(255,255,255,0.1) !important; border-color: #aaa !important; }
+    .officer-chip {
+      padding: 0.25em 0.55em; border-radius: 6px; font-size: 1em; font-weight: 700;
+      cursor: pointer; border: 1.5px solid transparent; user-select:none;
+    }
+    .officer-chip.officer-blue { background:#1e3a5f; border-color:#3b82f6; color:#93c5fd; }
+    .officer-chip.dual         { background:#3d2e00; border-color:#eab308; color:#fde047; }
+    .officer-seat-input {
+      background: transparent; border: none; outline: none;
+      color: #94a3b8; font-size: 0.92em; width: 2.5em; min-width:0;
+    }
+    .officer-pos-del { position:absolute; top:4px; right:5px; font-size:0.77em; color:#444; cursor:pointer; }
+    .officer-pos-del:hover { color:#f87171; }
+    .officer-add-col-btn {
+      flex: 0 0 auto; min-width:90px; border:2px dashed rgba(255,255,255,0.15);
+      border-radius:10px; display:flex; align-items:center; justify-content:center;
+      cursor:pointer; color:rgba(255,255,255,0.25); font-size:28px; font-weight:300;
+      transition: all 0.15s; align-self: stretch;
+    }
+    .officer-add-col-btn:hover { border-color:rgba(255,255,255,0.4); color:rgba(255,255,255,0.5); }
+    /* 抽籤：座位格亮燈動畫 */
+    .seat-cell-flash { background: #fbbf24 !important; color: #000 !important; border-color: #f59e0b !important; transform:scale(1.08); }
+    .seat-cell-winner { background: #f59e0b !important; color: #000 !important; border-color: #fef3c7 !important; box-shadow: 0 0 16px #fbbf24; transform:scale(1.12); z-index:2; position:relative; }
+    /* 抽籤結果面板 */
+    .lottery-side-panel {
+      flex: 0 0 160px; background: rgba(0,0,0,0.6); border-radius:12px;
+      border: 1.5px solid #333; padding:14px 10px;
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+    }
+    .lottery-draw-num {
+      font-size: 54px; font-weight: 900; line-height:1;
+      border-radius:12px; padding:10px 20px;
+      background:rgba(255,255,255,0.08);
+    }
+
+    /* ── Tab 6: 投票 ── */
+    .vote-card { background: rgba(255,255,255,0.05); border: 1.5px solid #2a2a2a; border-radius: 12px; padding: 14px 16px; }
+    .vote-input {
+      background: #1a1a1a; border: 1.5px solid #333; color: #fff;
+      border-radius: 8px; padding: 7px 12px; font-size: 14px; width: 100%;
+    }
+    .vote-input:focus { outline: none; border-color: #4ade80; }
+    .vote-option-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    .vote-roster-summary {
+      padding: 12px 14px; border-radius: 10px; border: 1.5px solid #1d4ed8;
+      background: rgba(59,130,246,0.12); color: #bfdbfe; font-size: 14px; font-weight: 800;
+    }
+    .vote-qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; }
+    .vote-qr-inner { background: #fff; padding: 12px; border-radius: 12px; }
+    .vote-bar-chart { width: 100%; }
+    .vote-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .vote-bar-label { min-width: 70px; max-width: 110px; font-size: 12px; font-weight: 600; color: #e2e8f0; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vote-bar-track { flex: 1; background: #1a1a1a; border-radius: 6px; height: 26px; overflow: hidden; }
+    .vote-bar-fill { height: 100%; border-radius: 6px; background: #4ade80; display: flex; align-items: center; padding: 0 6px; font-size: 12px; font-weight: 700; color: #052e16; transition: width 0.4s; min-width: 0; }
+    .vote-bar-pct { font-size: 12px; color: #888; min-width: 36px; }
+    .vote-resp-detail { font-size: 12px; color: #555; margin-top: 4px; }
+    .vote-column-chart { display:flex; align-items:flex-end; gap:10px; width:100%; min-height:220px; padding:18px 8px 6px; overflow-x:auto; }
+    .vote-column-item { flex:1 0 52px; min-width:52px; max-width:90px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:6px; }
+    .vote-column-count { color:#e2e8f0; font-size:13px; font-weight:900; min-height:18px; }
+    .vote-column-bar { width:100%; min-height:12px; border-radius:8px 8px 3px 3px; display:flex; align-items:flex-start; justify-content:center; box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset; }
+    .vote-column-label { width:100%; color:#cbd5e1; font-size:13px; font-weight:900; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
     /* ── Desktop Sidebar ── */
     @media (min-width: 768px) {
@@ -757,7 +1010,7 @@
     .toast-container {
       position: fixed; top: 64px; left: 50%;
       transform: translateX(-50%);
-      z-index: 999; display: flex;
+      z-index: 999999; display: flex;
       flex-direction: column; gap: 6px;
       align-items: center; pointer-events: none;
     }
@@ -781,12 +1034,13 @@
 <!-- Header -->
 <div class="app-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
   <div>
-    <h1>📚 作業缺交追蹤</h1>
+    <h1>📚 作業缺交追蹤 <span id="header-version" style="font-size:12px;font-weight:500;color:var(--text-muted);letter-spacing:0;"></span></h1>
     <p id="today-display"></p>
   </div>
   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
     <button class="header-nav-btn active" onclick="switchTab('manage')" data-tab="manage">📋 班級事務管理</button>
     <button class="header-nav-btn" onclick="switchTab('voice')" data-tab="voice">🎙️ 訂正確認</button>
+    <button class="header-nav-btn" onclick="switchTab('reminder')" data-tab="reminder">🔔 會議提醒</button>
     <button class="header-nav-btn" onclick="openProjectorMode()">📺 投影模式</button>
     <button class="header-nav-btn" onclick="requireAuth(openSetupModal)">⚙️ 班級設定</button>
   </div>
@@ -846,7 +1100,76 @@
           <button class="qp-icon-btn" onclick="vtManualAdd()" title="確認" style="width:42px;height:42px;font-size:18px;background:var(--accent);border-color:var(--accent);color:white;">✓</button>
         </div>
         <div id="vt-status" style="font-size:12px;color:var(--text-muted);margin-top:6px;min-height:18px;"></div>
+        <!-- 重設按鈕 -->
+        <button onclick="resetAllSubmitted()" style="margin-top:10px;width:100%;padding:10px;border:1.5px dashed #f87171;border-radius:8px;background:#fff5f5;color:#dc2626;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+          🔄 重設訂正名單（清除所有綠色標記，回到缺交狀態）
+        </button>
+        <div id="vt-session-count" style="font-size:12px;color:var(--text-muted);margin-top:6px;text-align:right;min-height:18px;"></div>
       </div>
+    </div>
+
+    <!-- ══════════════════ TAB: 會議提醒 ══════════════════ -->
+    <div class="tab-panel" id="tab-reminder">
+      <div style="padding:14px 16px 8px;display:flex;justify-content:space-between;align-items:center;">
+        <div class="section-header" style="padding:0;">🔔 會議提醒</div>
+        <button class="btn btn-primary btn-sm" onclick="requireAuth(()=>openReminderModal())">＋ 新增提醒</button>
+      </div>
+      <p style="padding:0 16px 4px;font-size:12px;color:var(--text-muted);">時間到時會在桌面跳出全螢幕警報。支援單次／每天／週一～五／每週／每月。資料雲端同步。</p>
+      <div id="reminder-list" style="padding:6px 16px 16px;"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ REMINDER ADD/EDIT MODAL ══════════════════ -->
+<div class="modal-backdrop" id="reminder-modal">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-header">
+      <h3 id="reminder-modal-title">新增提醒</h3>
+      <button class="modal-close" onclick="closeReminderModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>提醒名稱 *</label>
+        <input type="text" id="rm-name" placeholder="例：週會、領午餐">
+      </div>
+      <div class="form-group">
+        <label>週期</label>
+        <div id="rm-rec-btns" style="display:flex;flex-wrap:wrap;gap:6px;">
+          <button type="button" class="rm-rec-btn active" data-rec="none" onclick="setRmRec('none')">單次</button>
+          <button type="button" class="rm-rec-btn" data-rec="daily" onclick="setRmRec('daily')">每天</button>
+          <button type="button" class="rm-rec-btn" data-rec="weekdays" onclick="setRmRec('weekdays')">週一～五</button>
+          <button type="button" class="rm-rec-btn" data-rec="weekly" onclick="setRmRec('weekly')">每週</button>
+          <button type="button" class="rm-rec-btn" data-rec="monthly" onclick="setRmRec('monthly')">每月</button>
+        </div>
+      </div>
+      <!-- 單次：日期 -->
+      <div class="form-group" id="rm-date-group">
+        <label>日期 *</label>
+        <input type="date" id="rm-date">
+      </div>
+      <!-- 每週：星期 -->
+      <div class="form-group" id="rm-weekday-group" style="display:none;">
+        <label>星期（可複選）</label>
+        <div id="rm-weekday-btns" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+      <!-- 每月：幾日 -->
+      <div class="form-group" id="rm-monthday-group" style="display:none;">
+        <label>每月幾日</label>
+        <input type="number" id="rm-monthday" min="1" max="31" value="1" style="width:100px;">
+      </div>
+      <div class="form-group">
+        <label>時間 *</label>
+        <input type="time" id="rm-time" value="08:00">
+      </div>
+      <div class="form-group">
+        <label>提前提醒（分鐘）</label>
+        <input type="number" id="rm-pre" min="0" max="120" value="5" style="width:100px;">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeReminderModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveReminder()">儲存</button>
     </div>
   </div>
 </div>
@@ -921,6 +1244,14 @@
       </p>
       <div id="setup-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;"></div>
       <p style="font-size:12px;color:var(--text-muted);margin-top:12px;" id="setup-count-hint"></p>
+      <!-- 性別設定 -->
+      <div style="margin-top:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">性別設定（用於座位表顯示）</div>
+        <p style="font-size:12px;background:#eff6ff;color:#1e40af;padding:7px 10px;border-radius:8px;margin-bottom:10px;">
+          💡 點擊切換：<strong style="color:#3b82f6;">藍色 = 男生</strong>　<strong style="color:#f43f5e;">粉色 = 女生</strong>　<strong style="color:#94a3b8;">灰色 = 未設定</strong>
+        </p>
+        <div id="setup-gender-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;"></div>
+      </div>
     </div>
     <div style="padding:12px 20px 0;border-top:1px solid var(--border);">
       <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">開機啟動模式</div>
@@ -1067,6 +1398,11 @@
     <div class="proj-tabs">
       <button class="proj-tab-btn active" id="proj-tab1-btn" onclick="switchProjTab(1)">📓 聯絡簿 &amp; 行事曆</button>
       <button class="proj-tab-btn" id="proj-tab2-btn" onclick="switchProjTab(2)">✏️ 待訂正作業</button>
+      <button class="proj-tab-btn" id="proj-tab3-btn" onclick="switchProjTab(3)">🪑 座位表</button>
+      <button class="proj-tab-btn" id="proj-tab4-btn" onclick="switchProjTab(4)">🧹 打掃工作</button>
+      <button class="proj-tab-btn" id="proj-tab5-btn" onclick="switchProjTab(5)">🏅 班級幹部</button>
+      <button class="proj-tab-btn" id="proj-tab6-btn" onclick="switchProjTab(6)">🗳️ 投票</button>
+      <button class="proj-tab-btn" id="proj-tab7-btn" onclick="switchProjTab(7)">📝 大考</button>
     </div>
     <!-- 字體拉桿 -->
     <div class="proj-slider-row">
@@ -1084,6 +1420,12 @@
   <!-- Tab 1：行事曆（上橫式）+ 聯絡簿（下大字） -->
   <div id="proj-tab1">
     <div id="proj-events-section">
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-bottom:4px;">
+        <span style="font-size:12px;color:#888;font-weight:700;letter-spacing:0.5px;">📅 行事曆</span>
+        <button id="proj-events-toggle-btn" onclick="toggleProjEventsRange()"
+          style="padding:2px 10px;border-radius:6px;border:1.5px solid #444;background:#222;color:#aaa;
+                 font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;">今日</button>
+      </div>
       <div id="proj-events-items" class="proj-events-horizontal"></div>
     </div>
     <div id="proj-hw-section">
@@ -1100,6 +1442,224 @@
     <div class="proj-section-title">⚠️ 缺交座號 <span style="font-size:11px;opacity:0.4;font-weight:400;letter-spacing:0;margin-left:6px;">點1次看詳情・點2次標綠（已交待查）</span></div>
     <div class="proj-grid-full" id="proj-grid"></div>
   </div>
+
+  <!-- Tab 3：座位表 -->
+  <div id="proj-tab3">
+    <div class="ptab-controls">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="ptab-btn" id="seat-lock-toggle" onclick="toggleSeatingLock()">🔓 未鎖定・點擊鎖定</button>
+        <button class="ptab-btn ptab-clear" onclick="clearSeating()">🗑️ 清除</button>
+        <div id="seat-size-inputs" style="display:flex;gap:5px;align-items:center;margin-left:10px;">
+          <span style="font-size:12px;color:#888;">行</span>
+          <input type="number" id="seat-rows" min="1" max="12" value="6" style="width:46px;background:#222;border:1px solid #444;color:#fff;border-radius:6px;padding:3px 6px;font-size:13px;">
+          <span style="font-size:12px;color:#888;">列</span>
+          <input type="number" id="seat-cols" min="1" max="12" value="6" style="width:46px;background:#222;border:1px solid #444;color:#fff;border-radius:6px;padding:3px 6px;font-size:13px;">
+          <button class="ptab-btn ptab-blue" onclick="applySeatingGrid()">套用</button>
+        </div>
+        <button id="seat-lottery-btn" class="ptab-btn ptab-purple" onclick="startLottery()">🎲 抽籤</button>
+      </div>
+      <div class="ptab-hint">點座號切換性別（藍=男・粉=女）・拖拉到座位格排列</div>
+    </div>
+    <!-- 主體：左側座位 + 右側抽籤結果 -->
+    <div style="flex:1;display:flex;gap:10px;min-height:0;overflow:hidden;">
+      <!-- 左側：座號池 + 座位格 -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto;overflow-x:hidden;">
+        <div id="seat-pool-section" style="flex-shrink:0;">
+          <div style="font-size:11px;color:#555;margin-bottom:4px;">未排入的座號（點切換性別）</div>
+          <div class="seat-pool" id="seat-pool"
+            ondragover="event.preventDefault()"
+            ondrop="seatingDropToPool(event)"></div>
+        </div>
+        <div style="overflow:auto;flex:1;">
+          <div id="seat-chart-grid" class="seat-chart-grid"></div>
+        </div>
+      </div>
+      <!-- 右側：抽籤結果（平時隱藏） -->
+      <div id="lottery-side" class="lottery-side-panel" style="display:none;">
+        <div style="font-size:12px;color:#888;font-weight:700;letter-spacing:0.5px;">🎲 抽籤結果</div>
+        <div id="lottery-results" style="width:100%;"></div>
+        <button onclick="closeLottery()" style="margin-top:auto;background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:6px 20px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 4：打掃工作 -->
+  <div id="proj-tab4">
+    <div class="ptab-controls">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="ptab-btn" id="clean-lock-toggle" onclick="toggleCleaningLock()">🔓 未鎖定・點擊鎖定</button>
+        <button class="ptab-btn ptab-clear" id="clean-clear-seats-btn" onclick="clearCleaningSeats()" style="background:rgba(251,146,60,0.15);border-color:#fb923c;color:#fb923c;">🧹 清除座號</button>
+        <button class="ptab-btn ptab-clear" id="clean-clear-all-btn" onclick="clearCleaning()">🗑️ 清除工作與座號</button>
+        <button class="ptab-btn ptab-blue" id="clean-add-btn" onclick="addCleaningTask()">＋ 新增工作</button>
+      </div>
+      <div class="ptab-hint">拖拉座號到工作項目・橘色=身兼兩職</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto;">
+      <div id="clean-pool-section" style="flex-shrink:0;">
+        <div style="font-size:11px;color:#555;margin-bottom:4px;">未分配座號</div>
+        <div class="seat-pool" id="clean-pool"
+          ondragover="event.preventDefault()"
+          ondrop="cleaningDropToPool(event)"></div>
+      </div>
+      <div class="clean-tasks-wrap" id="clean-tasks"></div>
+    </div>
+  </div>
+
+  <!-- Tab 5：班級幹部 -->
+  <div id="proj-tab5">
+    <div class="ptab-controls">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="ptab-btn" id="officer-lock-toggle" onclick="toggleOfficersLock()">🔓 未鎖定・點擊鎖定</button>
+        <button class="ptab-btn ptab-clear" id="officer-reset-btn" onclick="resetOfficersToDefault()">↺ 重設預設</button>
+        <button class="ptab-btn ptab-clear" onclick="clearOfficers()">🗑️ 清除</button>
+      </div>
+      <div class="ptab-hint">拖拉座號到職位・可打座號後按 Enter・🟠橘色=身兼兩職 &nbsp;<span id="officer-sync-indicator" style="font-size:11px;"></span></div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden;">
+      <div id="officer-pool-section" style="flex-shrink:0;">
+        <div style="font-size:11px;color:#555;margin-bottom:4px;">未擔任幹部的座號</div>
+        <div class="seat-pool" id="officer-pool"
+          ondragover="event.preventDefault()"
+          ondrop="officerDropToPool(event)"></div>
+      </div>
+      <div id="officer-table-wrap" class="officer-table"></div>
+    </div>
+  </div>
+
+  <!-- Tab 6：投票 -->
+  <div id="proj-tab6">
+    <!-- Draft 狀態：設計投票 -->
+    <div id="vote-draft" style="flex:1;display:flex;flex-direction:column;gap:10px;overflow-y:auto;">
+      <div class="vote-card">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+          <button class="ptab-btn ptab-clear" onclick="clearVote()">🗑️ 清除</button>
+          <span style="font-size:12px;color:#555;">編輯投票後按「開始投票」產生 QR Code</span>
+        </div>
+        <div style="margin-bottom:8px;">
+          <div style="font-size:12px;color:#888;margin-bottom:4px;">投票主題</div>
+          <input class="vote-input" id="vote-title-input" placeholder="例：要不要延長下課？" style="width:100%;">
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px;">
+          <div>
+            <div style="font-size:12px;color:#888;margin-bottom:4px;">投票類型</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <label style="display:flex;align-items:center;gap:4px;font-size:13px;color:#ccc;cursor:pointer;">
+                <input type="radio" name="vote-type" value="single" checked style="accent-color:#4ade80;"> 一人一票
+              </label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:13px;color:#ccc;cursor:pointer;">
+                <input type="radio" name="vote-type" value="multi" style="accent-color:#4ade80;"> 一人多票（最多
+                <input type="number" id="vote-max-votes" min="2" max="10" value="3" style="width:40px;background:#222;border:1px solid #444;color:#fff;border-radius:5px;padding:2px 4px;font-size:13px;"> 票）
+              </label>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#888;margin-bottom:4px;">結果顯示</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <label style="display:flex;align-items:center;gap:4px;font-size:13px;color:#ccc;cursor:pointer;">
+                <input type="radio" name="vote-show" value="live" checked style="accent-color:#4ade80;"> 即時顯示
+              </label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:13px;color:#ccc;cursor:pointer;">
+                <input type="radio" name="vote-show" value="later" style="accent-color:#4ade80;"> 稍後公告
+              </label>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom:8px;">
+          <div style="font-size:12px;color:#888;margin-bottom:4px;">投票選項</div>
+          <div id="vote-options-list"></div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button class="ptab-btn ptab-blue" onclick="addVoteOption()">＋ 新增選項</button>
+            <button class="ptab-btn" style="font-size:12px;" onclick="addAllSeatsAsOptions()">👥 全班座號為選項（模範生）</button>
+          </div>
+        </div>
+        <div id="vote-draft-msg" style="display:none;margin:8px 0;padding:9px 12px;border-radius:8px;background:#3a1111;color:#fca5a5;border:1.5px solid #7f1d1d;font-size:13px;font-weight:700;"></div>
+        <button class="ptab-btn ptab-lock" style="width:100%;padding:10px;font-size:15px;" onclick="startVote()">▶ 開始投票</button>
+      </div>
+    </div>
+    <!-- Open 狀態：投票進行中 -->
+    <div id="vote-open" style="flex:1;display:none;flex-direction:column;gap:10px;overflow-y:auto;">
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;">
+        <div class="vote-qr-wrap">
+          <div class="vote-qr-inner" id="vote-qrcode-el"></div>
+          <div style="font-size:11px;color:#666;text-align:center;">學生掃描投票</div>
+          <div id="vote-count-display" style="font-size:16px;font-weight:700;color:#4ade80;text-align:center;"></div>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <div id="vote-live-chart" style="margin-bottom:12px;"></div>
+          <div id="vote-resp-list" style="font-size:12px;color:#555;"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:auto;flex-shrink:0;">
+        <button class="ptab-btn ptab-lock" onclick="announceVote()" style="flex:1;padding:10px;">✅ 公告結果</button>
+        <button class="ptab-btn ptab-clear" onclick="stopVote()" style="padding:10px;">✕ 結束</button>
+      </div>
+    </div>
+    <!-- Announced 狀態：公告結果 -->
+    <div id="vote-announced" style="flex:1;display:none;flex-direction:column;gap:10px;overflow-y:auto;align-items:center;">
+      <div style="font-size:16px;font-weight:700;color:#4ade80;text-align:center;" id="vote-announced-title"></div>
+      <div id="vote-final-chart" style="width:100%;max-width:600px;"></div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="ptab-btn ptab-blue" onclick="reopenVote()">↩ 重新開放</button>
+        <button class="ptab-btn ptab-clear" onclick="clearVote()">🗑️ 清除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 7：大考（超大時鐘 + 考試設定） -->
+  <div id="proj-tab7">
+    <div class="exam-clock-area">
+      <div class="exam-clock" id="exam-clock">00:00:00</div>
+      <div class="exam-date" id="exam-date-display"></div>
+      <div class="exam-countdown" id="exam-countdown"></div>
+    </div>
+    <div class="exam-settings">
+      <!-- 左：科目 + 時間（最多兩天，每天三科） -->
+      <div class="exam-panel">
+        <div class="exam-panel-head">
+          <div class="exam-panel-title">📋 考試設定</div>
+          <div class="exam-day-tabs" id="exam-day-tabs">
+            <button class="exam-day-tab" data-day="0" onclick="setExamDay(0)">第一天</button>
+            <button class="exam-day-tab" data-day="1" onclick="setExamDay(1)">第二天</button>
+          </div>
+        </div>
+        <div id="exam-subject-rows"></div>
+      </div>
+      <!-- 右：人數（三行，數字與標題同列） -->
+      <div class="exam-panel">
+        <div class="exam-panel-title">👥 應考人數</div>
+        <div class="exam-nrow">
+          <div class="exam-ncell">
+            <span class="exam-nlabel">應到</span>
+            <input type="number" id="exam-expected" min="0" oninput="updateExamField('expected', this.value)" placeholder="全班">
+          </div>
+          <div class="exam-ncell">
+            <span class="exam-nlabel">實到</span>
+            <span class="exam-nval" id="exam-actual" style="color:#60a5fa;">0</span>
+          </div>
+        </div>
+        <div class="exam-nrow">
+          <div class="exam-ncell">
+            <span class="exam-nlabel">缺考</span>
+            <span class="exam-nval" id="exam-absent-count" style="color:#ff6b6b;">0</span>
+          </div>
+          <div class="exam-ncell">
+            <span class="exam-nlabel">座號</span>
+            <input id="exam-absent" oninput="updateExamField('absentSeats', this.value)" placeholder="例：5, 12">
+          </div>
+        </div>
+        <div class="exam-nrow">
+          <div class="exam-ncell">
+            <span class="exam-nlabel">抽離</span>
+            <span class="exam-nval" id="exam-pullout-count" style="color:#fbbf24;">0</span>
+          </div>
+          <div class="exam-ncell">
+            <span class="exam-nlabel">座號</span>
+            <input id="exam-pullout" oninput="updateExamField('pulloutSeats', this.value)" placeholder="例：8">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- 座位詳情 Popup -->
@@ -1113,9 +1673,12 @@
   </div>
 </div>
 
+<!-- QR Code 產生器 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <script>
 // ════════════════════════════════════════════
@@ -1131,11 +1694,18 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
+
+// ── 匿名登入（Firestore 安全規則要求 request.auth != null）──
+// 取得匿名身分後才開始同步，避免被規則拒絕。
+const authReady = auth.signInAnonymously()
+  .then(() => true)
+  .catch(e => { console.error('匿名登入失敗：', e); return false; });
 
 // ════════════════════════════════════════════
 //  版本
 // ════════════════════════════════════════════
-const APP_VERSION = '1.0.0';
+let APP_VERSION = '1.7.2'; // fallback，會在啟動時從 Electron 動態更新
 
 // ════════════════════════════════════════════
 //  資料模型
@@ -1148,17 +1718,161 @@ let classRoster = []; // active seat numbers
 let _syncUnsubscribers = []; // Firestore listeners
 let dailyItems = []; // {id, type:'event'|'homework', text, date:'YYYY-MM-DD'}
 
-// ── 投影模式：已交待查座號（localStorage 持久化）──
-let submittedSeats = new Set(JSON.parse(localStorage.getItem('proj_submitted') || '[]'));
+// ── 會議提醒（Firestore 同步）──
+let reminders = []; // {id, name, recurrence, time, pre_min, enabled, last_fired, datetime?, weekdays?, monthday?}
+let _editingReminderId = null;
+let _rmRec = 'none';
+
+// ── 大考狀態（Firestore 同步）──
+let examState = {
+  days: [
+    { date:'', subjects:[ {name:'',start:'',end:''}, {name:'',start:'',end:''}, {name:'',start:'',end:''} ] },
+    { date:'', subjects:[ {name:'',start:'',end:''}, {name:'',start:'',end:''}, {name:'',start:'',end:''} ] }
+  ],
+  expected: '', absentSeats: '', pulloutSeats: ''
+};
+let _examDayIdx = 0;
+
+// ── 投影模式：已交待查座號（Firestore 同步，所有裝置共用）──
+let submittedSeats = new Set();
+let _vtSessionRemovedCount = 0; // 本次訂正確認移除人數累計
+
+// ── Tab 3-6 資料 ──
+let _seatingData  = { rows:6, cols:6, layout:{}, genderMap:{}, locked:false };
+let _cleaningData = { tasks:[], locked:false };
+let _officersData = { groups:[], locked:false };
+// 解鎖保護時間戳：解鎖後 3 秒內，snapshot 不覆蓋 locked 狀態
+let _unlockGuardTs = { seat: 0, clean: 0, officer: 0 };
+const UNLOCK_GUARD_MS = 3000;
+
+const DEFAULT_OFFICER_GROUPS = [
+  { id:'grp-leader', title:'班長 / 副班長', color:'#ef4444',
+    positions:[
+      { id:'p-monitor',  title:'班長',   desc:'帶隊、老師不在管秩序',  maxSeats:1, seats:[] },
+      { id:'p-vmonitor', title:'副班長', desc:'早上點名登記遲到',       maxSeats:1, seats:[] },
+    ]
+  },
+  { id:'grp-rowleader', title:'排組長', color:'#f97316',
+    positions:[
+      { id:'p-row1', title:'第一排組長', desc:'收作業', maxSeats:1, seats:[] },
+      { id:'p-row2', title:'第二排組長', desc:'收作業', maxSeats:1, seats:[] },
+      { id:'p-row3', title:'第三排組長', desc:'收作業', maxSeats:1, seats:[] },
+      { id:'p-row4', title:'第四排組長', desc:'收作業', maxSeats:1, seats:[] },
+      { id:'p-row5', title:'第五排組長', desc:'收作業', maxSeats:1, seats:[] },
+      { id:'p-row6', title:'第六排組長', desc:'收作業', maxSeats:1, seats:[] },
+    ]
+  },
+  { id:'grp-meal', title:'盛飯小幫手', color:'#3b82f6',
+    positions:[
+      { id:'p-rice',  title:'盛飯',      desc:'盛飯、收餐桶',          maxSeats:1, seats:[] },
+      { id:'p-veg1',  title:'盛菜一',    desc:'盛菜1、收餐桶',         maxSeats:1, seats:[] },
+      { id:'p-veg2',  title:'盛菜二',    desc:'盛菜2、收餐桶',         maxSeats:1, seats:[] },
+      { id:'p-soup',  title:'盛湯',      desc:'盛湯、收餐桶',          maxSeats:1, seats:[] },
+      { id:'p-fruit', title:'水果/豆漿', desc:'發水果、豆漿、收餐袋',  maxSeats:1, seats:[] },
+    ]
+  },
+  { id:'grp-artserv', title:'學藝 / 服務', color:'#a855f7',
+    positions:[
+      { id:'p-art',     title:'學藝股長', desc:'班書、擬書',   maxSeats:6, seats:[] },
+      { id:'p-service', title:'服務股長', desc:'加分、集點',   maxSeats:6, seats:[] },
+    ]
+  },
+  { id:'grp-misc', title:'其他職務', color:'#06b6d4',
+    positions:[
+      { id:'p-tablet',  title:'平板小幫手', desc:'整理平板、搬平板',   maxSeats:3, seats:[] },
+      { id:'p-postman', title:'收發長',     desc:'各班收發物品',       maxSeats:2, seats:[] },
+      { id:'p-doorman', title:'開門長',     desc:'早上開教室門',       maxSeats:2, seats:[] },
+    ]
+  },
+  { id:'grp-env', title:'環保 / 衛生', color:'#22c55e',
+    positions:[
+      { id:'p-eco',    title:'環保小尖兵',       desc:'倒垃圾、管理資源回收（連動打掃工作）', maxSeats:2, seats:[], linkedTo:'garbage' },
+      { id:'p-gargle', title:'衛生股長（嗽口水）', desc:'倒嗽口水',                           maxSeats:1, seats:[] },
+      { id:'p-hyg1',    title:'衛生股長（1.2排）',  desc:'1.2排外掃督導、檢查（連動打掃工作）', maxSeats:1, seats:[], linkedTo:'check-12' },
+      { id:'p-hyg2',    title:'衛生股長（3.4排）',  desc:'3.4排外掃督導、檢查（連動打掃工作）', maxSeats:1, seats:[], linkedTo:'check-34' },
+      { id:'p-hyg3',    title:'衛生股長（5.6排）',  desc:'5.6排外掃督導、檢查（連動打掃工作）', maxSeats:1, seats:[], linkedTo:'check-56' },
+      { id:'p-hyg-ext', title:'衛生股長（外掃區）', desc:'外掃區督導、檢查（連動打掃工作）',    maxSeats:2, seats:[], linkedTo:'check-ext' },
+    ]
+  },
+];
+
+function _initOfficersFromDefaults() {
+  return {
+    groups: JSON.parse(JSON.stringify(DEFAULT_OFFICER_GROUPS)),
+    locked: false
+  };
+}
+
+// ── 遷移舊資料：修復錯誤的 linkedTo、補上缺少的職位/群組
+function _ensureOfficerPositions(data) {
+  if (!data || !data.groups) return data;
+  const VALID_LINKED = new Set(['garbage','check-12','check-34','check-56','check-ext']);
+  let changed = false;
+  data.groups.forEach(g => {
+    // 修復不合法的 linkedTo，並同步 maxSeats
+    g.positions.forEach(p => {
+      if (p.linkedTo && !VALID_LINKED.has(p.linkedTo)) {
+        const dg = DEFAULT_OFFICER_GROUPS.find(dg => dg.id === g.id);
+        const dp = dg && dg.positions.find(dp => dp.id === p.id);
+        p.linkedTo = (dp && dp.linkedTo) || undefined;
+        changed = true;
+      }
+      // 同步 maxSeats（以 default 為準，避免舊版過小）
+      const dg2 = DEFAULT_OFFICER_GROUPS.find(dg => dg.id === g.id);
+      const dp2 = dg2 && dg2.positions.find(dp => dp.id === p.id);
+      if (dp2 && dp2.maxSeats && (!p.maxSeats || p.maxSeats < dp2.maxSeats)) {
+        p.maxSeats = dp2.maxSeats; changed = true;
+      }
+    });
+    // 補上同群組缺少的職位
+    const dg = DEFAULT_OFFICER_GROUPS.find(dg => dg.id === g.id);
+    if (dg) {
+      const existingIds = new Set(g.positions.map(p => p.id));
+      dg.positions.forEach(dp => {
+        if (!existingIds.has(dp.id)) { g.positions.push(JSON.parse(JSON.stringify(dp))); changed = true; }
+      });
+    }
+  });
+  // 補上缺少的群組
+  const existingGroupIds = new Set(data.groups.map(g => g.id));
+  DEFAULT_OFFICER_GROUPS.forEach(dg => {
+    if (!existingGroupIds.has(dg.id)) { data.groups.push(JSON.parse(JSON.stringify(dg))); changed = true; }
+  });
+  // 有改動就立刻存回 Firestore，避免重開機後遺失
+  if (changed) setTimeout(() => _saveOfficers(), 0);
+  return data;
+}
+let _voteData     = null;
+let _draggingSeat = null;   // 目前正在拖拉的座號（共用）
+let _draggingFrom = null;   // 'pool'|'chart'|'clean:{taskId}'|'officer:{posId}'
+let _lotteryTimer = null;
 let _projPopupSeat = null;
 let _projLastClickSeat = null;
 let _projLastClickTime = 0;
 let _currentProjTab = 1;
 let _projHwSize  = parseInt(localStorage.getItem('proj_hw_size')   || '90');
 let _projSeatSize = parseInt(localStorage.getItem('proj_seat_size') || '110');
+let _projEventsRange = 1; // 1=今日, 3=近三天
 
 function _saveSubmittedSeats() {
-  localStorage.setItem('proj_submitted', JSON.stringify([...submittedSeats]));
+  db.collection('data').doc('projectorState').set({
+    submittedSeats: [...submittedSeats],
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function resetAllSubmitted() {
+  if (!submittedSeats.size) { showToast('目前沒有綠色標記', 'error'); return; }
+  const count = submittedSeats.size;
+  submittedSeats.clear();
+  _saveSubmittedSeats();
+  refreshProjGrid();
+  showToast(`已清除 ${count} 位的訂正標記`, 'success');
+}
+
+function _updateVtSessionStatus() {
+  const el = document.getElementById('vt-session-count');
+  if (el) el.textContent = _vtSessionRemovedCount > 0 ? `本次共移除 ${_vtSessionRemovedCount} 人` : '';
 }
 
 // ── 拉桿變動 ──
@@ -1169,12 +1883,33 @@ function onProjSlider(val) {
     _projHwSize = val;
     localStorage.setItem('proj_hw_size', val);
     document.querySelectorAll('.proj-hw-card').forEach(el => el.style.fontSize = val + 'px');
-    const evSize = Math.max(16, Math.round(val * 0.45));
+    const evSize = Math.max(28, Math.round(val * 0.58));
     document.querySelectorAll('.proj-event-horizontal').forEach(el => el.style.fontSize = evSize + 'px');
-  } else {
+  } else if (_currentProjTab === 2) {
     _projSeatSize = val;
     localStorage.setItem('proj_seat_size', val);
     _applyProjSeatSize(val);
+  } else if (_currentProjTab === 3) {
+    renderSeatGrid();
+  } else if (_currentProjTab === 4) {
+    localStorage.setItem('proj_clean_size', val);
+    const scale = val / 80;
+    const chipSize  = Math.round(15 * scale);
+    const titleSize = Math.round(16 * scale);
+    document.querySelectorAll('.clean-chip').forEach(el => el.style.fontSize = chipSize + 'px');
+    document.querySelectorAll('.clean-task-title').forEach(el => el.style.fontSize = titleSize + 'px');
+  } else if (_currentProjTab === 5) {
+    localStorage.setItem('proj_officer_size', val);
+    // 整體 em 縮放：設 officer-table-wrap 的 font-size，所有子元素跟著等比縮放
+    const base = Math.round(13 * val / 80);
+    const wrap = document.getElementById('officer-table-wrap');
+    if (wrap) wrap.style.fontSize = base + 'px';
+    const pool = document.getElementById('officer-pool');
+    if (pool) pool.style.fontSize = Math.round(14 * val / 80) + 'px';
+  } else if (_currentProjTab === 7) {
+    localStorage.setItem('proj_exam_size', val);
+    const clock = document.getElementById('exam-clock');
+    if (clock) clock.style.fontSize = val + 'px';
   }
 }
 
@@ -1220,6 +1955,20 @@ function requireAuth(callback) {
   document.getElementById('login-error').style.display = 'none';
   document.getElementById('login-modal').classList.add('open');
   setTimeout(() => document.getElementById('login-password-input').focus(), 100);
+}
+
+// 投影模式專用：用 showMiniPrompt（z-index:999999）取代 modal 避免遮蔽問題
+function _requireProjAuth(callback) {
+  if (isAuthenticated) { callback(); return; }
+  showMiniPrompt('🔐 輸入管理密碼', '請輸入密碼以解除鎖定', (val) => {
+    if (val === _authPassword) {
+      isAuthenticated = true;
+      showToast('已登入教師模式', 'success');
+      callback();
+    } else {
+      showToast('密碼錯誤，請重試', 'error');
+    }
+  });
 }
 
 function submitLogin() {
@@ -1317,6 +2066,7 @@ function openSetupModal() {
     }
   }
   generateSetupGrid();
+  renderSetupGenderGrid();
   _renderStartupBtns();
   document.getElementById('setup-modal').classList.add('open');
 }
@@ -1348,6 +2098,12 @@ function setupRealtimeSync() {
         cleared.forEach(s => submittedSeats.delete(s));
         _saveSubmittedSeats();
       }
+    }
+    // 自動刪除已全班完成的項目（missingSeatNums 為空）
+    const completed = assignments.filter(a => (a.missingSeatNums || []).length === 0);
+    if (completed.length) {
+      assignments = assignments.filter(a => (a.missingSeatNums || []).length > 0);
+      save();
     }
     renderAssignmentList();
     refreshProjGrid();
@@ -1399,7 +2155,63 @@ function setupRealtimeSync() {
     renderOverviewEvents();
   });
 
-  _syncUnsubscribers = [unsubA, unsubR, unsubD];
+  // 監聽投影模式綠色標記（跨裝置同步）
+  const unsubP = db.collection('data').doc('projectorState').onSnapshot(doc => {
+    submittedSeats = new Set(doc.exists ? (doc.data().submittedSeats || []) : []);
+    refreshProjGrid();
+  });
+
+  // 監聽 Tab 3-6 資料
+  const unsubSeat = db.collection('settings').doc('seatingChart').onSnapshot(doc => {
+    _seatingData = doc.exists ? { rows:6,cols:6,layout:{},genderMap:{},locked:false, ...doc.data() } : { rows:6,cols:6,layout:{},genderMap:{},locked:false };
+    if (Date.now() - _unlockGuardTs.seat < UNLOCK_GUARD_MS) _seatingData.locked = false;
+    if (_currentProjTab === 3) renderSeatingTab();
+  });
+  const unsubClean = db.collection('settings').doc('cleaning').onSnapshot(doc => {
+    _cleaningData = doc.exists ? { tasks:[], locked:false, ...doc.data() } : { tasks:[], locked:false };
+    if (Date.now() - _unlockGuardTs.clean < UNLOCK_GUARD_MS) _cleaningData.locked = false;
+    if (_currentProjTab === 4) renderCleaningTab();
+    // 連動：打掃更新時，若幹部 Tab 開著也要更新（顯示連動座號）
+    if (_currentProjTab === 5) renderOfficersTab();
+  });
+  const unsubOfficers = db.collection('settings').doc('officers').onSnapshot(doc => {
+    if (doc.exists) {
+      const d = doc.data();
+      // 舊格式（flat positions[]）自動遷移到新格式（groups[]）
+      _officersData = d.groups ? { locked:false, ...d } : _initOfficersFromDefaults();
+      if (!_officersData.groups) _officersData = _initOfficersFromDefaults();
+      // 解鎖保護：3 秒內不讓 snapshot 覆蓋本地解鎖狀態
+      if (Date.now() - _unlockGuardTs.officer < UNLOCK_GUARD_MS) _officersData.locked = false;
+      // 修復舊版 linkedTo / 補上缺少的職位
+      _ensureOfficerPositions(_officersData);
+    } else {
+      _officersData = _initOfficersFromDefaults();
+    }
+    if (_currentProjTab === 5) renderOfficersTab();
+  });
+  const unsubVote = db.collection('data').doc('currentVote').onSnapshot(doc => {
+    _voteData = doc.exists ? doc.data() : null;
+    if (_currentProjTab === 6) renderVoteTab();
+  });
+
+  // 監聽會議提醒
+  const unsubRem = db.collection('data').doc('reminders').onSnapshot(doc => {
+    reminders = doc.exists ? (doc.data().list || []) : [];
+    renderReminderList();
+  });
+
+  // 監聽大考狀態
+  const unsubExam = db.collection('data').doc('examState').onSnapshot(doc => {
+    examState = doc.exists ? { ...examState, ...doc.data() } : examState;
+    _ensureExamDays();
+    if (_currentProjTab === 7) {
+      // 本機 2 秒內剛輸入過就不覆寫輸入框（避免游標跳動），只更新顯示
+      if (Date.now() - _examLocalEditTs > 2000) renderExamTab();
+      else { _renderExamStats(); }
+    }
+  });
+
+  _syncUnsubscribers = [unsubA, unsubR, unsubD, unsubP, unsubSeat, unsubClean, unsubOfficers, unsubVote, unsubRem, unsubExam];
 }
 
 function getClassSize() {
@@ -1447,6 +2259,7 @@ function switchTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
   document.querySelectorAll('.header-nav-btn[data-tab="' + name + '"]').forEach(b => b.classList.add('active'));
   if (name === 'voice') renderVoiceAssignmentSelect();
+  if (name === 'reminder') renderReminderList();
 }
 
 // ════════════════════════════════════════════
@@ -1527,7 +2340,16 @@ function removeSeat(id, num) {
   a.missingSeatNums = a.missingSeatNums.filter(n => n !== num);
   save();
   renderAssignmentList();
-  showToast(`已移除座號 ${num}`, 'success');
+  if (a.missingSeatNums.length === 0) {
+    showToast(`🎉 ${a.name} 全班完成！3 秒後自動刪除`, 'success');
+    setTimeout(() => {
+      assignments = assignments.filter(x => x.id !== id);
+      save();
+      renderAssignmentList();
+    }, 3000);
+  } else {
+    showToast(`已移除座號 ${num}`, 'success');
+  }
 }
 
 function markAllDone(id) {
@@ -1537,7 +2359,12 @@ function markAllDone(id) {
   a.missingSeatNums = [];
   save();
   renderAssignmentList();
-  showToast('已全部標記完成 🎉', 'success');
+  showToast(`🎉 ${a.name} 全班完成！3 秒後自動刪除`, 'success');
+  setTimeout(() => {
+    assignments = assignments.filter(x => x.id !== id);
+    save();
+    renderAssignmentList();
+  }, 3000);
 }
 
 function deleteAssignment(id) {
@@ -2031,8 +2858,16 @@ function vtRemoveSeat(num) {
   if (!a) return;
   a.missingSeatNums = a.missingSeatNums.filter(n => n !== num);
   save();
+  // 從投影模式綠色清單移除，讓座號回到正確顏色（黃/橘/紅）
+  if (submittedSeats.has(num)) {
+    submittedSeats.delete(num);
+    _saveSubmittedSeats();
+  }
+  refreshProjGrid();
   renderAssignmentList();
   renderVtSeats();
+  _vtSessionRemovedCount++;
+  _updateVtSessionStatus();
   showToast(`已移除 ${num} 號`, 'success');
 }
 
@@ -2155,7 +2990,15 @@ function applyVoiceCorrection(assignmentId, seats) {
   const removed = seats.filter(n => a.missingSeatNums.includes(n));
   a.missingSeatNums = a.missingSeatNums.filter(n => !seats.includes(n));
   save();
+  // 從投影模式綠色清單移除，讓座號回到正確顏色
+  let changed = false;
+  removed.forEach(n => { if (submittedSeats.has(n)) { submittedSeats.delete(n); changed = true; } });
+  if (changed) { _saveSubmittedSeats(); refreshProjGrid(); }
   renderAssignmentList();
+  if (removed.length > 0) {
+    _vtSessionRemovedCount += removed.length;
+    _updateVtSessionStatus();
+  }
   showToast(`✓ ${removed.length} 位同學已完成訂正`, 'success');
 }
 
@@ -2182,6 +3025,7 @@ function generateSetupGrid() {
                : 'background:var(--success-light);color:var(--success);border-color:#86efac;'}">${n}</div>`;
   }).join('');
   updateSetupCount(max);
+  renderSetupGenderGrid();
 }
 
 function toggleSetupSeat(n) {
@@ -2207,6 +3051,39 @@ function updateSetupCount(max) {
     `有效座號：${active} 人　已排除：${setupToggleSet.size} 人（${[...setupToggleSet].sort((a,b)=>a-b).join('、') || '無'}）`;
 }
 
+function renderSetupGenderGrid() {
+  const grid = document.getElementById('setup-gender-grid');
+  if (!grid) return;
+  const max = parseInt(document.getElementById('setup-max-seat').value) || 35;
+  const gm = (_seatingData && _seatingData.genderMap) || {};
+  grid.innerHTML = Array.from({length: max}, (_, i) => {
+    const n = i + 1;
+    if (setupToggleSet.has(n)) return '';
+    const g = gm[String(n)] || '';
+    const bg   = g === 'm' ? '#3b82f6' : g === 'f' ? '#f43f5e' : '#475569';
+    const icon = g === 'm' ? '♂' : g === 'f' ? '♀' : '';
+    return `<div onclick="toggleSetupGender(${n})" title="${n}號 點擊切換性別"
+      style="aspect-ratio:1;border-radius:8px;background:${bg};color:#fff;display:flex;
+             flex-direction:column;align-items:center;justify-content:center;
+             cursor:pointer;font-weight:700;font-size:13px;gap:1px;transition:background 0.15s;
+             user-select:none;">
+      <span>${n}</span>${icon ? `<span style="font-size:9px;line-height:1;">${icon}</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function toggleSetupGender(n) {
+  if (!_seatingData) _seatingData = { layout:{}, genderMap:{}, rows:6, cols:6, locked:false };
+  if (!_seatingData.genderMap) _seatingData.genderMap = {};
+  const gm = _seatingData.genderMap;
+  const cur = gm[String(n)] || '';
+  if (cur === '') gm[String(n)] = 'm';
+  else if (cur === 'm') gm[String(n)] = 'f';
+  else delete gm[String(n)];
+  renderSetupGenderGrid();
+  _saveSeating();
+}
+
 function saveRoster() {
   const max = parseInt(document.getElementById('setup-max-seat').value) || 35;
   classRoster = [];
@@ -2214,6 +3091,7 @@ function saveRoster() {
     if (!setupToggleSet.has(i)) classRoster.push(i);
   }
   saveRosterToStorage();
+  _saveSeating(); // 同步儲存 genderMap 到 Firestore
   closeSetupModal();
   showToast(`班級設定已儲存，共 ${classRoster.length} 位有效座號`, 'success');
   renderAssignmentList();
@@ -2364,21 +3242,11 @@ function openProjectorMode() {
     hwDateEl.textContent = `${d.getMonth()+1}月${d.getDate()}日（${weekDays[d.getDay()]}）`;
   }
 
-  const todayEvents = dailyItems.filter(i => i.type === 'event' && i.date === todayStr);
-
   document.getElementById('proj-hw-items').innerHTML = showHw.length
     ? showHw.map(i => `<div class="proj-hw-card" style="font-size:${_projHwSize}px">${escHtml(i.text.trim())}</div>`).join('')
     : `<div class="proj-hw-card" style="font-size:${_projHwSize}px;opacity:0.25;">（今日無聯絡簿）</div>`;
 
-  const evSection = document.getElementById('proj-events-section');
-  if (todayEvents.length) {
-    const evSize = Math.max(16, Math.round(_projHwSize * 0.45));
-    document.getElementById('proj-events-items').innerHTML =
-      todayEvents.map(i => `<div class="proj-event-horizontal" style="font-size:${evSize}px">${escHtml(i.text.trim())}</div>`).join('');
-    evSection.style.display = 'flex';
-  } else {
-    evSection.style.display = 'none';
-  }
+  _renderProjEvents();
 
   // ── Tab 2：座位圖 ──
   refreshProjGrid();
@@ -2390,19 +3258,43 @@ function openProjectorMode() {
 
 function switchProjTab(n) {
   _currentProjTab = n;
-  document.getElementById('proj-tab1').style.display = n === 1 ? 'flex' : 'none';
-  document.getElementById('proj-tab2').style.display = n === 2 ? 'flex' : 'none';
-  document.getElementById('proj-tab1-btn').classList.toggle('active', n === 1);
-  document.getElementById('proj-tab2-btn').classList.toggle('active', n === 2);
+  for (let i = 1; i <= 7; i++) {
+    const t = document.getElementById('proj-tab' + i);
+    const b = document.getElementById('proj-tab' + i + '-btn');
+    if (t) t.style.display = i === n ? 'flex' : 'none';
+    if (b) b.classList.toggle('active', i === n);
+  }
   // 更新拉桿
-  const val = n === 1 ? _projHwSize : _projSeatSize;
   const slider = document.getElementById('proj-font-slider');
-  slider.value = val;
-  slider.min = n === 1 ? 30 : 60;
-  slider.max = n === 1 ? 220 : 240;
-  document.getElementById('proj-slider-val').textContent = val + 'px';
-  document.getElementById('proj-slider-label').textContent = n === 1 ? '聯絡簿字體' : '座位大小';
-  if (n === 2) _applyProjSeatSize(_projSeatSize);
+  const sliderLabel = document.getElementById('proj-slider-label');
+  const sliderVal = document.getElementById('proj-slider-val');
+  if (n === 1) {
+    slider.min = 30; slider.max = 220; slider.value = _projHwSize;
+    sliderVal.textContent = _projHwSize + 'px'; sliderLabel.textContent = '聯絡簿字體';
+  } else if (n === 2) {
+    slider.min = 60; slider.max = 240; slider.value = _projSeatSize;
+    sliderVal.textContent = _projSeatSize + 'px'; sliderLabel.textContent = '座位大小';
+    _applyProjSeatSize(_projSeatSize);
+  } else if (n === 4 || n === 5) {
+    const saved = parseInt(localStorage.getItem(n === 4 ? 'proj_clean_size' : 'proj_officer_size') || '80');
+    slider.min = 50; slider.max = 160; slider.value = saved;
+    sliderVal.textContent = saved + 'px';
+    sliderLabel.textContent = n === 4 ? '打掃字體大小' : '幹部字體大小';
+  } else if (n === 7) {
+    const saved = parseInt(localStorage.getItem('proj_exam_size') || '280');
+    slider.min = 120; slider.max = 600; slider.step = 10; slider.value = saved;
+    sliderVal.textContent = saved + 'px'; sliderLabel.textContent = '時鐘大小';
+  } else {
+    slider.min = 40; slider.max = 160; slider.value = 80;
+    sliderVal.textContent = '80px'; sliderLabel.textContent = '格子大小';
+  }
+  if (n !== 7) slider.step = 5;
+  // 渲染新 Tab 內容
+  if (n === 3) renderSeatingTab();
+  if (n === 4) { renderCleaningTab(); onProjSlider(slider.value); }
+  if (n === 5) { renderOfficersTab(); onProjSlider(slider.value); }
+  if (n === 6) renderVoteTab();
+  if (n === 7) { renderExamTab(); onProjSlider(slider.value); }
 }
 
 // ── 重新渲染座位圖（資料更新時自動呼叫）──
@@ -2491,8 +3383,1339 @@ function closeProjOverlay() {
   _projPopupSeat = null;
 }
 
+function _renderProjEvents() {
+  const todayStr = today();
+  const evSize = Math.max(28, Math.round(_projHwSize * 0.58));
+  const evSection = document.getElementById('proj-events-section');
+  const evItems = document.getElementById('proj-events-items');
+  const btn = document.getElementById('proj-events-toggle-btn');
+
+  evSection.style.display = 'flex'; // 永遠顯示（含切換按鈕）
+  const weekDays = ['日','一','二','三','四','五','六'];
+
+  if (_projEventsRange === 1) {
+    // 今日模式：按鈕標籤「近三天」，表示點擊可切換
+    if (btn) { btn.textContent = '近三天'; btn.style.borderColor = '#444'; btn.style.color = '#aaa'; }
+    const evs = dailyItems.filter(i => i.type === 'event' && i.date === todayStr);
+    const dt = new Date(todayStr + 'T00:00:00');
+    const datePrefix = `${dt.getMonth()+1}/${dt.getDate()}（${weekDays[dt.getDay()]}）`;
+    evItems.innerHTML = evs.length
+      ? evs.map(i => `<div class="proj-event-horizontal" style="font-size:${evSize}px"><span class="proj-event-date-label">${datePrefix}</span><span>${escHtml(i.text.trim())}</span></div>`).join('')
+      : `<span style="font-size:${Math.max(20, Math.round(evSize * 0.55))}px;color:#555;">今日無行事</span>`;
+  } else {
+    // 近三天模式：按鈕標籤「今日」，每筆事件前帶日期+星期
+    if (btn) { btn.textContent = '今日'; btn.style.borderColor = '#f97316'; btn.style.color = '#fb923c'; }
+    let html = '';
+    let hasAny = false;
+    for (let d = 0; d < 3; d++) {
+      const dt = new Date(todayStr + 'T00:00:00');
+      dt.setDate(dt.getDate() + d);
+      const ds = dt.toISOString().slice(0, 10);
+      const evs = dailyItems.filter(i => i.type === 'event' && i.date === ds);
+      if (!evs.length) continue;
+      hasAny = true;
+      const datePrefix = `${dt.getMonth()+1}/${dt.getDate()}（${weekDays[dt.getDay()]}）`;
+      html += evs.map(i =>
+        `<div class="proj-event-horizontal" style="font-size:${evSize}px">
+          <span class="proj-event-date-label">${datePrefix}</span><span>${escHtml(i.text.trim())}</span>
+        </div>`
+      ).join('');
+    }
+    evItems.innerHTML = hasAny ? html : `<span style="font-size:${Math.max(20, Math.round(evSize * 0.55))}px;color:#555;">近三天無行事</span>`;
+  }
+}
+
+function toggleProjEventsRange() {
+  _projEventsRange = _projEventsRange === 1 ? 3 : 1;
+  _renderProjEvents();
+}
+
 function closeProjectorMode() {
   document.getElementById('projector-mode').classList.remove('open');
+}
+
+// ════════════════════════════════════════════
+//  會議提醒
+// ════════════════════════════════════════════
+const RM_WD_NAMES = ['一','二','三','四','五','六','日']; // 0=週一 .. 6=週日
+const RM_REC_LABELS = { none:'單次', daily:'每天', weekdays:'週一～五', weekly:'每週', monthly:'每月' };
+
+function _rmMonWd(d) { return (d.getDay() + 6) % 7; }       // JS 週日=0 → 轉成 週一=0
+function _rmParseDT(s) {                                     // "YYYY-MM-DD HH:MM"
+  const [dp, tp] = s.split(' ');
+  const [y, mo, da] = dp.split('-').map(Number);
+  const [h, mi] = (tp || '0:0').split(':').map(Number);
+  return new Date(y, mo - 1, da, h, mi, 0, 0);
+}
+function _rmPad(n) { return String(n).padStart(2, '0'); }
+function _rmNowStr(d) {
+  return `${d.getFullYear()}-${_rmPad(d.getMonth()+1)}-${_rmPad(d.getDate())} ${_rmPad(d.getHours())}:${_rmPad(d.getMinutes())}`;
+}
+
+function rmNextAlarmDt(rem) {
+  const rec = rem.recurrence || 'none';
+  const pre = rem.pre_min || 0;
+  const now = new Date();
+  if (rec === 'none') {
+    if (!rem.datetime) return null;
+    return new Date(_rmParseDT(rem.datetime).getTime() - pre * 60000);
+  }
+  const [h, m] = (rem.time || '0:0').split(':').map(Number);
+  let total = h * 60 + m - pre; if (total < 0) total = 0;
+  const ah = Math.floor(total / 60), am = total % 60;
+  const base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), ah, am, 0, 0);
+  if (rec === 'daily') return base > now ? base : new Date(base.getTime() + 86400000);
+  if (rec === 'weekdays') {
+    for (let i = 0; i < 8; i++) { const d = new Date(base.getTime() + i*86400000); if (d > now && _rmMonWd(d) < 5) return d; }
+  }
+  if (rec === 'weekly') {
+    const wd = rem.weekdays || [];
+    for (let i = 0; i < 8; i++) { const d = new Date(base.getTime() + i*86400000); if (d > now && wd.includes(_rmMonWd(d))) return d; }
+  }
+  if (rec === 'monthly') {
+    const mday = rem.monthday || 1;
+    for (let add = 0; add < 3; add++) {
+      const d = new Date(now.getFullYear(), now.getMonth() + add, mday, ah, am, 0, 0);
+      if (d.getDate() === mday && d > now) return d;
+    }
+  }
+  return null;
+}
+
+function rmDesc(rem) {
+  const rec = rem.recurrence || 'none';
+  const t = rem.time || '';
+  if (rec === 'none') return rem.datetime || '';
+  if (rec === 'weekly') {
+    const days = (rem.weekdays || []).slice().sort((a,b)=>a-b).map(d => RM_WD_NAMES[d]).join('');
+    return `每週 ${days}　${t}`;
+  }
+  if (rec === 'monthly') return `每月 ${rem.monthday || 1} 日　${t}`;
+  return `${RM_REC_LABELS[rec] || rec}　${t}`;
+}
+
+function rmCountdown(rem) {
+  if (!rem.enabled) return '停用';
+  const nxt = rmNextAlarmDt(rem);
+  if (!nxt) return '—';
+  let diff = (nxt - new Date()) / 1000;
+  if (diff <= 0) return (rem.recurrence || 'none') === 'none' ? '已過' : '—';
+  const h = Math.floor(diff/3600), m = Math.floor((diff%3600)/60), s = Math.floor(diff%60);
+  return h > 0 ? `${h}時${_rmPad(m)}分${_rmPad(s)}秒` : `${_rmPad(m)}分${_rmPad(s)}秒`;
+}
+
+function renderReminderList() {
+  const el = document.getElementById('reminder-list');
+  if (!el) return;
+  if (!reminders.length) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">🔔</div><p>尚無提醒<br>點「＋ 新增提醒」開始</p></div>`;
+    return;
+  }
+  const sorted = [...reminders].sort((a, b) => {
+    const na = rmNextAlarmDt(a), nb = rmNextAlarmDt(b);
+    return (na ? na.getTime() : Infinity) - (nb ? nb.getTime() : Infinity);
+  });
+  el.innerHTML = sorted.map(r => `
+    <div class="rm-card${r.enabled ? '' : ' off'}">
+      <span class="rm-toggle" onclick="requireAuth(()=>toggleReminder('${r.id}'))">${r.enabled ? '🟢' : '⚪'}</span>
+      <div class="rm-info">
+        <div class="rm-title">${escHtml(r.name)}</div>
+        <div class="rm-sub">${escHtml(rmDesc(r))}　提前 ${r.pre_min || 0} 分</div>
+      </div>
+      <div class="rm-countdown" data-cd="${r.id}">${rmCountdown(r)}</div>
+      <div class="rm-actions">
+        <button onclick="requireAuth(()=>openReminderModal('${r.id}'))" title="編輯">✏️</button>
+        <button onclick="requireAuth(()=>deleteReminder('${r.id}'))" title="刪除">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function _saveReminders() {
+  db.collection('data').doc('reminders').set({
+    list: reminders, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function toggleReminder(id) {
+  const r = reminders.find(x => x.id === id); if (!r) return;
+  r.enabled = !r.enabled;
+  _saveReminders(); renderReminderList();
+}
+
+function deleteReminder(id) {
+  const r = reminders.find(x => x.id === id); if (!r) return;
+  if (!confirm(`確定刪除提醒「${r.name}」？`)) return;
+  reminders = reminders.filter(x => x.id !== id);
+  _saveReminders(); renderReminderList();
+  showToast('已刪除提醒', 'success');
+}
+
+function setRmRec(rec) {
+  _rmRec = rec;
+  document.querySelectorAll('#rm-rec-btns .rm-rec-btn').forEach(b => b.classList.toggle('active', b.dataset.rec === rec));
+  document.getElementById('rm-date-group').style.display     = rec === 'none'    ? '' : 'none';
+  document.getElementById('rm-weekday-group').style.display  = rec === 'weekly'  ? '' : 'none';
+  document.getElementById('rm-monthday-group').style.display = rec === 'monthly' ? '' : 'none';
+}
+
+function _buildRmWeekdayBtns(selected) {
+  document.getElementById('rm-weekday-btns').innerHTML = RM_WD_NAMES.map((n, i) =>
+    `<button type="button" class="rm-wd-btn${selected.includes(i) ? ' active' : ''}" data-wd="${i}" onclick="this.classList.toggle('active')">${n}</button>`
+  ).join('');
+}
+
+function openReminderModal(id) {
+  _editingReminderId = id || null;
+  const r = id ? reminders.find(x => x.id === id) : null;
+  document.getElementById('reminder-modal-title').textContent = r ? '編輯提醒' : '新增提醒';
+  document.getElementById('rm-name').value = r ? r.name : '';
+  document.getElementById('rm-pre').value = r ? (r.pre_min || 0) : 5;
+  let timeVal = '08:00';
+  if (r) timeVal = r.time || (r.datetime ? r.datetime.split(' ')[1] : '08:00');
+  document.getElementById('rm-time').value = timeVal;
+  setRmRec(r ? (r.recurrence || 'none') : 'none');
+  document.getElementById('rm-date').value = (r && r.datetime) ? r.datetime.split(' ')[0] : today();
+  _buildRmWeekdayBtns(r && r.weekdays ? r.weekdays : []);
+  document.getElementById('rm-monthday').value = (r && r.monthday) ? r.monthday : new Date().getDate();
+  document.getElementById('reminder-modal').classList.add('open');
+}
+
+function closeReminderModal() {
+  document.getElementById('reminder-modal').classList.remove('open');
+}
+
+function saveReminder() {
+  const name = document.getElementById('rm-name').value.trim();
+  if (!name) { showToast('請輸入提醒名稱', 'error'); return; }
+  const pre = parseInt(document.getElementById('rm-pre').value) || 0;
+  const time = document.getElementById('rm-time').value || '08:00';
+  const rec = _rmRec;
+  const data = {
+    id: _editingReminderId || ('rm' + Date.now() + Math.floor(Math.random()*1000)),
+    name, recurrence: rec, time, pre_min: pre, enabled: true, last_fired: ''
+  };
+  if (_editingReminderId) {
+    const old = reminders.find(x => x.id === _editingReminderId);
+    if (old) { data.last_fired = old.last_fired || ''; data.enabled = old.enabled !== false; }
+  }
+  if (rec === 'none') {
+    const date = document.getElementById('rm-date').value;
+    if (!date) { showToast('請選擇日期', 'error'); return; }
+    data.datetime = `${date} ${time}`;
+  } else if (rec === 'weekly') {
+    const wd = [...document.querySelectorAll('#rm-weekday-btns .rm-wd-btn.active')].map(b => parseInt(b.dataset.wd));
+    if (!wd.length) { showToast('請至少選一個星期', 'error'); return; }
+    data.weekdays = wd;
+  } else if (rec === 'monthly') {
+    data.monthday = parseInt(document.getElementById('rm-monthday').value) || 1;
+  }
+  if (_editingReminderId) reminders = reminders.map(x => x.id === _editingReminderId ? data : x);
+  else reminders.push(data);
+  _saveReminders(); renderReminderList(); closeReminderModal();
+  showToast(_editingReminderId ? '已更新提醒' : '已新增提醒', 'success');
+}
+
+// ── 觸發判斷（移植自 Python 版）──
+function _rmCheckFire(rem, now) {
+  const rec = rem.recurrence || 'none';
+  const pre = rem.pre_min || 0;
+  if (rec === 'none') {
+    if (!rem.datetime) return false;
+    const alarm = new Date(_rmParseDT(rem.datetime).getTime() - pre * 60000);
+    if (alarm <= now && now < new Date(alarm.getTime() + 60000)) {
+      const last = rem.last_fired || '';
+      return !last || (now - _rmParseDT(last)) / 1000 > 120;
+    }
+    return false;
+  }
+  const [h, m] = (rem.time || '0:0').split(':').map(Number);
+  let total = h * 60 + m - pre; if (total < 0) total = 0;
+  const ah = Math.floor(total/60), am = total % 60;
+  const alarmToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), ah, am, 0, 0);
+  if (!(alarmToday <= now && now < new Date(alarmToday.getTime() + 60000))) return false;
+  const wd = _rmMonWd(now);
+  let match = false;
+  if (rec === 'daily') match = true;
+  else if (rec === 'weekdays') match = wd < 5;
+  else if (rec === 'weekly') match = (rem.weekdays || []).includes(wd);
+  else if (rec === 'monthly') match = now.getDate() === (rem.monthday || 1);
+  if (!match) return false;
+  const last = rem.last_fired || '';
+  if (last && (now - _rmParseDT(last)) / 1000 < 23 * 3600) return false;
+  return true;
+}
+
+function fireReminderAlarm(name) {
+  if (window.electronAPI && window.electronAPI.showAlarm) window.electronAPI.showAlarm(name);
+  else showInPageAlarm(name);
+}
+
+function showInPageAlarm(name) {
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0a0a1a;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:20px;';
+  ov.innerHTML = `<div style="font-size:80px;">🚨</div>
+    <div style="font-size:38px;font-weight:900;color:#ffd700;">⚠️ 緊急提醒 ⚠️</div>
+    <div style="font-size:52px;font-weight:900;color:#ff3366;word-break:break-word;max-width:90vw;">【 ${escHtml(name)} 】</div>
+    <div style="font-size:28px;font-weight:800;">時間到了！！！</div>
+    <button style="margin-top:14px;font-size:24px;font-weight:900;color:#000;background:#00ff88;border:none;border-radius:14px;padding:18px 44px;cursor:pointer;">✅ 我知道了！</button>`;
+  ov.querySelector('button').onclick = () => ov.remove();
+  document.body.appendChild(ov);
+}
+
+let _remMonitorStarted = false;
+function startReminderMonitor() {
+  if (_remMonitorStarted) return;
+  _remMonitorStarted = true;
+  setInterval(() => {
+    const now = new Date();
+    const remTab = document.getElementById('tab-reminder');
+    if (remTab && remTab.classList.contains('active')) {
+      document.querySelectorAll('.rm-countdown[data-cd]').forEach(el => {
+        const r = reminders.find(x => x.id === el.dataset.cd);
+        if (r) el.textContent = rmCountdown(r);
+      });
+    }
+    let fired = false;
+    for (const rem of reminders) {
+      if (!rem.enabled) continue;
+      try {
+        if (_rmCheckFire(rem, now)) {
+          rem.last_fired = _rmNowStr(now);
+          fired = true;
+          fireReminderAlarm(rem.name);
+        }
+      } catch (e) {}
+    }
+    if (fired) _saveReminders();
+  }, 1000);
+}
+
+// ════════════════════════════════════════════
+//  大考（投影 Tab 7）
+// ════════════════════════════════════════════
+function _saveExamState() {
+  db.collection('data').doc('examState').set({
+    ...examState, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function _parseSeatList(s) {
+  return [...new Set((s || '').split(/[,，、\s]+/).map(x => parseInt(x)).filter(n => !isNaN(n)))];
+}
+
+let _examFieldSaveTimer = null;
+let _examLocalEditTs = 0;
+function updateExamField(field, val) {
+  examState[field] = val;
+  _examLocalEditTs = Date.now();
+  _renderExamStats();
+  clearTimeout(_examFieldSaveTimer);
+  _examFieldSaveTimer = setTimeout(_saveExamState, 500);
+}
+
+function _ensureExamDays() {
+  // 相容舊資料：若只有 subjects 而無 days，轉成 days[0]
+  if (!Array.isArray(examState.days)) {
+    const old = Array.isArray(examState.subjects) ? examState.subjects : [];
+    examState.days = [
+      { date:'', subjects: old.length ? old : [] },
+      { date:'', subjects: [] }
+    ];
+    delete examState.subjects;
+  }
+  while (examState.days.length < 2) examState.days.push({ date:'', subjects:[] });
+  examState.days.forEach(d => {
+    if (!Array.isArray(d.subjects)) d.subjects = [];
+    while (d.subjects.length < 3) d.subjects.push({ name:'', start:'', end:'' });
+  });
+  return examState.days;
+}
+
+function _curExamDay() { return _ensureExamDays()[_examDayIdx]; }
+
+function setExamDay(idx) {
+  _examDayIdx = idx;
+  renderExamTab();
+}
+
+function updateExamSubject(idx, key, val) {
+  _curExamDay().subjects[idx][key] = val;
+  _examLocalEditTs = Date.now();
+  clearTimeout(_examFieldSaveTimer);
+  _examFieldSaveTimer = setTimeout(_saveExamState, 500);
+}
+
+function _renderExamStats() {
+  const expected = parseInt(examState.expected) || 0;
+  const absent = _parseSeatList(examState.absentSeats);
+  const pullout = _parseSeatList(examState.pulloutSeats);
+  const actual = Math.max(0, expected - absent.length - pullout.length);
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  set('exam-actual', actual);
+  set('exam-absent-count', absent.length);
+  set('exam-pullout-count', pullout.length);
+}
+
+function _renderExamDayTabs() {
+  document.querySelectorAll('.exam-day-tab').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.day) === _examDayIdx);
+  });
+}
+
+function _buildExamSubjectRows() {
+  const wrap = document.getElementById('exam-subject-rows');
+  if (!wrap) return;
+  const subs = _curExamDay().subjects;
+  const esc = s => (s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  wrap.innerHTML = subs.slice(0, 3).map((s, i) => `
+    <div class="exam-srow">
+      <input class="exam-sname" placeholder="科目${i+1}" value="${esc(s.name)}" oninput="updateExamSubject(${i},'name',this.value)">
+      <input type="time" value="${s.start||''}" onchange="updateExamSubject(${i},'start',this.value)">
+      <span class="exam-stilde">~</span>
+      <input type="time" value="${s.end||''}" onchange="updateExamSubject(${i},'end',this.value)">
+    </div>`).join('');
+}
+
+function renderExamTab() {
+  _renderExamDayTabs();
+  _buildExamSubjectRows();
+  document.getElementById('exam-expected').value = examState.expected || '';
+  document.getElementById('exam-absent').value   = examState.absentSeats || '';
+  document.getElementById('exam-pullout').value  = examState.pulloutSeats || '';
+  _renderExamStats();
+  const sz = parseInt(localStorage.getItem('proj_exam_size') || '280');
+  const clock = document.getElementById('exam-clock');
+  if (clock) clock.style.fontSize = sz + 'px';
+}
+
+// 時鐘 + 倒數（每秒更新，僅投影開啟且在大考分頁時運作）
+setInterval(() => {
+  const pm = document.getElementById('projector-mode');
+  if (!pm || !pm.classList.contains('open') || _currentProjTab !== 7) return;
+  const now = new Date();
+  const p = n => String(n).padStart(2, '0');
+  const clock = document.getElementById('exam-clock');
+  if (clock) clock.textContent = `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+  const dateEl = document.getElementById('exam-date-display');
+  if (dateEl) {
+    const wd = ['日','一','二','三','四','五','六'][now.getDay()];
+    dateEl.textContent = `${now.getFullYear()} 年 ${now.getMonth()+1} 月 ${now.getDate()} 日　星期${wd}`;
+  }
+  const cdEl = document.getElementById('exam-countdown');
+  if (cdEl) {
+    const mk = t => { const [h, m] = t.split(':').map(Number); return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0); };
+    const fmt = diff => { const h = Math.floor(diff/3600), m = Math.floor((diff%3600)/60), s = Math.floor(diff%60); return `${h > 0 ? h + '時' : ''}${p(m)}分${p(s)}秒`; };
+    // 依目前選取的分頁（第一天／第二天）倒數
+    const days = Array.isArray(examState.days) ? examState.days
+               : [{ subjects: examState.subjects || [] }];
+    const day = days[_examDayIdx] || days[0] || { subjects: [] };
+    const subs = (day.subjects || []).filter(s => s.start && s.end);
+    let active = null, upcoming = null;
+    for (const s of subs) {
+      const st = mk(s.start), en = mk(s.end);
+      if (now >= st && now < en) { active = { name: s.name, en }; break; }
+      if (now < st && (!upcoming || st < upcoming.st)) upcoming = { name: s.name, st };
+    }
+    if (active) {
+      const diff = (active.en - now) / 1000;
+      cdEl.textContent = `距離 ${active.name || '本科'} 結束 ${fmt(diff)}`;
+      cdEl.classList.toggle('urgent', diff <= 300);
+    } else if (upcoming) {
+      const diff = (upcoming.st - now) / 1000;
+      cdEl.textContent = `距離 ${upcoming.name || '下一科'} 開始 ${fmt(diff)}`;
+      cdEl.classList.remove('urgent');
+    } else if (subs.length) {
+      cdEl.textContent = '⏰ 考試已全部結束';
+      cdEl.classList.add('urgent');
+    } else {
+      cdEl.textContent = '';
+      cdEl.classList.remove('urgent');
+    }
+  }
+}, 1000);
+
+// ════════════════════════════════════════════
+//  Tab 3：座位表
+// ════════════════════════════════════════════
+function _saveSeating() {
+  db.collection('settings').doc('seatingChart').set({
+    ..._seatingData, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+function _genderClass(seatNum) {
+  const g = (_seatingData.genderMap || {})[String(seatNum)];
+  return g === 'm' ? 'gender-m' : g === 'f' ? 'gender-f' : 'gender-n';
+}
+function _seatCellSize() {
+  const slider = document.getElementById('proj-font-slider');
+  return slider ? parseInt(slider.value) : 80;
+}
+
+function renderSeatingTab() {
+  const locked = _seatingData.locked;
+  // 控制按鈕
+  const seatToggle = document.getElementById('seat-lock-toggle');
+  if (seatToggle) {
+    seatToggle.textContent = locked ? '🔒 已鎖定・點擊解除' : '🔓 未鎖定・點擊鎖定';
+    seatToggle.style.background = locked ? 'rgba(34,197,94,0.15)' : 'rgba(251,146,60,0.15)';
+    seatToggle.style.borderColor = locked ? '#22c55e' : '#fb923c';
+    seatToggle.style.color = locked ? '#22c55e' : '#fb923c';
+  }
+  document.getElementById('seat-lottery-btn').style.display = ''; // 永遠顯示
+  const sizeInputs = document.getElementById('seat-size-inputs');
+  if (sizeInputs) sizeInputs.style.display = locked ? 'none' : '';
+  // 同步行列數
+  if (!locked) {
+    document.getElementById('seat-rows').value = _seatingData.rows || 6;
+    document.getElementById('seat-cols').value = _seatingData.cols || 6;
+  }
+  // 計算已排入座號
+  const layout = _seatingData.layout || {};
+  const assigned = new Set(Object.values(layout).map(Number).filter(Boolean));
+  // 座號池
+  const pool = document.getElementById('seat-pool');
+  const roster = getActiveRoster();
+  const unassigned = roster.filter(n => !assigned.has(n));
+  pool.innerHTML = unassigned.map(n => _seatChipHTML(n, 'pool', locked)).join('');
+  // 格子
+  renderSeatGrid();
+}
+
+function _seatChipHTML(n, from, locked) {
+  const gc = _genderClass(n);
+  if (locked) {
+    return `<div class="draggable-seat ${gc}" title="點兩下切換性別">${n}</div>`;
+  }
+  return `<div class="draggable-seat ${gc}" draggable="true"
+    onclick="toggleSeatGender(${n})"
+    ondragstart="seatDragStart(event,${n},'${from}')"
+    ondragend="seatDragEnd(event)"
+    title="點切換性別・拖拉排位">${n}</div>`;
+}
+
+function renderSeatGrid() {
+  const grid = document.getElementById('seat-chart-grid');
+  if (!grid) return;
+  const rows = _seatingData.rows || 6;
+  const cols = _seatingData.cols || 6;
+  const layout = _seatingData.layout || {};
+  const locked = _seatingData.locked;
+  const sz = _seatCellSize();
+  grid.style.gridTemplateColumns = `repeat(${cols}, ${sz}px)`;
+  grid.style.gap = '6px';
+  let html = '';
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const key = `r${r}c${c}`;
+      const seatNum = layout[key];
+      const gc = seatNum ? _genderClass(seatNum) : '';
+      const hasSeat = seatNum ? 'has-seat' : '';
+      const dz = locked ? '' : `ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="seatingDrop(event,'${key}')"`;
+      const removeX = (!locked && seatNum) ? `<span class="seat-remove-x" onclick="seatingRemoveSeat('${key}')">✕</span>` : '';
+      const chipClick = (!locked && seatNum) ? `onclick="toggleSeatGender(${seatNum})"` : '';
+      html += `<div id="seat-cell-${key}" data-seat="${seatNum||''}" class="seat-cell ${gc} ${hasSeat}" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*0.3)}px;" ${dz} ${chipClick}>
+        ${seatNum ? seatNum : ''}${removeX}
+      </div>`;
+    }
+  }
+  grid.innerHTML = html;
+}
+
+function seatDragStart(e, n, from) {
+  _draggingSeat = n; _draggingFrom = from;
+  setTimeout(() => e.target.classList.add('dragging'), 0);
+  e.dataTransfer.effectAllowed = 'move';
+}
+function seatDragEnd(e) {
+  e.target.classList.remove('dragging');
+}
+function seatingDrop(e, key) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!_draggingSeat) return;
+  const layout = _seatingData.layout || {};
+  // 若目標格子已有座號，換回 pool（先移除）
+  const prev = layout[key];
+  if (prev) delete layout[key];
+  // 從原位置移除
+  if (_draggingFrom && _draggingFrom !== 'pool') {
+    delete layout[_draggingFrom];
+  }
+  layout[key] = _draggingSeat;
+  _seatingData.layout = layout;
+  _draggingSeat = null; _draggingFrom = null;
+  _saveSeating();
+}
+function seatingDropToPool(e) {
+  e.preventDefault();
+  if (!_draggingSeat || !_draggingFrom || _draggingFrom === 'pool') { _draggingSeat = null; return; }
+  const layout = _seatingData.layout || {};
+  delete layout[_draggingFrom];
+  _seatingData.layout = layout;
+  _draggingSeat = null; _draggingFrom = null;
+  _saveSeating();
+}
+function seatingRemoveSeat(key) {
+  const layout = _seatingData.layout || {};
+  delete layout[key];
+  _seatingData.layout = layout;
+  _saveSeating();
+}
+function toggleSeatGender(n) {
+  if (_seatingData.locked) return;
+  const gm = _seatingData.genderMap || {};
+  const cur = gm[String(n)];
+  gm[String(n)] = cur === 'm' ? 'f' : cur === 'f' ? undefined : 'm';
+  if (!gm[String(n)]) delete gm[String(n)];
+  _seatingData.genderMap = gm;
+  _saveSeating();
+}
+function applySeatingGrid() {
+  const r = parseInt(document.getElementById('seat-rows').value) || 6;
+  const c = parseInt(document.getElementById('seat-cols').value) || 6;
+  _seatingData.rows = Math.min(12, Math.max(1, r));
+  _seatingData.cols = Math.min(12, Math.max(1, c));
+  _saveSeating();
+}
+function toggleSeatingLock() {
+  if (_seatingData.locked) {
+    _requireProjAuth(() => { _unlockGuardTs.seat = Date.now(); _seatingData.locked = false; renderSeatingTab(); _saveSeating(); showToast('座位表已解鎖', 'success'); });
+  } else {
+    _seatingData.locked = true; renderSeatingTab(); _saveSeating(); showToast('座位表已鎖定', 'success');
+  }
+}
+function clearSeating() {
+  showMiniConfirm('確定要清除座位表？\n（座號排列與性別設定全部清空）', () => {
+    _seatingData = { rows:6, cols:6, layout:{}, genderMap:{}, locked:false };
+    _saveSeating(); showToast('座位表已清除', 'success');
+  });
+}
+
+function startLottery() {
+  const roster = getActiveRoster();
+  if (!roster.length) { showToast('沒有座號', 'error'); return; }
+  showMiniPrompt('🎲 抽籤', '抽幾位小朋友？（輸入數字）', (countStr) => {
+    const count = parseInt(countStr);
+    if (!count || count < 1) return;
+    _runLotteryOnGrid(roster, Math.min(count, roster.length));
+  });
+}
+
+function closeLottery() {
+  const side = document.getElementById('lottery-side');
+  if (side) side.style.display = 'none';
+  // 清除格子亮燈
+  document.querySelectorAll('.seat-cell-flash,.seat-cell-winner').forEach(el => {
+    el.classList.remove('seat-cell-flash','seat-cell-winner');
+  });
+  if (_lotteryTimer) { clearTimeout(_lotteryTimer); _lotteryTimer = null; }
+}
+
+function _runLotteryOnGrid(roster, pick) {
+  // 找出所有已排入座位的 DOM 格子（id = seat-cell-r*c*）
+  const allCells = Array.from(document.querySelectorAll('#seat-chart-grid .seat-cell'));
+  // 只取有座號的格子，建立 seatNum→element map
+  const seatCells = new Map();
+  allCells.forEach(el => {
+    const n = parseInt(el.dataset.seat);
+    if (n && roster.includes(n)) seatCells.set(n, el);
+  });
+  if (!seatCells.size) { showToast('座位圖尚無排入座號', 'error'); return; }
+
+  // 開啟右側結果面板
+  const side = document.getElementById('lottery-side');
+  const resEl = document.getElementById('lottery-results');
+  side.style.display = 'flex';
+  resEl.innerHTML = '<span style="color:#555;font-size:12px;">抽籤中…</span>';
+
+  // 清除上一次亮燈
+  document.querySelectorAll('.seat-cell-flash,.seat-cell-winner').forEach(el =>
+    el.classList.remove('seat-cell-flash','seat-cell-winner')
+  );
+
+  const available = Array.from(seatCells.keys());
+  const pool = [...available];
+  const drawn = [];
+  let tick = 0;
+  let flashEl = null;
+  const totalTicks = 45 + pick * 12;
+
+  function doFlash() {
+    // 移除上一個閃爍
+    if (flashEl) flashEl.classList.remove('seat-cell-flash');
+    // 隨機點亮一格（排除已抽中）
+    const candidates = pool.filter(n => !drawn.includes(n));
+    if (!candidates.length) return;
+    const rnd = candidates[Math.floor(Math.random() * candidates.length)];
+    flashEl = seatCells.get(rnd);
+    if (flashEl) flashEl.classList.add('seat-cell-flash');
+
+    tick++;
+    const delay = tick < totalTicks * 0.5 ? 55 : tick < totalTicks * 0.8 ? 110 : 200;
+
+    if (tick < totalTicks) {
+      _lotteryTimer = setTimeout(doFlash, delay);
+    } else {
+      // 最後結果：決定得獎者
+      if (flashEl) flashEl.classList.remove('seat-cell-flash');
+      _settleLottery(pool, pick, drawn, seatCells, resEl);
+    }
+  }
+  doFlash();
+}
+
+function _settleLottery(pool, pick, drawn, seatCells, resEl) {
+  // 欄數與字體大小依人數決定
+  const cols     = pick <= 5 ? 1 : pick <= 10 ? 2 : 3;
+  const fontSize = pick <= 5 ? 54 : pick <= 10 ? 36 : 24;
+  const pad      = fontSize >= 50 ? '8px 16px' : fontSize >= 32 ? '6px 10px' : '4px 7px';
+  resEl.style.cssText = `display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px;width:100%;align-items:start;`;
+  function renderDrawn() {
+    resEl.innerHTML = drawn.map(n => {
+      const gc = _genderClass(n);
+      const color = gc === 'gender-m' ? '#93c5fd' : gc === 'gender-f' ? '#fda4af' : '#fbbf24';
+      return `<div class="lottery-draw-num" style="color:${color};font-size:${fontSize}px;padding:${pad};text-align:center;">${n}</div>`;
+    }).join('');
+  }
+  // 逐一抽出，每 500ms 顯示一個，由左到右由上到下填入
+  function drawNext() {
+    if (drawn.length >= pick) { renderDrawn(); return; }
+    const remaining = pool.filter(n => !drawn.includes(n));
+    const winner = remaining[Math.floor(Math.random() * remaining.length)];
+    drawn.push(winner);
+    const el = seatCells.get(winner);
+    if (el) el.classList.add('seat-cell-winner');
+    renderDrawn();
+    _lotteryTimer = setTimeout(drawNext, 500);
+  }
+  drawNext();
+}
+
+// ════════════════════════════════════════════
+//  Tab 4：打掃工作
+// ════════════════════════════════════════════
+function _saveCleaning() {
+  db.collection('settings').doc('cleaning').set({
+    ..._cleaningData, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function renderCleaningTab() {
+  const locked = _cleaningData.locked;
+  const cleanToggle = document.getElementById('clean-lock-toggle');
+  if (cleanToggle) {
+    cleanToggle.textContent = locked ? '🔒 已鎖定・點擊解除' : '🔓 未鎖定・點擊鎖定';
+    cleanToggle.style.background = locked ? 'rgba(34,197,94,0.15)' : 'rgba(251,146,60,0.15)';
+    cleanToggle.style.borderColor = locked ? '#22c55e' : '#fb923c';
+    cleanToggle.style.color = locked ? '#22c55e' : '#fb923c';
+  }
+  const addBtn = document.getElementById('clean-add-btn');
+  if (addBtn) addBtn.style.display = locked ? 'none' : '';
+  const clearSeatsBtn = document.getElementById('clean-clear-seats-btn');
+  if (clearSeatsBtn) clearSeatsBtn.style.display = locked ? 'none' : '';
+  const clearAllBtn = document.getElementById('clean-clear-all-btn');
+  if (clearAllBtn) clearAllBtn.style.display = locked ? 'none' : '';
+  // 計算已分配座號
+  const tasks = _cleaningData.tasks || [];
+  const assigned = new Map(); // seatNum → count
+  tasks.forEach(t => (t.seats || []).forEach(n => assigned.set(n, (assigned.get(n)||0)+1)));
+  // 座號池
+  const roster = getActiveRoster();
+  const pool = document.getElementById('clean-pool');
+  const unassigned = roster.filter(n => !assigned.has(n));
+  pool.innerHTML = unassigned.map(n => {
+    const gc = _genderClass(n);
+    if (locked) return `<div class="draggable-seat ${gc}">${n}</div>`;
+    return `<div class="draggable-seat ${gc}" draggable="true"
+      ondragstart="seatDragStart(event,${n},'pool')" ondragend="seatDragEnd(event)">${n}</div>`;
+  }).join('');
+  // 工作卡（同色排在一起）
+  const sortedTasks = [...tasks].sort((a, b) => {
+    const ca = a.color || '#3b82f6', cb = b.color || '#3b82f6';
+    return ca < cb ? -1 : ca > cb ? 1 : 0;
+  });
+  const container = document.getElementById('clean-tasks');
+  container.innerHTML = sortedTasks.map(t => {
+    const dzAttr = locked ? '' : `ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="cleaningDrop(event,'${t.id}')"`;
+    const chips = (t.seats || []).map(n => {
+      const cnt = assigned.get(n) || 1;
+      const dutyClass = cnt >= 2 ? 'duty2' : 'duty1';
+      const rm = locked ? '' : `onclick="cleaningRemoveSeat('${t.id}',${n})"`;
+      return `<div class="clean-chip ${dutyClass}" ${rm} title="${locked ? '' : '點擊移除'}">${n}</div>`;
+    }).join('');
+    const delBtn = locked ? '' : `<span style="cursor:pointer;font-size:11px;color:#aaa;" onclick="removeCleaningTask('${t.id}')">✕</span>`;
+    const c = t.color || '#3b82f6';
+    const colorDot = locked ? '' : `<span title="更換顏色" onclick="changeCleaningTaskColor('${t.id}')"
+      style="display:inline-block;width:11px;height:11px;border-radius:50%;background:${c};cursor:pointer;margin-right:5px;vertical-align:middle;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;"></span>`;
+    return `<div class="clean-task-card" style="border-left:4px solid ${c};background:color-mix(in srgb,${c} 10%,#1a2332);">
+      <div class="clean-task-title">${colorDot}<span style="color:${c};">${t.name}</span>${delBtn}</div>
+      <div class="clean-dropzone" ${dzAttr}>${chips}</div>
+    </div>`;
+  }).join('');
+}
+
+function addCleaningTask() {
+  showAddCleaningDialog((name, color) => {
+    const tasks = _cleaningData.tasks || [];
+    tasks.push({ id: 'c' + Date.now(), name: name.trim(), seats: [], color: color || '#3b82f6' });
+    _cleaningData.tasks = tasks;
+    _saveCleaning();
+  });
+}
+function removeCleaningTask(id) {
+  _cleaningData.tasks = (_cleaningData.tasks || []).filter(t => t.id !== id);
+  _saveCleaning();
+}
+function changeCleaningTaskColor(id) {
+  const task = (_cleaningData.tasks || []).find(t => t.id === id);
+  if (!task) return;
+  const COLORS = ['#3b82f6','#ef4444','#22c55e','#f97316','#a855f7','#06b6d4','#eab308','#ec4899','#14b8a6','#f43f5e'];
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:999999;display:flex;align-items:center;justify-content:center;';
+  const dots = COLORS.map(c =>
+    `<div onclick="_applyCleanColor('${id}','${c}')" style="width:30px;height:30px;border-radius:50%;background:${c};cursor:pointer;box-shadow:${c===task.color?'0 0 0 3px #fff':''};"></div>`
+  ).join('');
+  ov.innerHTML = `<div id="_ccp_box" style="background:#1e2d40;border-radius:12px;padding:20px;min-width:240px;">
+    <div style="color:#e2e8f0;font-size:13px;margin-bottom:12px;">選擇顏色</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">${dots}</div>
+    <button onclick="document.getElementById('_ccp_ov').remove()" style="background:#334155;border:none;color:#e2e8f0;border-radius:6px;padding:6px 16px;cursor:pointer;">取消</button>
+  </div>`;
+  ov.id = '_ccp_ov';
+  document.body.appendChild(ov);
+}
+function _applyCleanColor(id, color) {
+  const task = (_cleaningData.tasks || []).find(t => t.id === id);
+  if (task) { task.color = color; _saveCleaning(); }
+  const ov = document.getElementById('_ccp_ov');
+  if (ov) ov.remove();
+}
+function cleaningDrop(e, taskId) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!_draggingSeat) return;
+  const n = _draggingSeat; _draggingSeat = null;
+  const tasks = _cleaningData.tasks || [];
+  // 計算這個座號目前有幾個工作
+  const currentDuties = tasks.filter(t => (t.seats||[]).includes(n)).length;
+  if (currentDuties >= 2) { showToast(`${n}號 已有兩個工作`, 'error'); return; }
+  const task = tasks.find(t => t.id === taskId);
+  if (!task) return;
+  if ((task.seats||[]).includes(n)) return;
+  task.seats = [...(task.seats||[]), n];
+  _cleaningData.tasks = tasks;
+  _saveCleaning();
+}
+function cleaningDropToPool(e) {
+  e.preventDefault();
+  if (!_draggingSeat) return;
+  const n = _draggingSeat; _draggingSeat = null;
+  const tasks = _cleaningData.tasks || [];
+  tasks.forEach(t => { t.seats = (t.seats||[]).filter(s => s !== n); });
+  _cleaningData.tasks = tasks;
+  _saveCleaning();
+}
+function cleaningRemoveSeat(taskId, n) {
+  const task = (_cleaningData.tasks||[]).find(t => t.id === taskId);
+  if (!task) return;
+  task.seats = (task.seats||[]).filter(s => s !== n);
+  _saveCleaning();
+}
+function toggleCleaningLock() {
+  if (_cleaningData.locked) {
+    _requireProjAuth(() => { _unlockGuardTs.clean = Date.now(); _cleaningData.locked = false; renderCleaningTab(); _saveCleaning(); showToast('打掃工作已解鎖', 'success'); });
+  } else {
+    _cleaningData.locked = true; renderCleaningTab(); _saveCleaning(); showToast('打掃工作已鎖定', 'success');
+  }
+}
+function clearCleaningSeats() {
+  showMiniConfirm('確定要清除所有座號分配？\n（工作項目保留，只移除座號）', () => {
+    (_cleaningData.tasks || []).forEach(t => { t.seats = []; });
+    _saveCleaning(); showToast('座號已全部清除', 'success');
+  });
+}
+function clearCleaning() {
+  showMiniConfirm('確定要清除所有工作與座號？\n（工作項目與座號分配全部清空）', () => {
+    _cleaningData = { tasks:[], locked:false }; _saveCleaning(); showToast('打掃工作已清除', 'success');
+  });
+}
+
+// ════════════════════════════════════════════
+//  Tab 5：班級幹部（新版欄位式）
+// ════════════════════════════════════════════
+function _saveOfficers() {
+  db.collection('settings').doc('officers').set({
+    ..._officersData, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    const ind = document.getElementById('officer-sync-indicator');
+    if (ind) { ind.textContent = '✓ 已同步'; ind.style.color = '#4ade80'; setTimeout(() => { ind.textContent = ''; }, 2000); }
+  }).catch(e => showToast('幹部資料儲存失敗：' + e.message, 'error'));
+}
+
+// ── 計算全局 seatNum → 出現次數（含連動職位，用於判斷黃色）
+function _officerDualMap() {
+  const map = new Map();
+  (_officersData.groups || []).forEach(g =>
+    g.positions.forEach(p => {
+      const seats = p.linkedTo ? _getLinkedSeats(p.linkedTo) : (p.seats || []);
+      seats.forEach(n => map.set(n, (map.get(n) || 0) + 1));
+    })
+  );
+  return map;
+}
+
+function renderOfficersTab() {
+  const locked = _officersData.locked;
+  const offToggle = document.getElementById('officer-lock-toggle');
+  if (offToggle) {
+    offToggle.textContent = locked ? '🔒 已鎖定・點擊解除' : '🔓 未鎖定・點擊鎖定';
+    offToggle.style.background = locked ? 'rgba(34,197,94,0.15)' : 'rgba(251,146,60,0.15)';
+    offToggle.style.borderColor = locked ? '#22c55e' : '#fb923c';
+    offToggle.style.color = locked ? '#22c55e' : '#fb923c';
+  }
+  document.getElementById('officer-reset-btn').style.display  = locked ? 'none' : '';
+  // dualMap：所有職位（含連動），用於黃色判斷
+  const dualMap = _officerDualMap();
+  // pool 排除：非連動已指派 + 連動中出現的座號（手動輸入才能重複）
+  const poolExcluded = new Set();
+  (_officersData.groups||[]).forEach(g => g.positions.forEach(p => {
+    if (p.linkedTo) _getLinkedSeats(p.linkedTo).forEach(n => poolExcluded.add(n));
+    else (p.seats||[]).forEach(n => poolExcluded.add(n));
+  }));
+  // 座號池
+  const roster = getActiveRoster();
+  const pool = document.getElementById('officer-pool');
+  pool.innerHTML = roster.filter(n => !poolExcluded.has(n)).map(n => {
+    if (locked) return `<div class="draggable-seat gender-n">${n}</div>`;
+    return `<div class="draggable-seat gender-n" draggable="true"
+      ondragstart="seatDragStart(event,${n},'pool')" ondragend="seatDragEnd(event)">${n}</div>`;
+  }).join('');
+  // 群組欄
+  const wrap = document.getElementById('officer-table-wrap');
+  const groups = _officersData.groups || [];
+  let html = groups.map(g => _renderOfficerGroup(g, locked, dualMap)).join('');
+  if (!locked) {
+    html += `<div class="officer-add-col-btn" onclick="addOfficerGroup()" title="新增群組">＋</div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+function _renderOfficerGroup(g, locked, dualMap) {
+  const posRows = g.positions.map(p => _renderOfficerPos(g.id, p, locked, dualMap)).join('');
+  const addPosBtn = locked ? '' : `<button class="grp-add-btn" onclick="addPositionToGroup('${g.id}')">＋</button>`;
+  const delGrpBtn = locked ? '' : `<button class="grp-del-btn" onclick="removeOfficerGroup('${g.id}')">✕</button>`;
+  return `<div class="officer-col">
+    <div class="officer-col-header" style="background:${g.color};">
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${g.title}</span>
+      ${addPosBtn}${delGrpBtn}
+    </div>
+    ${posRows}
+  </div>`;
+}
+
+function _renderOfficerPos(grpId, p, locked, dualMap) {
+  const delBtn = locked ? '' :
+    `<span class="officer-pos-del" onclick="removeOfficerPosition('${grpId}','${p.id}')">✕</span>`;
+  const linkedBadge = p.linkedTo
+    ? `<span style="font-size:9px;background:rgba(34,197,94,0.2);color:#4ade80;border-radius:4px;padding:1px 4px;margin-left:3px;">連動</span>` : '';
+
+  // ── 連動職位：唯讀，顯示打掃工作的座號 ──
+  if (p.linkedTo) {
+    const seats = _getLinkedSeats(p.linkedTo);
+    const chips = seats.length
+      ? seats.map(n => {
+          const cnt = dualMap.get(n) || 1;
+          const gc  = cnt >= 2 ? 'dual' : 'officer-blue';
+          return `<div class="officer-chip ${gc}" title="${cnt >= 2 ? '身兼兩職・' : ''}由打掃工作連動">${n}</div>`;
+        }).join('')
+      : `<span style="color:#334155;font-size:11px;">尚未在打掃工作指派</span>`;
+    return `<div class="officer-pos-row">
+      ${delBtn}
+      <div class="officer-pos-title">${p.title}${linkedBadge}</div>
+      <div class="officer-pos-desc">${p.desc || ''}</div>
+      <div class="officer-pos-dropzone" style="background:rgba(34,197,94,0.05);border-color:#1a3a2a;">${chips}</div>
+    </div>`;
+  }
+
+  // ── 一般職位：可拖拉 / 輸入 ──
+  const chips = (p.seats || []).map(n => {
+    const cnt = dualMap.get(n) || 1;
+    const gc  = cnt >= 2 ? 'dual' : 'officer-blue';
+    const rm  = locked ? '' : `onclick="officerRemoveSeat('${grpId}','${p.id}',${n})"`;
+    return `<div class="officer-chip ${gc}" title="${cnt >= 2 ? '身兼兩職・' : ''}點擊移除" draggable="${locked ? 'false' : 'true'}"
+      ondragstart="seatDragStart(event,${n},'officer_${grpId}_${p.id}')" ondragend="seatDragEnd(event)"
+      ${rm}>${n}</div>`;
+  }).join('');
+  const canAdd = !locked && (p.seats || []).length < (p.maxSeats || 99);
+  const inputEl = canAdd
+    ? `<input class="officer-seat-input" type="number" min="1" max="99" placeholder="座號"
+         onkeydown="if(event.key==='Enter')officerAddByInput('${grpId}','${p.id}',this)">`
+    : '';
+  const dzAttr = locked ? '' :
+    `ondragover="event.preventDefault();this.classList.add('drag-over')"
+     ondragleave="this.classList.remove('drag-over')"
+     ondrop="officerDrop(event,'${grpId}','${p.id}')"`;
+  return `<div class="officer-pos-row">
+    ${delBtn}
+    <div class="officer-pos-title">${p.title}${linkedBadge}</div>
+    <div class="officer-pos-desc">${p.desc || ''}</div>
+    <div class="officer-pos-dropzone" ${dzAttr}>${chips}${inputEl}</div>
+  </div>`;
+}
+
+// ── 拖放
+function officerDrop(e, grpId, posId) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!_draggingSeat) return;
+  const n = _draggingSeat; _draggingSeat = null;
+  const grp = (_officersData.groups||[]).find(g => g.id === grpId);
+  if (!grp) return;
+  const pos = grp.positions.find(p => p.id === posId);
+  if (!pos) return;
+  if ((pos.seats||[]).includes(n)) return;
+  if ((pos.seats||[]).length >= (pos.maxSeats||99)) {
+    showToast(`${pos.title} 已達人數上限`, 'error'); return;
+  }
+  // 若來源是另一個職位，先從那裡移除
+  if (_draggingFrom && _draggingFrom.startsWith('officer_')) {
+    const [, fromGrpId, fromPosId] = _draggingFrom.split('_');
+    const fg = (_officersData.groups||[]).find(g => g.id === fromGrpId);
+    if (fg) { const fp = fg.positions.find(p => p.id === fromPosId); if (fp) fp.seats = (fp.seats||[]).filter(s => s !== n); }
+  }
+  pos.seats = [...(pos.seats||[]), n];
+  _saveOfficers(); renderOfficersTab();
+}
+
+function officerDropToPool(e) {
+  e.preventDefault();
+  if (!_draggingSeat) return;
+  const n = _draggingSeat; _draggingSeat = null;
+  (_officersData.groups||[]).forEach(g => g.positions.forEach(p => { p.seats = (p.seats||[]).filter(s => s !== n); }));
+  _saveOfficers(); renderOfficersTab();
+}
+
+function officerRemoveSeat(grpId, posId, n) {
+  const grp = (_officersData.groups||[]).find(g => g.id === grpId);
+  if (!grp) return;
+  const pos = grp.positions.find(p => p.id === posId);
+  if (!pos) return;
+  pos.seats = (pos.seats||[]).filter(s => s !== n);
+  _saveOfficers(); renderOfficersTab();
+}
+
+function officerAddByInput(grpId, posId, inputEl) {
+  const n = parseInt(inputEl.value);
+  inputEl.value = '';
+  if (!n || !getActiveRoster().includes(n)) { showToast('無效座號', 'error'); return; }
+  const grp = (_officersData.groups||[]).find(g => g.id === grpId);
+  if (!grp) return;
+  const pos = grp.positions.find(p => p.id === posId);
+  if (!pos) return;
+  if ((pos.seats||[]).includes(n)) return;
+  if ((pos.seats||[]).length >= (pos.maxSeats||99)) { showToast(`${pos.title} 已達人數上限`, 'error'); return; }
+  pos.seats = [...(pos.seats||[]), n];
+  _saveOfficers(); renderOfficersTab();
+}
+
+// ── 新增 / 刪除 職位 & 群組
+function addPositionToGroup(grpId) {
+  showMiniPrompt('新增職位', '職位名稱（例：副班長）', title => {
+    showMiniPrompt('工作說明（可空白）', '例：收作業', desc => {
+      const grp = (_officersData.groups||[]).find(g => g.id === grpId);
+      if (!grp) return;
+      grp.positions.push({ id:'o'+Date.now(), title:title.trim(), desc:desc.trim(), maxSeats:1, seats:[] });
+      _saveOfficers();
+    });
+  });
+}
+
+function addPositionToGroupFull(grpId) {
+  showMiniPrompt('新增職位', '職位名稱', title => {
+    const grp = (_officersData.groups||[]).find(g => g.id === grpId);
+    if (!grp) return;
+    grp.positions.push({ id:'o'+Date.now(), title:title.trim(), desc:'', maxSeats:1, seats:[] });
+    _saveOfficers();
+  });
+}
+
+function removeOfficerPosition(grpId, posId) {
+  const grp = (_officersData.groups||[]).find(g => g.id === grpId);
+  if (!grp) return;
+  grp.positions = grp.positions.filter(p => p.id !== posId);
+  _saveOfficers();
+}
+
+function addOfficerGroup() {
+  showMiniPrompt('新增群組', '群組名稱（例：服務隊）', title => {
+    const colors = ['#f97316','#3b82f6','#a855f7','#06b6d4','#ec4899','#eab308','#22c55e','#ef4444'];
+    const color = colors[(_officersData.groups||[]).length % colors.length];
+    (_officersData.groups = _officersData.groups || []).push({
+      id: 'grp'+Date.now(), title:title.trim(), color, positions:[]
+    });
+    _saveOfficers();
+  });
+}
+
+function removeOfficerGroup(grpId) {
+  _officersData.groups = (_officersData.groups||[]).filter(g => g.id !== grpId);
+  _saveOfficers();
+}
+
+function toggleOfficersLock() {
+  if (_officersData.locked) {
+    _requireProjAuth(() => { _unlockGuardTs.officer = Date.now(); _officersData.locked = false; _saveOfficers(); renderOfficersTab(); showToast('班級幹部已解鎖', 'success'); });
+  } else {
+    _officersData.locked = true; _saveOfficers(); renderOfficersTab(); showToast('班級幹部已鎖定', 'success');
+  }
+}
+function clearOfficers() {
+  showMiniConfirm('確定要清空幹部名單？\n（職位結構保留，所有座號指派清空）', () => {
+    (_officersData.groups||[]).forEach(g => g.positions.forEach(p => p.seats = []));
+    _saveOfficers(); showToast('幹部名單已清空', 'success');
+  });
+}
+function resetOfficersToDefault() {
+  showMiniConfirm('確定要重設為預設職位？\n（現有自訂職位將遺失）', () => {
+    _officersData = _initOfficersFromDefaults();
+    _saveOfficers(); showToast('已重設為預設職位', 'success');
+  });
+}
+
+// ── 連動：打掃工作 → 班級幹部（單向，打掃為主）
+// 依關鍵字比對打掃任務名稱，傳回分配的座號
+function _getLinkedSeats(linkedTo) {
+  const tasks = _cleaningData.tasks || [];
+  const match = {
+    'garbage':    t => /垃圾/.test(t.name),
+    'check-12':   t => /1[._]?2排/.test(t.name) && /檢查/.test(t.name),
+    'check-34':   t => /3[._]?4排/.test(t.name) && /檢查/.test(t.name),
+    'check-56':   t => /5[._]?6排/.test(t.name) && /檢查/.test(t.name),
+    'check-ext':  t => /外掃/.test(t.name) && /檢查/.test(t.name),
+  }[linkedTo];
+  if (!match) return [];
+  return [...new Set(tasks.filter(match).flatMap(t => t.seats || []))];
+}
+
+// ════════════════════════════════════════════
+//  Tab 6：投票
+// ════════════════════════════════════════════
+const VOTE_HOST_URL = 'https://homework-tracker-5c6d3.web.app/vote';
+
+function _saveVote() {
+  if (!_voteData) return;
+  db.collection('data').doc('currentVote').set({
+    ..._voteData, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function renderVoteTab() {
+  const status = _voteData ? _voteData.status : 'draft';
+  document.getElementById('vote-draft').style.display     = (status === 'draft' || !_voteData) ? 'flex' : 'none';
+  document.getElementById('vote-open').style.display      = status === 'open' ? 'flex' : 'none';
+  document.getElementById('vote-announced').style.display = status === 'announced' ? 'flex' : 'none';
+
+  if (status === 'draft' || !_voteData) {
+    _renderVoteDraft();
+  } else if (status === 'open') {
+    _renderVoteOpen();
+  } else if (status === 'announced') {
+    _renderVoteAnnounced();
+  }
+}
+
+function _renderVoteDraft() {
+  if (!_voteData) {
+    document.getElementById('vote-title-input').value = '';
+    document.getElementById('vote-options-list').innerHTML = '';
+    return;
+  }
+  document.getElementById('vote-title-input').value = _voteData.title || '';
+  _renderVoteOptionsList();
+}
+
+function _renderVoteOptionsList() {
+  const opts = _voteData ? (_voteData.options || []) : [];
+  const rosterCount = _voteData && _voteData.optionMode === 'roster' ? opts.length : 0;
+  if (rosterCount) {
+    document.getElementById('vote-options-list').innerHTML =
+      `<div class="vote-roster-summary">已提名全班 ${rosterCount} 人</div>`;
+    return;
+  }
+  document.getElementById('vote-options-list').innerHTML = opts.map((o, i) => `
+    <div class="vote-option-row">
+      <input class="vote-input" style="flex:1;" value="${o.text.replace(/"/g,'&quot;')}"
+        oninput="updateVoteOption('${o.id}',this.value)" placeholder="選項 ${i+1}">
+      <button class="ptab-btn ptab-clear" style="padding:4px 10px;font-size:12px;" onclick="removeVoteOption('${o.id}')">✕</button>
+    </div>`).join('');
+}
+
+function addVoteOption(text) {
+  if (!_voteData) _voteData = { id:'v'+Date.now(), title:'', options:[], voteType:'single', maxVotes:1, status:'draft', showLive:true, responses:{} };
+  _voteData.optionMode = 'custom';
+  _voteData.options = [...(_voteData.options||[]), { id:'opt'+Date.now()+(Math.random()*999|0), text: text||'' }];
+  _renderVoteOptionsList();
+}
+function removeVoteOption(id) {
+  if (!_voteData) return;
+  _voteData.optionMode = 'custom';
+  _voteData.options = (_voteData.options||[]).filter(o => o.id !== id);
+  _renderVoteOptionsList();
+}
+function updateVoteOption(id, text) {
+  const opt = (_voteData&&_voteData.options||[]).find(o => o.id === id);
+  if (opt) opt.text = text;
+}
+function addAllSeatsAsOptions() {
+  if (!_voteData) _voteData = { id:'v'+Date.now(), title:'', options:[], voteType:'single', maxVotes:1, status:'draft', showLive:true, responses:{} };
+  const roster = getActiveRoster();
+  _voteData.options = roster.map(n => ({ id:'opt'+n, text: n+'號' }));
+  _voteData.optionMode = 'roster';
+  _renderVoteOptionsList();
+}
+
+function _showVoteDraftMsg(msg, targetEl) {
+  if (targetEl) {
+    targetEl.style.borderColor = '#f87171';
+    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => targetEl.focus(), 200);
+  }
+  showMiniAlert(msg);
+}
+
+function _clearVoteDraftMsg() {
+  const el = document.getElementById('vote-draft-msg');
+  if (el) el.style.display = 'none';
+  const titleEl = document.getElementById('vote-title-input');
+  if (titleEl) titleEl.style.borderColor = '';
+}
+
+function startVote() {
+  _clearVoteDraftMsg();
+  const title = document.getElementById('vote-title-input').value.trim();
+  const titleEl = document.getElementById('vote-title-input');
+  if (!title) { _showVoteDraftMsg('請先輸入投票主題', titleEl); return; }
+  // 讀取 UI 設定
+  const voteType = document.querySelector('input[name="vote-type"]:checked')?.value || 'single';
+  const maxVotes = parseInt(document.getElementById('vote-max-votes').value) || 1;
+  const showLive = document.querySelector('input[name="vote-show"]:checked')?.value === 'live';
+  // 更新選項文字（避免未觸發 oninput）
+  if (!_voteData || _voteData.optionMode !== 'roster') {
+    document.querySelectorAll('#vote-options-list input').forEach(inp => {
+      const row = inp.closest('.vote-option-row');
+      if (!row) return;
+      const btn = row.querySelector('button');
+      if (!btn) return;
+      const oid = btn.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+      if (oid) {
+        const opt = (_voteData&&_voteData.options||[]).find(o => o.id === oid);
+        if (opt) opt.text = inp.value;
+      }
+    });
+  }
+  const opts = _voteData ? (_voteData.options||[]).filter(o => (o.text || '').trim()) : [];
+  if (opts.length < 2) { _showVoteDraftMsg('請至少新增 2 個有效選項'); return; }
+  if (!_voteData) _voteData = {};
+  _voteData = { ..._voteData, id: _voteData.id||'v'+Date.now(), title, options: opts, voteType, maxVotes, showLive, status: 'open', responses: {}, deviceVotes: {} };
+  _saveVote();
+}
+
+function _renderVoteOpen() {
+  const v = _voteData;
+  if (!v) return;
+  // QR Code
+  const qrEl = document.getElementById('vote-qrcode-el');
+  qrEl.innerHTML = '';
+  const voteUrl = `${VOTE_HOST_URL}?id=${v.id}`;
+  try {
+    new QRCode(qrEl, { text: voteUrl, width: 180, height: 180, colorDark:'#000', colorLight:'#fff', correctLevel: QRCode.CorrectLevel.M });
+  } catch(e) { qrEl.innerHTML = `<div style="font-size:12px;color:#888;word-break:break-all;">${voteUrl}</div>`; }
+  // 計數
+  const responses = v.responses || {};
+  const voterCount = Object.keys(responses).length;
+  const rosterSize = getActiveRoster().length;
+  document.getElementById('vote-count-display').textContent = `已投票：${voterCount} / ${rosterSize} 人`;
+  // 圖表（即時顯示或隱藏）
+  const chartEl = document.getElementById('vote-live-chart');
+  if (v.showLive) {
+    chartEl.innerHTML = _buildVoteBarChart(v);
+  } else {
+    chartEl.innerHTML = '<div style="font-size:13px;color:#555;">結果稍後公告</div>';
+  }
+  // 詳細名單（老師端可見）
+  const respEl = document.getElementById('vote-resp-list');
+  const opts = v.options || [];
+  const details = Object.entries(responses).map(([seat, choiceIds]) => {
+    const choiceTexts = (Array.isArray(choiceIds) ? choiceIds : [choiceIds]).map(cid => {
+      const o = opts.find(op => op.id === cid);
+      return o ? o.text : cid;
+    }).join('、');
+    return `${seat}號 → ${choiceTexts}`;
+  }).join('　');
+  respEl.textContent = details ? '投票記錄：' + details : '';
+}
+
+function _renderVoteAnnounced() {
+  const v = _voteData;
+  if (!v) return;
+  document.getElementById('vote-announced-title').textContent = '📊 ' + (v.title||'投票結果');
+  document.getElementById('vote-final-chart').innerHTML = _buildVoteBarChart(v);
+}
+
+function _buildVoteBarChart(v) {
+  const opts = v.options || [];
+  const responses = v.responses || {};
+  // 統計票數
+  const tally = {};
+  opts.forEach(o => tally[o.id] = 0);
+  Object.values(responses).forEach(choiceIds => {
+    (Array.isArray(choiceIds) ? choiceIds : [choiceIds]).forEach(cid => {
+      if (cid in tally) tally[cid]++;
+    });
+  });
+  const visibleOpts = opts.filter(o => (tally[o.id] || 0) > 0);
+  if (!visibleOpts.length) return '<div style="font-size:13px;color:#555;">尚無票數</div>';
+  const colors = ['#4ade80','#60a5fa','#f97316','#a78bfa','#f43f5e','#34d399','#fbbf24','#818cf8'];
+  const maxVotes = Math.max(1, ...visibleOpts.map(o => tally[o.id] || 0));
+  return `<div class="vote-column-chart">${visibleOpts.map((o, i) => {
+    const cnt = tally[o.id] || 0;
+    const height = Math.max(12, Math.round((cnt / maxVotes) * 170));
+    const color = colors[i % colors.length];
+    const label = String(o.text || '').replace(/號$/, '');
+    return `<div class="vote-column-item" title="${escHtml(o.text)}：${cnt}票">
+      <div class="vote-column-count">${cnt}票</div>
+      <div class="vote-column-bar" style="height:${height}px;background:${color};"></div>
+      <div class="vote-column-label">${escHtml(label)}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function announceVote() {
+  if (!_voteData) return;
+  _voteData.status = 'announced'; _saveVote();
+}
+function stopVote() {
+  if (!_voteData) return;
+  _voteData.status = 'draft'; _saveVote();
+}
+function reopenVote() {
+  if (!_voteData) return;
+  _voteData.status = 'open'; _saveVote();
+}
+function clearVote() {
+  showMiniConfirm('確定要清除投票設定？\n（投票題目、選項與所有票數將全部清空）', () => {
+    _voteData = null;
+    db.collection('data').doc('currentVote').delete().catch(()=>{});
+    renderVoteTab(); showToast('投票已清除', 'success');
+  });
+}
+
+// Tab 6 onProjSlider 更新：座位表格子大小
+function _onProjSliderExtra(val) {
+  if (_currentProjTab === 3) renderSeatGrid();
 }
 
 // ════════════════════════════════════════════
@@ -2505,6 +4728,108 @@ function showToast(msg, type = '') {
   t.textContent = msg;
   tc.appendChild(t);
   setTimeout(() => t.remove(), 2800);
+}
+
+// ════════════════════════════════════════════
+//  Mini Prompt（取代 window.prompt，避免投影模式被擋）
+// ════════════════════════════════════════════
+const CLEAN_COLORS = [
+  { label:'藍', hex:'#3b82f6' }, { label:'綠', hex:'#22c55e' },
+  { label:'橘', hex:'#f97316' }, { label:'紅', hex:'#ef4444' },
+  { label:'紫', hex:'#a855f7' }, { label:'青', hex:'#06b6d4' },
+  { label:'粉', hex:'#ec4899' }, { label:'黃', hex:'#eab308' },
+  { label:'棕', hex:'#a16207' }, { label:'灰', hex:'#64748b' },
+];
+
+function showMiniConfirm(msg, cb) {
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:999999;display:flex;align-items:center;justify-content:center;';
+  ov.innerHTML = `<div style="background:#1e293b;border:1.5px solid #334155;border-radius:14px;padding:22px 24px;min-width:280px;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+    <div style="color:#f1f5f9;font-size:15px;font-weight:700;margin-bottom:18px;line-height:1.5;">${msg}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button id="_mc_cancel" style="background:#334155;border:none;color:#94a3b8;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">取消</button>
+      <button id="_mc_ok" style="background:#ef4444;border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;">確定清除</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('#_mc_ok').onclick = () => { ov.remove(); cb(); };
+  ov.querySelector('#_mc_cancel').onclick = () => ov.remove();
+  document.addEventListener('keydown', function h(e) {
+    if (e.key === 'Escape') { ov.remove(); document.removeEventListener('keydown', h); }
+  });
+}
+
+function showMiniAlert(msg, cb) {
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:999999;display:flex;align-items:center;justify-content:center;';
+  ov.innerHTML = `<div style="background:#1e293b;border:1.5px solid #334155;border-radius:14px;padding:22px 24px;min-width:280px;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+    <div style="color:#f1f5f9;font-size:16px;font-weight:800;margin-bottom:18px;line-height:1.5;text-align:center;">${escHtml(msg)}</div>
+    <button id="_ma_ok" style="width:100%;background:#3b82f6;border:none;color:#fff;padding:10px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:800;">確定</button>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => { ov.remove(); if (cb) cb(); };
+  ov.querySelector('#_ma_ok').onclick = close;
+  document.addEventListener('keydown', function h(e) {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      document.removeEventListener('keydown', h);
+      close();
+    }
+  });
+}
+
+function showMiniPrompt(title, placeholder, cb) {
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:999999;display:flex;align-items:center;justify-content:center;';
+  ov.innerHTML = `<div style="background:#1e293b;border:1.5px solid #334155;border-radius:14px;padding:22px 24px;min-width:300px;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+    <div style="color:#f1f5f9;font-size:15px;font-weight:700;margin-bottom:14px;">${title}</div>
+    <input id="_mp_input" autocomplete="off" style="width:100%;box-sizing:border-box;background:#0f172a;border:1.5px solid #475569;border-radius:8px;padding:9px 12px;color:#f1f5f9;font-size:14px;outline:none;" placeholder="${placeholder}">
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end;">
+      <button id="_mp_cancel" style="background:#334155;border:none;color:#94a3b8;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">取消</button>
+      <button id="_mp_ok" style="background:#3b82f6;border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;">確定</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const inp = ov.querySelector('#_mp_input');
+  inp.focus();
+  const confirm = () => { const v = inp.value.trim(); ov.remove(); if (v) cb(v); };
+  ov.querySelector('#_mp_ok').onclick = confirm;
+  ov.querySelector('#_mp_cancel').onclick = () => ov.remove();
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') confirm(); if (e.key === 'Escape') ov.remove(); });
+}
+
+function showAddCleaningDialog(cb) {
+  let selectedColor = CLEAN_COLORS[0].hex;
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:999999;display:flex;align-items:center;justify-content:center;';
+  const colorChips = CLEAN_COLORS.map((c, i) =>
+    `<div id="_cc_${i}" onclick="_selectCleanColor('${c.hex}',${i})" title="${c.label}"
+      style="width:28px;height:28px;border-radius:50%;background:${c.hex};cursor:pointer;
+             border:3px solid ${i===0?'#fff':'transparent'};box-sizing:border-box;transition:border 0.1s;"></div>`
+  ).join('');
+  ov.innerHTML = `<div style="background:#1e293b;border:1.5px solid #334155;border-radius:14px;padding:22px 24px;min-width:320px;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+    <div style="color:#f1f5f9;font-size:15px;font-weight:700;margin-bottom:14px;">新增打掃工作</div>
+    <input id="_ct_name" autocomplete="off" style="width:100%;box-sizing:border-box;background:#0f172a;border:1.5px solid #475569;border-radius:8px;padding:9px 12px;color:#f1f5f9;font-size:14px;outline:none;" placeholder="工作名稱（例：掃地）">
+    <div style="color:#94a3b8;font-size:12px;margin:12px 0 6px;">選擇區域顏色</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">${colorChips}</div>
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
+      <button id="_ct_cancel" style="background:#334155;border:none;color:#94a3b8;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">取消</button>
+      <button id="_ct_ok" style="background:#3b82f6;border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;">確定</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  window._selectCleanColor = (hex, idx) => {
+    selectedColor = hex;
+    CLEAN_COLORS.forEach((_, i) => {
+      const el = ov.querySelector('#_cc_' + i);
+      if (el) el.style.border = i === idx ? '3px solid #fff' : '3px solid transparent';
+    });
+  };
+  const inp = ov.querySelector('#_ct_name');
+  inp.focus();
+  const confirm = () => { const v = inp.value.trim(); ov.remove(); if (v) cb(v, selectedColor); };
+  ov.querySelector('#_ct_ok').onclick = confirm;
+  ov.querySelector('#_ct_cancel').onclick = () => ov.remove();
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') confirm(); if (e.key === 'Escape') ov.remove(); });
 }
 
 // ════════════════════════════════════════════
@@ -2547,8 +4872,19 @@ document.querySelectorAll('.modal-backdrop').forEach(bd => {
 document.getElementById('today-display').textContent =
   new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'long', day:'numeric', weekday:'short'});
 
-setupRealtimeSync();
-checkForUpdates();
+authReady.then(() => setupRealtimeSync());
+startReminderMonitor();
+// 先取得正確版本號，再檢查更新（避免 APP_VERSION 尚未更新就比對）
+if (window.electronAPI && window.electronAPI.getVersion) {
+  window.electronAPI.getVersion().then(v => {
+    if (v) APP_VERSION = v;
+    const el = document.getElementById('header-version');
+    if (el) el.textContent = 'v' + APP_VERSION;
+    checkForUpdates();
+  });
+} else {
+  checkForUpdates();
+}
 
 // ── Electron：URL 參數 ?projector=1 自動開啟投影模式 ──
 if (new URLSearchParams(window.location.search).get('projector') === '1') {
@@ -2623,7 +4959,8 @@ async function startUpdate(url, fileName) {
 
   try {
     await window.electronAPI.downloadAndInstall(url, fileName);
-    showToast('下載完成，安裝程式已啟動！', 'success');
+    showToast('下載完成，正在自動安裝⋯程式即將重新啟動', 'success');
+    if (btn) btn.textContent = '安裝中，即將重啟⋯';
   } catch (e) {
     showToast('下載失敗：' + e.message, 'error');
     if (btn) { btn.textContent = '⬇ 下載並安裝'; btn.disabled = false; }

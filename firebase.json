@@ -1,8 +1,13 @@
 {
+  "firestore": {
+    "rules": "firestore.rules"
+  },
   "hosting": {
     "public": "web",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
+      { "source": "/vote", "destination": "/vote.html" },
+      { "source": "/parent", "destination": "/parent.html" },
       { "source": "**", "destination": "/index.html" }
     ]
   }

@@ -1,9 +1,9 @@
-const { app, BrowserWindow, Tray, Menu, nativeImage, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage, dialog, ipcMain, screen } = require('electron');
 const path = require('path');
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 const schedule = require('node-schedule');
 
 let mainWindow = null;
@@ -61,6 +61,8 @@ function createWindow(projectorMode = false) {
     icon: appIcon,
     autoHideMenuBar: true,
     show: false,
+    center: true,
+    backgroundColor: '#ffffff',
   });
 
   const indexPath = path.join(__dirname, 'index.html');
@@ -71,10 +73,15 @@ function createWindow(projectorMode = false) {
   mainWindow.loadURL(url);
 
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
-    if (projectorMode) {
-      mainWindow.setFullScreen(true);
-    }
+    // 延遲一點讓 DWM 完整初始化，避免標題列按鈕消失
+    setTimeout(() => {
+      if (!mainWindow) return;
+      mainWindow.show();
+      mainWindow.focus();
+      if (projectorMode) {
+        mainWindow.maximize(); // 最大化但保留標題列按鈕
+      }
+    }, 150);
   });
 
   mainWindow.on('close', (e) => {
@@ -93,7 +100,7 @@ function enterProjectorMode() {
   if (!mainWindow) { createWindow(true); return; }
   mainWindow.show();
   mainWindow.focus();
-  mainWindow.setFullScreen(true);
+  mainWindow.maximize(); // 最大化但保留標題列按鈕
   mainWindow.webContents.executeJavaScript('openProjectorMode && openProjectorMode()');
 }
 
@@ -254,6 +261,42 @@ function setupSchedule() {
   });
 }
 
+// ── 全螢幕會議提醒警報視窗 ──
+let alarmWindows = [];
+function showAlarmWindow(name) {
+  const display = screen.getPrimaryDisplay();
+  const { x, y, width, height } = display.bounds;
+  const win = new BrowserWindow({
+    x, y, width, height,
+    fullscreen: true,
+    frame: false,
+    alwaysOnTop: true,
+    skipTaskbar: false,
+    backgroundColor: '#0a0a1a',
+    title: '🚨 緊急提醒！',
+    icon: appIcon,
+    webPreferences: { nodeIntegration: false, contextIsolation: true },
+  });
+  win.setAlwaysOnTop(true, 'screen-saver');
+  const alarmPath = path.join(__dirname, 'alarm.html');
+  win.loadURL(`file://${alarmPath}?name=${encodeURIComponent(name || '會議')}`);
+  win.once('ready-to-show', () => { win.show(); win.focus(); });
+  // 持續搶回最上層，直到使用者關閉
+  const topTimer = setInterval(() => {
+    if (win.isDestroyed()) { clearInterval(topTimer); return; }
+    win.setAlwaysOnTop(true, 'screen-saver');
+    win.moveTop();
+  }, 500);
+  win.on('closed', () => {
+    clearInterval(topTimer);
+    alarmWindows = alarmWindows.filter(w => w !== win);
+  });
+  alarmWindows.push(win);
+}
+
+// ── IPC：顯示會議提醒警報 ──
+ipcMain.handle('show-alarm', (_e, name) => { showAlarmWindow(name); });
+
 // ── IPC：取得目前版本 ──
 ipcMain.handle('get-version', () => app.getVersion());
 
@@ -294,10 +337,18 @@ ipcMain.handle('download-and-install', async (event, url, fileName) => {
         });
         res.on('end', () => {
           file.end();
-          // 執行安裝檔
-          exec(`"${savePath}"`, (err) => {
-            if (err) { reject(err); return; }
-            resolve({ success: true, path: savePath });
+          // 等檔案完全關閉後，再多等 500ms（讓防毒掃描完）才 spawn
+          file.on('close', () => {
+            setTimeout(() => {
+              const child = spawn(savePath, ['/S'], {
+                detached: true,
+                stdio: 'ignore'
+              });
+              child.unref();
+              resolve({ success: true, path: savePath });
+              // 盡快關閉 app，讓安裝程式可以覆蓋程式檔案
+              setTimeout(() => app.quit(), 200);
+            }, 500);
           });
         });
         res.on('error', reject);

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f172a">
+<title>班級投票</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Segoe UI', sans-serif; background: #0f172a; color: #f1f5f9; }
+  body { display: flex; flex-direction: column; min-height: 100vh; }
+
+  .header {
+    background: #1e293b; border-bottom: 1.5px solid #334155;
+    padding: 14px 20px; text-align: center;
+  }
+  .header h1 { font-size: 18px; font-weight: 800; color: #f1f5f9; }
+  .header p  { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+  .main { flex: 1; padding: 20px 16px; max-width: 480px; margin: 0 auto; width: 100%; }
+
+  /* ── 選座號 ── */
+  #screen-select { display: flex; flex-direction: column; gap: 16px; }
+  .seat-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .seat-btn {
+    width: 56px; height: 56px; border-radius: 12px;
+    border: 2px solid #334155; background: #1e293b; color: #94a3b8;
+    font-size: 18px; font-weight: 800; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .seat-btn:hover { border-color: #4ade80; color: #4ade80; }
+  .seat-btn.gender-m { border-color: #3b82f6; color: #93c5fd; background: #1e3a5f; }
+  .seat-btn.gender-f { border-color: #f43f5e; color: #fda4af; background: #4a1a2e; }
+
+  /* ── 投票 ── */
+  #screen-vote { display: none; flex-direction: column; gap: 14px; }
+  .vote-title { font-size: 22px; font-weight: 800; color: #f1f5f9; text-align: center; margin-bottom: 4px; }
+  .vote-hint  { font-size: 13px; color: #64748b; text-align: center; }
+  .vote-options { display: flex; flex-direction: column; gap: 10px; }
+  .vote-options.seat-options {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px;
+  }
+  .vote-option-btn {
+    padding: 16px 20px; border-radius: 14px; border: 2px solid #334155;
+    background: #1e293b; color: #f1f5f9; font-size: 16px; font-weight: 700;
+    cursor: pointer; text-align: left; transition: all 0.15s; position: relative;
+  }
+  .vote-options.seat-options .vote-option-btn {
+    min-height: 48px; padding: 8px 4px; text-align: center; font-size: 18px;
+  }
+  .vote-options.seat-options .vote-option-btn.selected::after {
+    right: 6px; top: 4px; transform: none; font-size: 14px;
+  }
+  .vote-option-btn:hover { border-color: #4ade80; background: #0f2a1a; }
+  .vote-option-btn.selected { border-color: #4ade80; background: #0a2a10; color: #4ade80; }
+  .vote-option-btn.selected::after { content: '✓'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #4ade80; }
+  .submit-btn {
+    padding: 16px; border-radius: 14px; border: none;
+    background: #16a34a; color: #fff; font-size: 16px; font-weight: 800;
+    cursor: pointer; width: 100%; transition: background 0.15s;
+  }
+  .submit-btn:hover { background: #15803d; }
+  .submit-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
+
+  /* ── 結果 ── */
+  #screen-result { display: none; flex-direction: column; gap: 14px; }
+  #screen-done   { display: none; flex-direction: column; gap: 14px; align-items: center; text-align: center; padding-top: 40px; }
+  .done-icon { font-size: 64px; }
+  .done-msg  { font-size: 20px; font-weight: 800; color: #4ade80; }
+  .done-sub  { font-size: 13px; color: #64748b; }
+  .result-title { font-size: 20px; font-weight: 800; text-align: center; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .bar-label { min-width: 64px; max-width: 100px; font-size: 13px; font-weight: 600; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #cbd5e1; }
+  .bar-track { flex: 1; background: #1e293b; border-radius: 6px; height: 28px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 6px; display: flex; align-items: center; padding: 0 6px; font-size: 13px; font-weight: 700; color: #052e16; transition: width 0.5s; min-width: 0; }
+  .bar-count { font-size: 13px; color: #64748b; min-width: 32px; }
+  .column-chart { display: flex; align-items: flex-end; gap: 8px; width: 100%; min-height: 210px; padding: 14px 4px 4px; overflow-x: auto; }
+  .column-item { flex: 1 0 44px; min-width: 44px; max-width: 72px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+  .column-count { color: #e2e8f0; font-size: 12px; font-weight: 900; min-height: 16px; }
+  .column-bar { width: 100%; min-height: 12px; border-radius: 8px 8px 3px 3px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset; }
+  .column-label { width: 100%; color: #cbd5e1; font-size: 13px; font-weight: 900; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ── Loading / Error ── */
+  #screen-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 60px; gap: 12px; }
+  #screen-error   { display: none; flex-direction: column; align-items: center; padding-top: 40px; gap: 12px; text-align: center; color: #f87171; }
+  .spinner { width: 36px; height: 36px; border: 3px solid #334155; border-top-color: #4ade80; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🗳️ 班級投票</h1>
+  <p id="header-title"></p>
+</div>
+<div class="main">
+  <!-- Loading -->
+  <div id="screen-loading"><div class="spinner"></div><p style="color:#64748b;font-size:14px;">載入中...</p></div>
+  <!-- Error -->
+  <div id="screen-error"><div style="font-size:48px;">⚠️</div><div id="error-msg">投票不存在或已結束</div></div>
+
+  <!-- 選座號 -->
+  <div id="screen-select">
+    <div style="text-align:center;">
+      <div style="font-size:18px;font-weight:800;margin-bottom:6px;">👤 請選擇你的座號</div>
+      <div style="font-size:13px;color:#64748b;">選完後才能投票</div>
+    </div>
+    <div class="seat-grid" id="seat-grid"></div>
+  </div>
+
+  <!-- 投票 -->
+  <div id="screen-vote">
+    <div id="my-seat-badge" style="text-align:center;font-size:13px;color:#64748b;"></div>
+    <div class="vote-title" id="vote-title-display"></div>
+    <div class="vote-hint" id="vote-hint"></div>
+    <div class="vote-options" id="vote-options"></div>
+    <button class="submit-btn" id="submit-btn" disabled onclick="submitVote()">送出投票</button>
+  </div>
+
+  <!-- 已投票（完成） -->
+  <div id="screen-done">
+    <div class="done-icon">✅</div>
+    <div class="done-msg">已完成投票！</div>
+    <div class="done-sub" id="done-result-hint"></div>
+  </div>
+
+  <!-- 結果公告 -->
+  <div id="screen-result">
+    <div class="result-title" id="result-title"></div>
+    <div id="result-chart"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDTT6UzOWRk_oqa8TXm3N1DK-1HiouKjxg",
+  authDomain: "homework-tracker-5c6d3.firebaseapp.com",
+  projectId: "homework-tracker-5c6d3",
+  storageBucket: "homework-tracker-5c6d3.firebasestorage.app",
+  messagingSenderId: "133239689183",
+  appId: "1:133239689183:web:196488edd609c4fa663e6a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// ── State ──
+let voteData = null;
+let mySeat   = null;       // 選擇的座號
+let myChoices = [];        // 已選的選項 ids
+let hasVoted  = false;
+let rosterData = [];
+
+// 取得 URL 參數
+const urlParams = new URLSearchParams(window.location.search);
+const voteId = urlParams.get('id');
+
+function showScreen(id) {
+  ['screen-loading','screen-error','screen-select','screen-vote','screen-done','screen-result']
+    .forEach(s => { document.getElementById(s).style.display = 'none'; });
+  document.getElementById(id).style.display = 'flex';
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── 初始化 ──
+async function init() {
+  if (!voteId) { showScreen('screen-error'); document.getElementById('error-msg').textContent = '找不到投票 ID'; return; }
+
+  // 載入名冊（取得座號與性別）
+  try {
+    const rDoc = await db.collection('settings').doc('roster').get();
+    rosterData = rDoc.exists ? (rDoc.data().seats || []) : [];
+  } catch(e) {}
+
+  // 監聽投票資料
+  db.collection('data').doc('currentVote').onSnapshot(doc => {
+    if (!doc.exists) { showScreen('screen-error'); return; }
+    const data = doc.data();
+    if (data.id !== voteId) { showScreen('screen-error'); document.getElementById('error-msg').textContent = '投票已結束或不存在'; return; }
+    voteData = data;
+    document.getElementById('header-title').textContent = data.title || '';
+    handleVoteState();
+  }, () => { showScreen('screen-error'); });
+}
+
+function _localVoteKey() { return 'voted_' + voteId; }
+function _deviceIdKey() { return 'vote_device_id'; }
+function _cookieVoteName() { return 'voted_' + voteId; }
+
+function _getDeviceId() {
+  try {
+    let id = localStorage.getItem(_deviceIdKey());
+    if (!id) {
+      id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem(_deviceIdKey(), id);
+    }
+    return id;
+  } catch(e) {
+    return null;
+  }
+}
+
+function _checkLocalVoted() {
+  try {
+    const rec = JSON.parse(localStorage.getItem(_localVoteKey()) || 'null');
+    if (rec) return rec;
+  } catch(e) {}
+  try {
+    const name = _cookieVoteName() + '=';
+    const pair = document.cookie.split(';').map(s => s.trim()).find(s => s.startsWith(name));
+    if (pair) return JSON.parse(decodeURIComponent(pair.slice(name.length)));
+  } catch(e) {}
+  return null; // { seat } or null
+}
+
+function _markLocalVoted(seat) {
+  const rec = JSON.stringify({ seat });
+  try { localStorage.setItem(_localVoteKey(), rec); } catch(e) {}
+  try { document.cookie = `${_cookieVoteName()}=${encodeURIComponent(rec)}; max-age=604800; path=/; samesite=lax`; } catch(e) {}
+}
+
+function _getDeviceVotedSeat() {
+  const deviceId = _getDeviceId();
+  if (!deviceId || !voteData) return null;
+  const deviceVotes = voteData.deviceVotes || {};
+  return deviceVotes[deviceId] || null;
+}
+
+function handleVoteState() {
+  if (!voteData) return;
+
+  // 先查這台裝置是否已投過（localStorage）
+  const localRec = _checkLocalVoted();
+  const deviceVotedSeat = _getDeviceVotedSeat();
+  if (localRec || deviceVotedSeat) {
+    hasVoted = true;
+    if (!mySeat) mySeat = deviceVotedSeat || localRec.seat;
+  }
+
+  // 已有座號 && 已投過（Firestore 確認）
+  const responses = voteData.responses || {};
+  if (mySeat && responses[String(mySeat)] !== undefined) {
+    hasVoted = true;
+  }
+
+  if (voteData.status === 'announced') {
+    showResultScreen();
+    return;
+  }
+  if (voteData.status !== 'open') {
+    showScreen('screen-error');
+    document.getElementById('error-msg').textContent = '投票尚未開始';
+    return;
+  }
+  if (hasVoted) {
+    showDoneScreen();
+    return;
+  }
+  if (!mySeat) {
+    showSeatSelectScreen();
+    return;
+  }
+  showVoteScreen();
+}
+
+function showSeatSelectScreen() {
+  // 載入名冊座號，顯示性別顏色
+  let seatingDoc;
+  db.collection('settings').doc('seatingChart').get().then(doc => {
+    const genderMap = doc.exists ? (doc.data().genderMap || {}) : {};
+    const grid = document.getElementById('seat-grid');
+    const roster = rosterData.length ? rosterData : Array.from({length:35}, (_,i)=>i+1);
+    grid.innerHTML = roster.map(n => {
+      const g = genderMap[String(n)];
+      const gc = g === 'm' ? 'gender-m' : g === 'f' ? 'gender-f' : '';
+      return `<button class="seat-btn ${gc}" onclick="selectSeat(${n})">${n}</button>`;
+    }).join('');
+    showScreen('screen-select');
+  });
+}
+
+function selectSeat(n) {
+  const localRec = _checkLocalVoted();
+  const deviceVotedSeat = _getDeviceVotedSeat();
+  if (localRec || deviceVotedSeat) {
+    mySeat = deviceVotedSeat || localRec.seat;
+    hasVoted = true;
+    showDoneScreen();
+    return;
+  }
+  mySeat = n;
+  myChoices = [];
+  hasVoted = false;
+  const responses = voteData ? (voteData.responses || {}) : {};
+  if (responses[String(n)] !== undefined) {
+    hasVoted = true;
+    showDoneScreen();
+    return;
+  }
+  showVoteScreen(true);
+}
+
+function showVoteScreen(resetChoices = false) {
+  if (!voteData || !mySeat) return;
+  if (resetChoices) myChoices = [];
+  document.getElementById('my-seat-badge').textContent = `${mySeat}號 正在投票`;
+  document.getElementById('vote-title-display').textContent = voteData.title || '';
+  const isMulti = voteData.voteType === 'multi';
+  const maxV = voteData.maxVotes || 1;
+  document.getElementById('vote-hint').textContent = isMulti ? `最多可選 ${maxV} 個選項` : '請選擇一個選項';
+  // 渲染選項
+  const opts = voteData.options || [];
+  const optionsEl = document.getElementById('vote-options');
+  const isSeatOptions = voteData.optionMode === 'roster';
+  optionsEl.classList.toggle('seat-options', isSeatOptions);
+  optionsEl.innerHTML = opts.map(o =>
+    `<button class="vote-option-btn" id="opt-${o.id}" onclick="toggleChoice('${o.id}')">${isSeatOptions ? escHtml(o.text).replace('號','') : escHtml(o.text)}</button>`
+  ).join('');
+  myChoices = myChoices.filter(id => opts.some(o => o.id === id));
+  myChoices.forEach(id => {
+    const btn = document.getElementById('opt-' + id);
+    if (btn) btn.classList.add('selected');
+  });
+  document.getElementById('submit-btn').disabled = myChoices.length === 0;
+  showScreen('screen-vote');
+}
+
+function toggleChoice(optId) {
+  const isMulti = voteData.voteType === 'multi';
+  const maxV = voteData.maxVotes || 1;
+  if (isMulti) {
+    const idx = myChoices.indexOf(optId);
+    if (idx >= 0) {
+      myChoices.splice(idx, 1);
+      document.getElementById('opt-' + optId).classList.remove('selected');
+    } else {
+      if (myChoices.length >= maxV) { return; }
+      myChoices.push(optId);
+      document.getElementById('opt-' + optId).classList.add('selected');
+    }
+  } else {
+    // 單選：取消其他
+    myChoices = [optId];
+    document.querySelectorAll('.vote-option-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('opt-' + optId).classList.add('selected');
+  }
+  document.getElementById('submit-btn').disabled = myChoices.length === 0;
+}
+
+async function submitVote() {
+  if (!mySeat || !myChoices.length || !voteData) return;
+  const localRec = _checkLocalVoted();
+  const deviceVotedSeat = _getDeviceVotedSeat();
+  if (localRec || deviceVotedSeat) {
+    mySeat = deviceVotedSeat || localRec.seat;
+    hasVoted = true;
+    showDoneScreen();
+    return;
+  }
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = '送出中...';
+  try {
+    const choicesToSubmit = [...myChoices];
+    const deviceId = _getDeviceId();
+    const ref = db.collection('data').doc('currentVote');
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(ref);
+      if (!snap.exists) throw new Error('VOTE_CLOSED');
+      const latest = snap.data();
+      if (latest.id !== voteId || latest.status !== 'open') throw new Error('VOTE_CLOSED');
+      const responses = latest.responses || {};
+      const deviceVotes = latest.deviceVotes || {};
+      if (deviceId && deviceVotes[deviceId] !== undefined) throw new Error('DEVICE_ALREADY_VOTED');
+      if (responses[String(mySeat)] !== undefined) throw new Error('SEAT_ALREADY_VOTED');
+      const updateData = {
+        [`responses.${mySeat}`]: choicesToSubmit
+      };
+      if (deviceId) updateData[`deviceVotes.${deviceId}`] = mySeat;
+      tx.update(ref, updateData);
+    });
+    hasVoted = true;
+    _markLocalVoted(mySeat);
+    showDoneScreen();
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '送出投票';
+    if (e.message === 'DEVICE_ALREADY_VOTED') {
+      alert('這支手機已經完成投票，不能再替其他座號投票。');
+      hasVoted = true;
+      showDoneScreen();
+    } else if (e.message === 'SEAT_ALREADY_VOTED') {
+      alert('這個座號已經投過票。');
+      hasVoted = true;
+      showDoneScreen();
+    } else {
+      alert('送出失敗，請重試');
+    }
+  }
+}
+
+function showDoneScreen() {
+  const showLive = voteData && voteData.showLive;
+  const seatText = mySeat ? `${mySeat}號已完成投票。` : '';
+  document.getElementById('done-result-hint').textContent = seatText + (showLive ? '可在下方查看即時結果' : '結果稍後由老師公告');
+  document.querySelectorAll('#screen-done .vote-result-chart').forEach(el => el.remove());
+  showScreen('screen-done');
+  // 若 showLive，在 done 下面附上圖表
+  if (showLive && voteData) {
+    const chart = buildBarChart(voteData);
+    document.getElementById('screen-done').insertAdjacentHTML('beforeend', `<div class="vote-result-chart">${chart}</div>`);
+  }
+}
+
+function showResultScreen() {
+  document.getElementById('result-title').textContent = '📊 ' + (voteData.title || '投票結果');
+  document.getElementById('result-chart').innerHTML = buildBarChart(voteData);
+  showScreen('screen-result');
+}
+
+function buildBarChart(v) {
+  const opts = v.options || [];
+  const responses = v.responses || {};
+  const tally = {};
+  opts.forEach(o => tally[o.id] = 0);
+  Object.values(responses).forEach(choices => {
+    (Array.isArray(choices) ? choices : [choices]).forEach(cid => {
+      if (cid in tally) tally[cid]++;
+    });
+  });
+  const visibleOpts = opts.filter(o => (tally[o.id] || 0) > 0);
+  if (!visibleOpts.length) return '<div style="color:#64748b;font-size:14px;text-align:center;">尚無票數</div>';
+  const colors = ['#4ade80','#60a5fa','#f97316','#a78bfa','#f43f5e','#34d399','#fbbf24','#818cf8'];
+  const maxVal = Math.max(1, ...visibleOpts.map(o => tally[o.id] || 0));
+  return `<div class="column-chart">${visibleOpts.map((o, i) => {
+    const cnt = tally[o.id] || 0;
+    const height = Math.max(12, Math.round((cnt / maxVal) * 160));
+    const color = colors[i % colors.length];
+    const label = String(o.text || '').replace(/號$/, '');
+    return `<div class="column-item" title="${escHtml(o.text)}：${cnt}票">
+      <div class="column-count">${cnt}票</div>
+      <div class="column-bar" style="height:${height}px;background:${color};"></div>
+      <div class="column-label">${escHtml(label)}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// 先匿名登入（Firestore 安全規則要求 request.auth != null），成功後才開始載入投票
+auth.signInAnonymously()
+  .then(() => init())
+  .catch(e => {
+    showScreen('screen-error');
+    document.getElementById('error-msg').textContent = '連線失敗，請重新整理';
+    console.error('匿名登入失敗：', e);
+  });
+</script>
+</body>
+</html>

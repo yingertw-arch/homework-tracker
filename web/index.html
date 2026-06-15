@@ -45,7 +45,19 @@
   }
   .btn-google:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
   .btn-google img { width: 22px; height: 22px; }
-  #login-error { color: #fca5a5; font-size: 13px; text-align: center; }
+  .gis-login-wrap { display: none; min-height: 44px; }
+  #login-error { color: #fca5a5; font-size: 13px; text-align: center; max-width: 320px; line-height: 1.5; }
+  .browser-hint {
+    display: none; max-width: 340px; background: rgba(255,255,255,0.08);
+    color: #dbeafe; border: 1px solid rgba(147,197,253,0.35);
+    border-radius: 12px; padding: 12px 14px; font-size: 13px; line-height: 1.55;
+  }
+  .browser-hint.show { display: block; }
+  .copy-link-btn {
+    margin-top: 8px; width: 100%; border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.12); color: #fff; border-radius: 8px;
+    padding: 8px 10px; font-size: 13px; font-weight: 700;
+  }
 
   /* ── App Shell ── */
   #app { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -78,6 +90,19 @@
     transition: all 0.15s;
   }
   .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .bottom-nav {
+    display: flex; background: #fff; border-top: 1.5px solid var(--border);
+    flex-shrink: 0; padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+  }
+  .bottom-nav-btn {
+    flex: 1; border: none; background: none; color: var(--text-muted);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; padding: 7px 4px; border-radius: 12px;
+    font-size: 12px; font-weight: 800; cursor: pointer;
+  }
+  .bottom-nav-btn .nav-icon { font-size: 20px; line-height: 1; }
+  .bottom-nav-btn.active { color: var(--primary); background: #eff6ff; }
 
   /* Content */
   .tab-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -107,6 +132,17 @@
     border-radius: 8px; padding: 6px 14px;
     font-size: 13px; font-weight: 700; cursor: pointer;
   }
+  .quick-actions {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
+  }
+  .quick-action-btn {
+    border: none; border-radius: 12px; padding: 12px 10px;
+    font-size: 14px; font-weight: 800; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .quick-action-btn.event { background: #fff7ed; color: #c2410c; border: 1.5px solid #fed7aa; }
+  .quick-action-btn.homework { background: #f0fdf4; color: #15803d; border: 1.5px solid #bbf7d0; }
+  .quick-action-btn.assignment { grid-column: 1 / -1; background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
 
   /* Card */
   .card {
@@ -127,7 +163,7 @@
   }
   .badge-event { background: #fff7ed; color: #c2410c; }
   .badge-hw { background: #eff6ff; color: #1d4ed8; }
-  .daily-text { flex: 1; }
+  .daily-text { flex: 1; white-space: pre-wrap; line-height: 1.45; }
   .daily-actions { display: flex; gap: 4px; flex-shrink: 0; }
   .icon-btn {
     background: none; border: none; cursor: pointer;
@@ -197,7 +233,13 @@
     border-radius: 10px; font-size: 15px; color: var(--text);
     background: var(--bg); outline: none; -webkit-appearance: none;
   }
+  textarea.form-input { min-height: 120px; resize: vertical; line-height: 1.45; font-family: inherit; }
   .form-input:focus { border-color: var(--primary); background: #fff; }
+  .textarea-tools { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .btn-linebreak {
+    border: 1.5px solid var(--border); background: #fff; color: var(--primary);
+    border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 800;
+  }
   .modal-btns { display: flex; gap: 10px; margin-top: 8px; }
   .modal-btns .btn { flex: 1; padding: 14px; font-size: 15px; }
 
@@ -258,6 +300,13 @@
     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
     使用 Google 帳號登入
   </button>
+  <div id="gis-login-wrap" class="gis-login-wrap">
+    <div id="gis-login-button"></div>
+  </div>
+  <div id="browser-hint" class="browser-hint">
+    Google 不允許在 LINE、Facebook、Instagram、Google App 等內建瀏覽器登入。請用 Safari 或 Chrome 開啟此頁。
+    <button class="copy-link-btn" onclick="copyAppLink()">複製網址</button>
+  </div>
   <div id="login-error"></div>
 </div>
 
@@ -272,23 +321,27 @@
   </div>
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('daily')" data-tab="daily">📓 班級事務</button>
-    <button class="tab-btn" onclick="switchTab('assignments')" data-tab="assignments">📋 作業管理</button>
+    <button class="tab-btn" onclick="switchTab('assignments')" data-tab="assignments">📋 作業缺交</button>
   </div>
   <div class="tab-content">
 
     <!-- Daily Items Tab -->
     <div id="tab-daily" class="tab-panel active">
+      <div class="quick-actions">
+        <button class="quick-action-btn event" onclick="openDailyModal('event')">🗓 新增行事曆</button>
+        <button class="quick-action-btn homework" onclick="openDailyModal('homework')">📓 新增聯絡簿</button>
+        <button class="quick-action-btn assignment" onclick="openAsgnModal()">📋 新增缺交名單</button>
+      </div>
+
       <!-- Events -->
       <div class="section-header" style="margin-bottom:8px;">
         <span class="section-title">🗓 行事曆</span>
-        <button class="btn-add" onclick="openDailyModal('event')">+ 新增</button>
       </div>
       <div class="card" id="events-list"><div class="empty">載入中…</div></div>
 
       <!-- Homework -->
       <div class="section-header" style="margin-top:16px; margin-bottom:8px;">
         <span class="section-title">📓 聯絡簿</span>
-        <button class="btn-add" onclick="openDailyModal('homework')">+ 新增</button>
       </div>
       <div class="card" id="homework-list"><div class="empty">載入中…</div></div>
     </div>
@@ -297,11 +350,21 @@
     <div id="tab-assignments" class="tab-panel">
       <div class="section-header" style="margin-bottom:12px;">
         <span class="section-title">📋 缺交作業</span>
-        <button class="btn-add" onclick="openAsgnModal()">+ 新增作業</button>
+        <button class="btn-add" onclick="openAsgnModal()">+ 新增缺交名單</button>
       </div>
       <div id="asgn-list"><div class="empty"><div class="empty-icon">📭</div>載入中…</div></div>
     </div>
 
+  </div>
+  <div class="bottom-nav">
+    <button class="bottom-nav-btn active" onclick="switchTab('daily')" data-tab="daily">
+      <span class="nav-icon">📓</span>
+      <span>班級事務</span>
+    </button>
+    <button class="bottom-nav-btn" onclick="switchTab('assignments')" data-tab="assignments">
+      <span class="nav-icon">📋</span>
+      <span>作業缺交</span>
+    </button>
   </div>
 </div>
 
@@ -311,7 +374,10 @@
     <div class="modal-title" id="daily-modal-title">新增行事曆</div>
     <div class="form-group">
       <label class="form-label" id="daily-modal-label">事項內容</label>
-      <input class="form-input" id="daily-text" type="text" placeholder="請輸入內容…">
+      <textarea class="form-input" id="daily-text" rows="5" enterkeyhint="enter" placeholder="請輸入內容…"></textarea>
+      <div class="textarea-tools">
+        <button type="button" class="btn-linebreak" onclick="insertDailyLineBreak()">↵ 換行</button>
+      </div>
     </div>
     <div class="form-group">
       <label class="form-label">日期</label>
@@ -327,7 +393,7 @@
 <!-- Assignment Modal -->
 <div class="modal-overlay" id="asgn-modal">
   <div class="modal">
-    <div class="modal-title" id="asgn-modal-title">新增作業</div>
+    <div class="modal-title" id="asgn-modal-title">新增缺交名單</div>
     <div class="form-group">
       <label class="form-label">作業名稱</label>
       <input class="form-input" id="asgn-name" type="text" placeholder="例：數學第3課">
@@ -357,6 +423,7 @@
 </div>
 
 <!-- Firebase SDK -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -374,6 +441,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const ALLOWED_TEACHER_EMAILS = ['yinger.tw@gmail.com'];
+const GOOGLE_OAUTH_CLIENT_ID = '133239689183-0oje066mk23cado9tg1qm5o20rstr4na.apps.googleusercontent.com';
+let _authInitDone = false;
+let _gisInitAttempts = 0;
 
 // ── State ──
 let dailyItems = [];
@@ -411,12 +482,113 @@ function showLoading(v) {
 }
 
 // ── Auth ──
-function signIn() {
+function isBlockedOAuthBrowser() {
+  const ua = navigator.userAgent || '';
+  const inApp = /Line|FBAN|FBAV|Instagram|MicroMessenger|GSA|GoogleApp|DuckDuckGo|NAVER|KAKAOTALK/i.test(ua);
+  const iosWebView = /iPhone|iPad|iPod/i.test(ua) && /AppleWebKit/i.test(ua) && !/Safari|CriOS|FxiOS|EdgiOS/i.test(ua);
+  return inApp || iosWebView;
+}
+
+function isMobileBrowser() {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
+}
+
+async function handleGoogleIdentityCredential(response) {
+  const errEl = document.getElementById('login-error');
+  try {
+    if (!response || !response.credential) throw new Error('沒有取得 Google 登入憑證');
+    errEl.textContent = '登入中，請稍候...';
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
+    await auth.signInWithCredential(credential);
+  } catch (err) {
+    errEl.textContent = '登入失敗：' + (err.message || err);
+  }
+}
+
+function initGoogleIdentityButton() {
+  if (!isMobileBrowser()) return;
+  const wrap = document.getElementById('gis-login-wrap');
+  const target = document.getElementById('gis-login-button');
+  const legacyBtn = document.querySelector('.btn-google');
+  if (legacyBtn) legacyBtn.style.display = 'none';
+  if (wrap) wrap.style.display = 'block';
+  if (!wrap || !target) return;
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    _gisInitAttempts += 1;
+    document.getElementById('login-error').textContent = 'Google 登入按鈕載入中，請稍候...';
+    if (_gisInitAttempts < 30) setTimeout(initGoogleIdentityButton, 300);
+    else document.getElementById('login-error').textContent = 'Google 登入按鈕載入失敗，請重新整理頁面。';
+    return;
+  }
+  try {
+    target.innerHTML = '';
+    google.accounts.id.initialize({
+      client_id: GOOGLE_OAUTH_CLIENT_ID,
+      callback: handleGoogleIdentityCredential,
+      cancel_on_tap_outside: false
+    });
+    google.accounts.id.renderButton(target, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+      shape: 'rectangular',
+      width: 260
+    });
+    wrap.style.display = 'block';
+    if (legacyBtn) legacyBtn.style.display = 'none';
+    document.getElementById('login-error').textContent = '';
+  } catch (err) {
+    document.getElementById('login-error').textContent = 'Google 登入元件載入失敗：' + (err.message || err);
+  }
+}
+
+initGoogleIdentityButton();
+window.addEventListener('load', initGoogleIdentityButton);
+
+function showBrowserHint() {
+  const hint = document.getElementById('browser-hint');
+  if (hint) hint.classList.add('show');
+  document.getElementById('login-error').textContent = '請改用 Safari 或 Chrome 開啟後再登入。';
+}
+
+async function copyAppLink() {
+  const url = 'https://homework-tracker-5c6d3.web.app/';
+  try {
+    await navigator.clipboard.writeText(url);
+    document.getElementById('login-error').textContent = '已複製網址，請貼到 Safari 或 Chrome 開啟。';
+  } catch(e) {
+    document.getElementById('login-error').textContent = url;
+  }
+}
+
+async function signIn() {
+  const errEl = document.getElementById('login-error');
+  if (isBlockedOAuthBrowser()) {
+    showBrowserHint();
+    return;
+  }
+  errEl.textContent = '登入中，請稍候...';
   const provider = new firebase.auth.GoogleAuthProvider();
-  // 使用 redirect 方式（取代 popup），手機瀏覽器相容性最佳
-  auth.signInWithRedirect(provider).catch(err => {
-    document.getElementById('login-error').textContent = '登入失敗：' + err.message;
-  });
+  provider.setCustomParameters({ prompt: 'select_account' });
+  try {
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    await auth.signInWithPopup(provider);
+  } catch (err) {
+    const fallbackCodes = ['auth/popup-blocked', 'auth/popup-closed-by-user', 'auth/cancelled-popup-request', 'auth/operation-not-supported-in-this-environment'];
+    if (isMobileBrowser()) {
+      errEl.textContent = '手機登入請使用下方 Google 官方登入按鈕。若未出現，請重新整理頁面。';
+    } else if (fallbackCodes.includes(err.code)) {
+      try {
+        await auth.signInWithRedirect(provider);
+      } catch (redirectErr) {
+        errEl.textContent = '登入失敗：' + redirectErr.message;
+      }
+    } else {
+      errEl.textContent = '登入失敗：' + err.message;
+    }
+  }
 }
 function signOut() {
   if (!confirm('確定要登出？')) return;
@@ -424,14 +596,39 @@ function signOut() {
 }
 
 // 處理 redirect 登入後的回傳結果
-auth.getRedirectResult().catch(err => {
-  if (err && err.code !== 'auth/no-current-user') {
-    document.getElementById('login-error').textContent = '登入失敗：' + err.message;
-  }
-});
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => auth.getRedirectResult())
+  .catch(err => {
+    if (err && err.code !== 'auth/no-current-user') {
+      document.getElementById('login-error').textContent = '登入失敗：' + err.message;
+    }
+  })
+  .finally(() => {
+    _authInitDone = true;
+    if (!auth.currentUser) {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app').classList.remove('visible');
+      const errEl = document.getElementById('login-error');
+      if (errEl.textContent === '登入狀態確認中，請稍候...') errEl.textContent = '';
+    }
+  });
 
 auth.onAuthStateChanged(user => {
+  if (!user && !_authInitDone) {
+    document.getElementById('login-error').textContent = '登入狀態確認中，請稍候...';
+    return;
+  }
   if (user) {
+    const email = (user.email || '').toLowerCase();
+    if (!ALLOWED_TEACHER_EMAILS.includes(email)) {
+      stopListeners();
+      document.getElementById('app').classList.remove('visible');
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('login-error').textContent = `此帳號沒有使用權限：${user.email || '未知帳號'}`;
+      auth.signOut();
+      return;
+    }
+    document.getElementById('login-error').textContent = '';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').classList.add('visible');
     const avatar = document.getElementById('user-avatar');
@@ -474,9 +671,9 @@ function stopListeners() {
 // ── Tabs ──
 function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  document.querySelector(`.tab-btn[data-tab="${name}"]`).classList.add('active');
+  document.querySelectorAll(`[data-tab="${name}"]`).forEach(b => b.classList.add('active'));
 }
 
 // ── Daily Items ──
@@ -542,6 +739,15 @@ function openEditDaily(id) {
 function closeDailyModal() {
   document.getElementById('daily-modal').classList.remove('open');
   _editingDailyId = null;
+}
+
+function insertDailyLineBreak() {
+  const input = document.getElementById('daily-text');
+  const start = input.selectionStart ?? input.value.length;
+  const end = input.selectionEnd ?? input.value.length;
+  input.value = input.value.slice(0, start) + '\n' + input.value.slice(end);
+  input.focus();
+  input.selectionStart = input.selectionEnd = start + 1;
 }
 
 function saveDailyItem() {
@@ -663,7 +869,7 @@ function spClearAll() { _selectedSeats.clear(); renderSeatPicker(); }
 function openAsgnModal() {
   _editingAsgnId = null;
   _selectedSeats = new Set();
-  document.getElementById('asgn-modal-title').textContent = '新增作業';
+  document.getElementById('asgn-modal-title').textContent = '新增缺交名單';
   document.getElementById('asgn-name').value = '';
   document.getElementById('asgn-date').value = today();
   renderSeatPicker();
@@ -676,7 +882,7 @@ function openEditAsgn(id) {
   if (!a) return;
   _editingAsgnId = id;
   _selectedSeats = new Set(a.missingSeatNums || []);
-  document.getElementById('asgn-modal-title').textContent = '編輯作業';
+  document.getElementById('asgn-modal-title').textContent = '編輯缺交名單';
   document.getElementById('asgn-name').value = a.name;
   document.getElementById('asgn-date').value = a.dueDate;
   renderSeatPicker();

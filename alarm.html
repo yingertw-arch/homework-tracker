@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>🚨 緊急提醒！</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    html, body {
+      width: 100vw; height: 100vh; overflow: hidden;
+      background: #0a0a1a;
+      font-family: 'Microsoft JhengHei', 'PingFang TC', 'Segoe UI', sans-serif;
+    }
+    #border {
+      position: fixed; inset: 20px;
+      border: 8px solid #ff3366; border-radius: 18px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; gap: 14px;
+      transition: border-color 0.15s;
+    }
+    .emoji { font-size: 13vh; line-height: 1; }
+    .warn { font-size: 6vh; font-weight: 900; color: #ffd700; letter-spacing: 2px; }
+    #name {
+      font-size: 9vh; font-weight: 900; color: #ff3366;
+      max-width: 90vw; word-break: break-word; transition: color 0.15s;
+    }
+    .go { font-size: 5vh; font-weight: 900; color: #fff; }
+    #now { font-size: 3vh; color: #8888aa; }
+    .hint { font-size: 2.2vh; color: #8888aa; }
+    #dismiss {
+      margin-top: 10px;
+      font-size: 4vh; font-weight: 900; color: #000;
+      background: #00ff88; border: none; border-radius: 16px;
+      padding: 22px 56px; cursor: pointer;
+      box-shadow: 0 8px 0 #00b25f;
+    }
+    #dismiss:active { transform: translateY(4px); box-shadow: 0 4px 0 #00b25f; }
+  </style>
+</head>
+<body>
+  <div id="border">
+    <div class="emoji">🚨</div>
+    <div class="warn">⚠️　緊急提醒　⚠️</div>
+    <div id="name">【 會議 】</div>
+    <div class="go">時間到了！！！</div>
+    <div id="now"></div>
+    <div class="hint">按下「我知道了！」才能關閉此視窗</div>
+    <button id="dismiss">✅　我知道了！</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const name = params.get('name') || '會議';
+    document.getElementById('name').textContent = '【 ' + name + ' 】';
+    document.title = '🚨 ' + name;
+
+    // 即時時間
+    function tick() {
+      const d = new Date();
+      const p = n => String(n).padStart(2, '0');
+      document.getElementById('now').textContent =
+        `現在時間：${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())}　${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+    }
+    tick(); setInterval(tick, 1000);
+
+    // 閃爍邊框
+    const colors = ['#ff3366', '#ff6600', '#ffd700', '#ff3366'];
+    let ci = 0;
+    const border = document.getElementById('border');
+    const nameEl = document.getElementById('name');
+    setInterval(() => {
+      const c = colors[ci++ % colors.length];
+      border.style.borderColor = c;
+      nameEl.style.color = c;
+    }, 300);
+
+    // 關閉
+    document.getElementById('dismiss').addEventListener('click', () => window.close());
+    // 防止 Esc/其他關閉前的誤觸，僅按鈕可關
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') window.close();
+    });
+  </script>
+</body>
+</html>
