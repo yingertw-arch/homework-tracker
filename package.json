@@ -1,6 +1,6 @@
 {
   "name": "homework-tracker",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "作業缺交追蹤系統",
   "main": "main.js",
   "scripts": {

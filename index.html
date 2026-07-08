@@ -1586,12 +1586,12 @@
         </div>
         <div style="flex:1;min-width:200px;">
           <div id="vote-live-chart" style="margin-bottom:12px;"></div>
-          <div id="vote-resp-list" style="font-size:12px;color:#555;"></div>
+          <div id="vote-resp-list" style="max-height:260px;overflow-y:auto;"></div>
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:auto;flex-shrink:0;">
-        <button class="ptab-btn ptab-lock" onclick="announceVote()" style="flex:1;padding:10px;">✅ 公告結果</button>
-        <button class="ptab-btn ptab-clear" onclick="stopVote()" style="padding:10px;">✕ 結束</button>
+        <button id="vote-announce-btn" class="ptab-btn ptab-lock" onclick="announceVote()" style="flex:1;padding:10px;">✅ 公告結果</button>
+        <button id="vote-stop-btn" class="ptab-btn ptab-clear" onclick="stopVote()" style="flex:1;padding:10px;">✕ 結束投票</button>
       </div>
     </div>
     <!-- Announced 狀態：公告結果 -->
@@ -4596,8 +4596,6 @@ function _clearVoteDraftMsg() {
 function startVote() {
   _clearVoteDraftMsg();
   const title = document.getElementById('vote-title-input').value.trim();
-  const titleEl = document.getElementById('vote-title-input');
-  if (!title) { _showVoteDraftMsg('請先輸入投票主題', titleEl); return; }
   // 讀取 UI 設定
   const voteType = document.querySelector('input[name="vote-type"]:checked')?.value || 'single';
   const maxVotes = parseInt(document.getElementById('vote-max-votes').value) || 1;
@@ -4640,22 +4638,30 @@ function _renderVoteOpen() {
   document.getElementById('vote-count-display').textContent = `已投票：${voterCount} / ${rosterSize} 人`;
   // 圖表（即時顯示或隱藏）
   const chartEl = document.getElementById('vote-live-chart');
+  // 老師端一律看得到即時長條圖（後台預覽）；稍後公告模式僅學生端看不到
   if (v.showLive) {
     chartEl.innerHTML = _buildVoteBarChart(v);
   } else {
-    chartEl.innerHTML = '<div style="font-size:13px;color:#555;">結果稍後公告</div>';
+    chartEl.innerHTML = _buildVoteBarChart(v) + '<div style="font-size:12px;color:#fbbf24;margin-top:4px;">⚠ 此為老師端預覽，學生端尚未公告</div>';
   }
+  // 即時顯示模式不需要「公告結果」（大家已看到即時結果），只留「結束投票」；稍後公告才需要公告
+  const announceBtn = document.getElementById('vote-announce-btn');
+  if (announceBtn) announceBtn.style.display = v.showLive ? 'none' : '';
   // 詳細名單（老師端可見）
   const respEl = document.getElementById('vote-resp-list');
   const opts = v.options || [];
-  const details = Object.entries(responses).map(([seat, choiceIds]) => {
-    const choiceTexts = (Array.isArray(choiceIds) ? choiceIds : [choiceIds]).map(cid => {
-      const o = opts.find(op => op.id === cid);
-      return o ? o.text : cid;
-    }).join('、');
-    return `${seat}號 → ${choiceTexts}`;
-  }).join('　');
-  respEl.textContent = details ? '投票記錄：' + details : '';
+  const detailRows = Object.entries(responses)
+    .sort((a, b) => (parseInt(a[0]) || 0) - (parseInt(b[0]) || 0))
+    .map(([seat, choiceIds]) => {
+      const choiceTexts = (Array.isArray(choiceIds) ? choiceIds : [choiceIds]).map(cid => {
+        const o = opts.find(op => op.id === cid);
+        return escHtml(o ? o.text : cid);
+      }).join('、');
+      return `<div style="padding:4px 8px;background:rgba(255,255,255,0.04);border-radius:6px;margin:3px 0;font-size:14px;"><span style="color:#4ade80;font-weight:700;">${escHtml(seat)}號</span> <span style="color:#888;">→</span> <span style="color:#e2e8f0;font-weight:600;">${choiceTexts}</span></div>`;
+    }).join('');
+  respEl.innerHTML = detailRows
+    ? `<div style="font-size:13px;color:#94a3b8;font-weight:700;margin-bottom:4px;">📋 投票明細（${Object.keys(responses).length} 人已投）</div>${detailRows}`
+    : '<div style="font-size:13px;color:#555;">尚無人投票</div>';
 }
 
 function _renderVoteAnnounced() {
@@ -4699,7 +4705,11 @@ function announceVote() {
 }
 function stopVote() {
   if (!_voteData) return;
-  _voteData.status = 'draft'; _saveVote();
+  showMiniConfirm('確定要結束這次投票嗎？\n（題目、選項與所有票數將清除，可立即開始下一輪）', () => {
+    _voteData = null;
+    db.collection('data').doc('currentVote').delete().catch(()=>{});
+    renderVoteTab(); showToast('投票已結束', 'success');
+  });
 }
 function reopenVote() {
   if (!_voteData) return;
